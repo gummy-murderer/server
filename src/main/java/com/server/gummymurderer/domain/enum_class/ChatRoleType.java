@@ -1,5 +1,5 @@
 package com.server.gummymurderer.domain.enum_class;
 
-public enum ChatType {
+public enum ChatRoleType {
     USER, AI
 }

@@ -1,6 +1,6 @@
 package com.server.gummymurderer.domain.entity;
 
-import com.server.gummymurderer.domain.enum_class.ChatType;
+import com.server.gummymurderer.domain.enum_class.ChatRoleType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,12 +20,12 @@ public class Chat{
     private String receiver;
 
     @Enumerated(EnumType.STRING)
-    private ChatType receiverType;
+    private ChatRoleType receiverType;
 
     private String sender;
 
     @Enumerated(EnumType.STRING)
-    private ChatType senderType;
+    private ChatRoleType senderType;
 
     private String chatContent;
 
@@ -34,6 +34,10 @@ public class Chat{
 
     @Column(name = "chat_day")
     private int chatDay;
+
+    @ManyToOne
+    @JoinColumn(name = "chat_room_no")
+    private ChatRoom chatRoom;
 
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "game_no")
