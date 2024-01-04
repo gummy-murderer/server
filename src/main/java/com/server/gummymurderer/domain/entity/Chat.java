@@ -33,6 +33,7 @@ public class Chat{
     private LocalDateTime chatDate;
 
     @Column(name = "chat_day")
+    // 대화했던 게임 일차
     private int chatDay;
 
     @ManyToOne

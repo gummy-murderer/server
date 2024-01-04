@@ -1,5 +1,8 @@
 package com.server.gummymurderer.configuration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.server.gummymurderer.domain.dto.chat.ChatSaveRequest;
+import com.server.gummymurderer.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -24,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class WebSocketChatHandler extends TextWebSocketHandler {
 
     private Map<String, Map<String, WebSocketSession>> chatRooms = new ConcurrentHashMap<>();
+    private final ChatService chatService;
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -37,11 +41,17 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
         log.info(session.getId() + "로부터 메시지 수신: " + message.getPayload());
         String chatRoomNo = getChatRoomNo(session);
 
+        ObjectMapper mapper = new ObjectMapper();
+        ChatSaveRequest chatSaveRequest = mapper.readValue(message.getPayload(), ChatSaveRequest.class);
+
+        chatService.sendChat(chatSaveRequest);  // 채팅 저장
+
         for (WebSocketSession s : chatRooms.get(chatRoomNo).values()) {
             s.sendMessage(message);
             log.info(s.getId() + "에 메시지 발송: " + message.getPayload());
         }
     }
+
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
