@@ -6,8 +6,9 @@ import com.server.gummymurderer.domain.dto.chat.ChatSaveResponse;
 import com.server.gummymurderer.domain.entity.Chat;
 import com.server.gummymurderer.domain.enum_class.ChatRoleType;
 import com.server.gummymurderer.repository.ChatRepository;
-import com.server.gummymurderer.repository.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -17,8 +18,10 @@ import java.time.LocalDateTime;
 public class ChatService {
 
     private final ChatRepository chatRepository;
-    private final ChatRoomRepository chatRoomRepository;
-    private final WebSocketChatHandler chatHandler;  // WebSocketChatHandler 를 사용하기 위해 추가
+
+    @Autowired
+    @Lazy
+    private WebSocketChatHandler chatHandler;  // WebSocketChatHandler 를 사용하기 위해 추가
 
     // 채팅 보내기
     public ChatSaveResponse sendChat(ChatSaveRequest request) {
@@ -40,11 +43,4 @@ public class ChatService {
         return ChatSaveResponse.of(chat);
     }
 
-//    // 채팅방의 채팅 리스트 가져오기
-//    public List<ChatDto> getChats(Long chatRoomNo) {
-//        ChatRoom chatRoom = chatRoomRepository.findByNo(chatRoomNo)
-//                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅방입니다."));
-//        List<Chat> chats = chatRoom.getChats();
-//        return chats.stream().map(ChatDto::new).collect(Collectors.toList());
-//    }
 }

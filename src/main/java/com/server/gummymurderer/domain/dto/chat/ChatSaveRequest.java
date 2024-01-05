@@ -22,7 +22,7 @@ public class ChatSaveRequest {
     private ChatRoleType receiverType;
 
     public void setRoleTypesBasedOnAI() {
-        if (this.sender.equalsIgnoreCase("ai")) {
+        if (this.sender.equalsIgnoreCase("ai_npc")) {
             this.senderType = ChatRoleType.AI;
             this.receiverType = ChatRoleType.USER;
         } else {

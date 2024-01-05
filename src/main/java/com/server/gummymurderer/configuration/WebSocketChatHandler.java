@@ -8,6 +8,7 @@ import jakarta.websocket.Session;
 import jakarta.websocket.WebSocketContainer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
@@ -34,6 +35,8 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
 
     private Map<String, WebSocketSession> unitySessions = new ConcurrentHashMap<>();
     private final Map<WebSocketSession, Long> sessionLastActiveTimes = new ConcurrentHashMap<>();
+
+    @Lazy
     private final ChatService chatService;
     private static final long TIMEOUT_MILLIS = 60000;  // 타임아웃 시간을 1분으로 설정
     private Session aiClientSession;
@@ -83,7 +86,6 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
         // Unity 서버에 메시지를 보낸다.
         sendMessageToUnityServer(message.getPayload());
     }
-
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
