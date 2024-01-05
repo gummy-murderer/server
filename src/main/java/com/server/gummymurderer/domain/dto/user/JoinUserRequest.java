@@ -3,15 +3,16 @@ package com.server.gummymurderer.domain.dto.user;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-@Getter
 @AllArgsConstructor
-@NoArgsConstructor
+@Getter
 @Builder
-public class UserJoinResponse {
+public class JoinUserRequest {
 
-    private long userNo;
     private String userId;
+    private String userPassword;
     private String userNickname;
+
+// user캐릭터 커스텀 관련 내용 필요
+
 }
