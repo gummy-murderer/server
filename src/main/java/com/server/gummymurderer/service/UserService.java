@@ -3,6 +3,7 @@ package com.server.gummymurderer.service;
 import com.server.gummymurderer.domain.dto.user.ReadAllUserResponse;
 import com.server.gummymurderer.domain.dto.user.JoinUserRequest;
 import com.server.gummymurderer.domain.dto.user.JoinUserResponse;
+import com.server.gummymurderer.domain.dto.user.ReadUserResponse;
 import com.server.gummymurderer.domain.entity.User;
 import com.server.gummymurderer.exception.AppException;
 import com.server.gummymurderer.exception.ErrorCode;
@@ -59,6 +60,13 @@ public class UserService {
         return userRepository.findAll(pageable).map(ReadAllUserResponse::of);
     }
 
+    public ReadUserResponse readByNo(long userNo) {
+
+        User foundUser = userRepository.findByUserNo(userNo)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        return ReadUserResponse.of(foundUser);
+    }
 
     //가입을 요청한 닉네임으로 유저 조회 -있으면 DUPLICATED_NICKNAME에러발생
     private void validateUserByNickName(String userNickname) {

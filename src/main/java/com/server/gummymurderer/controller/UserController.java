@@ -3,6 +3,7 @@ package com.server.gummymurderer.controller;
 import com.server.gummymurderer.domain.dto.user.JoinUserRequest;
 import com.server.gummymurderer.domain.dto.user.JoinUserResponse;
 import com.server.gummymurderer.domain.dto.user.ReadAllUserResponse;
+import com.server.gummymurderer.domain.dto.user.ReadUserResponse;
 import com.server.gummymurderer.exception.Response;
 import com.server.gummymurderer.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,14 @@ public class UserController {
 
         JoinUserResponse joinResponse = userService.join(request);
         return ResponseEntity.ok(Response.success(joinResponse));
+    }
+
+    @GetMapping("users/{userNo}")
+    public ResponseEntity<Response<ReadUserResponse>> readByUserNickname(@PathVariable long userNo) {
+
+        ReadUserResponse readUserResponse = userService.readByNo(userNo);
+
+        return ResponseEntity.ok(Response.success(readUserResponse));
     }
 
     @GetMapping("users")
