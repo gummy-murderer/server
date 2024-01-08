@@ -33,11 +33,11 @@ public class ChatService {
         log.info("🐻unity에서 전송한 채팅 수신자 : {}", chat.getReceiver());
         log.info("🐻unity에서 전송한 채팅 발신자 : {}", chat.getSender());
 
-        // AI 서버로 메시지 전송, 답장과 보낸사람 리턴
+        // AI로 메시지 전송, 수신자, 발신자, 채팅 내용 리턴
         return sendChatToAIServer(request);
     }
 
-    // AI 서버로 채팅 내용 전송하고 AI 서버에서 온 답장을 반환
+    // AI로 채팅 내용 전송하고 AI에서 온 답장을 반환
     private Mono<ChatSaveResponse> sendChatToAIServer(ChatSaveRequest request) {
         String aiServerUrl = "AI server url";
         WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build(); // WebClient 인스턴스 생성
@@ -48,7 +48,7 @@ public class ChatService {
                 .retrieve()
                 .bodyToMono(AIChatResponse.class)
                 .map(aiResponse -> {
-                    // AI 서버에서 보낸 채팅 저장
+                    // AI에서 보낸 채팅 저장
                     ChatSaveRequest aiChat = new ChatSaveRequest();
                     aiChat.setSender(aiResponse.getSender());
                     aiChat.setReceiver(request.getSender());
@@ -56,7 +56,9 @@ public class ChatService {
                     aiChat.setChatDay(request.getChatDay());
                     Chat aiChatEntity = ChatSaveRequest.toEntity(aiChat, LocalDateTime.now(), ChatRoleType.AI, ChatRoleType.USER);
                     chatRepository.save(aiChatEntity);
+
                     log.info("🐻AI가 전송한 채팅 내용: {}", aiChatEntity.getChatContent());
+                    log.info("🐻AI가 전송한 채팅 수신자: {}", aiChatEntity.getReceiver());
 
                     ChatSaveResponse response = new ChatSaveResponse();
                     response.setChatContent(aiResponse.getChatContent());
