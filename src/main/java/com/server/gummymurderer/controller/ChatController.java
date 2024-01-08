@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/api/v1/chat")
@@ -21,8 +22,8 @@ public class ChatController {
 
     // 채팅 보내기
     @PostMapping("/send")
-    public Response<?> sendChat(@RequestBody ChatSaveRequest request) {
-        chatService.sendChat(request);
-        return Response.success("채팅 저장 완료");
+    public Mono<Response<ChatSaveResponse>> sendChat(@RequestBody ChatSaveRequest request) {
+        return chatService.saveChat(request)
+                .map(Response::success);
     }
 }
