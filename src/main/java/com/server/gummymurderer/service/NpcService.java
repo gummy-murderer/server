@@ -1,7 +1,6 @@
 package com.server.gummymurderer.service;
 
 import com.server.gummymurderer.domain.dto.npc.*;
-import com.server.gummymurderer.domain.dto.user.ReadAllUserResponse;
 import com.server.gummymurderer.domain.entity.Npc;
 import com.server.gummymurderer.exception.AppException;
 import com.server.gummymurderer.exception.ErrorCode;
@@ -43,13 +42,20 @@ public class NpcService {
         return new UpdateNpcResponse(existNpc);
     }
 
-    private Npc validateNpcByNo(long npcNo) {
-        return npcRepository.findByNpcNo(npcNo)
-                .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
+    public ReadNpcResponse readByNo(long npcNo) {
+
+        Npc existNpc = validateNpcByNo(npcNo);
+
+        return new ReadNpcResponse(existNpc);
     }
 
     public Page<ReadAllNpcResponse> readAll(PageRequest pageable) {
 
         return npcRepository.findAll(pageable).map(ReadAllNpcResponse::of);
+    }
+
+    private Npc validateNpcByNo(long npcNo) {
+        return npcRepository.findByNpcNo(npcNo)
+                .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
     }
 }

@@ -35,12 +35,19 @@ public class NpcController {
         return ResponseEntity.ok(Response.success(npcUpdateResponse));
     }
 
-    @GetMapping("")
+    @GetMapping("read/all")
     public ResponseEntity<Response<Page<ReadAllNpcResponse>>> readAll() {
         PageRequest pageable = PageRequest.of(0, 10, Sort.by("npcNo").descending());
 
         Page<ReadAllNpcResponse> readAllUserResponsePage = npcService.readAll(pageable);
 
         return  ResponseEntity.ok(Response.success(readAllUserResponsePage));
+    }
+
+    @GetMapping("read/no/{npcNo}")
+    public ResponseEntity<Response<ReadNpcResponse>> readByNo(@PathVariable long npcNo) {
+        ReadNpcResponse readNpcResponse = npcService.readByNo(npcNo);
+
+        return ResponseEntity.ok(Response.success(readNpcResponse));
     }
 }
