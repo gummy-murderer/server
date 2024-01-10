@@ -6,6 +6,8 @@ import com.server.gummymurderer.domain.dto.chat.ChatSaveRequest;
 import com.server.gummymurderer.domain.dto.chat.ChatSaveResponse;
 import com.server.gummymurderer.domain.entity.Chat;
 import com.server.gummymurderer.domain.enum_class.ChatRoleType;
+import com.server.gummymurderer.exception.AppException;
+import com.server.gummymurderer.exception.ErrorCode;
 import com.server.gummymurderer.repository.ChatRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -94,6 +96,10 @@ public class ChatService {
     public List<ChatListResponse> getAllChatByUserNameAndAINpc(String userName, String aiNpcName) {
 
         List<Chat> chats = chatRepository.findAllByUserAndAINpc(userName, aiNpcName);
+
+        if (chats.isEmpty()) {
+            throw new AppException(ErrorCode.NO_CHAT_HISTORY);
+        }
 
         List<ChatListResponse> chatListResponses = new ArrayList<>();
         for (Chat chat : chats) {
