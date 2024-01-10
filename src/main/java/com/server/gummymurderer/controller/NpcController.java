@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -47,6 +48,13 @@ public class NpcController {
     @GetMapping("read/no/{npcNo}")
     public ResponseEntity<Response<ReadNpcResponse>> readByNo(@PathVariable long npcNo) {
         ReadNpcResponse readNpcResponse = npcService.readByNo(npcNo);
+
+        return ResponseEntity.ok(Response.success(readNpcResponse));
+    }
+
+    @GetMapping("read/name/{npcName}")
+    public ResponseEntity<Response<ReadNpcResponse>> readByName(@PathVariable String npcName) {
+        ReadNpcResponse readNpcResponse = npcService.readByName(npcName);
 
         return ResponseEntity.ok(Response.success(readNpcResponse));
     }

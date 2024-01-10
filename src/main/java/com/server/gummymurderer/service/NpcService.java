@@ -49,9 +49,21 @@ public class NpcService {
         return new ReadNpcResponse(existNpc);
     }
 
+    public ReadNpcResponse readByName(String npcName) {
+
+        Npc existNpc = validateNpcByName(npcName);
+
+        return new ReadNpcResponse(existNpc);
+    }
+
     public Page<ReadAllNpcResponse> readAll(PageRequest pageable) {
 
         return npcRepository.findAll(pageable).map(ReadAllNpcResponse::of);
+    }
+
+    private Npc validateNpcByName(String npcName) {
+        return npcRepository.findByNpcName(npcName)
+                .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
     }
 
     private Npc validateNpcByNo(long npcNo) {

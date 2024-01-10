@@ -11,5 +11,6 @@ import java.util.Optional;
 public interface NpcRepository extends JpaRepository<Npc, Long> {
 
     Optional<Npc> findByNpcNo(long npcNo);
+    Optional<Npc> findByNpcName(String npcName);
     Page<Npc> findAll(Pageable pageable);
 }
