@@ -38,6 +38,10 @@ dependencies {
 
     // WebSocket
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+    // WebClient
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'com.google.code.gson:gson:2.8.9'
 }
 
 tasks.named('bootBuildImage') {

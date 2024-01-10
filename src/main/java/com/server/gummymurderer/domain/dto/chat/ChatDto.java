@@ -25,10 +25,8 @@ public class ChatDto {
     private String chatContent;
     private LocalDateTime chatDate;
     private int chatDay;
-    private Long chatRoomNo;
 
     public ChatDto(Chat chat) {
-        this.chatRoomNo = chat.getChatRoom().getNo();
         this.receiver = chat.getReceiver();
         this.receiverType = chat.getReceiverType();
         this.sender = chat.getSender();
