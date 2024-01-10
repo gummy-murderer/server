@@ -1,14 +1,16 @@
 package com.server.gummymurderer.controller;
 
-import com.server.gummymurderer.domain.dto.npc.UpdateNpcRequest;
-import com.server.gummymurderer.domain.dto.npc.UpdateNpcResponse;
-import com.server.gummymurderer.domain.dto.npc.EnrollNpcRequest;
-import com.server.gummymurderer.domain.dto.npc.EnrollNpcResponse;
+import com.server.gummymurderer.domain.dto.npc.*;
+import com.server.gummymurderer.domain.dto.user.ReadAllUserResponse;
 import com.server.gummymurderer.exception.Response;
 import com.server.gummymurderer.service.NpcService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -29,8 +31,31 @@ public class NpcController {
     @PostMapping("/update/{npcNo}")
     public ResponseEntity<Response<UpdateNpcResponse>> update(@RequestBody UpdateNpcRequest request, @PathVariable long npcNo) {
 
-        UpdateNpcResponse npcUpdateResponse = npcService.update(request,npcNo);
+        UpdateNpcResponse npcUpdateResponse = npcService.update(request, npcNo);
 
         return ResponseEntity.ok(Response.success(npcUpdateResponse));
+    }
+
+    @GetMapping("read/all")
+    public ResponseEntity<Response<Page<ReadAllNpcResponse>>> readAll() {
+        PageRequest pageable = PageRequest.of(0, 10, Sort.by("npcNo").descending());
+
+        Page<ReadAllNpcResponse> readAllUserResponsePage = npcService.readAll(pageable);
+
+        return  ResponseEntity.ok(Response.success(readAllUserResponsePage));
+    }
+
+    @GetMapping("read/no/{npcNo}")
+    public ResponseEntity<Response<ReadNpcResponse>> readByNo(@PathVariable long npcNo) {
+        ReadNpcResponse readNpcResponse = npcService.readByNo(npcNo);
+
+        return ResponseEntity.ok(Response.success(readNpcResponse));
+    }
+
+    @GetMapping("read/name/{npcName}")
+    public ResponseEntity<Response<ReadNpcResponse>> readByName(@PathVariable String npcName) {
+        ReadNpcResponse readNpcResponse = npcService.readByName(npcName);
+
+        return ResponseEntity.ok(Response.success(readNpcResponse));
     }
 }
