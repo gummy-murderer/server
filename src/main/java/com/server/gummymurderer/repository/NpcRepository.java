@@ -2,6 +2,8 @@ package com.server.gummymurderer.repository;
 
 
 import com.server.gummymurderer.domain.entity.Npc;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
@@ -9,4 +11,5 @@ import java.util.Optional;
 public interface NpcRepository extends JpaRepository<Npc, Long> {
 
     Optional<Npc> findByNpcNo(long npcNo);
+    Page<Npc> findAll(Pageable pageable);
 }
