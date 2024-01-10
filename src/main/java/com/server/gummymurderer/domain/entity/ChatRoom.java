@@ -19,9 +19,6 @@ public class ChatRoom extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long no;
 
-    @OneToMany(mappedBy = "chatRoom")
-    private List<Chat> chats = new ArrayList<>();
-
     public static ChatRoom createChatRoom() {
         return new ChatRoom();
     }

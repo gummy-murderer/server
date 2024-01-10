@@ -36,9 +36,6 @@ public class Chat{
     // 대화했던 게임 일차
     private int chatDay;
 
-    @ManyToOne
-    @JoinColumn(name = "chat_room_no")
-    private ChatRoom chatRoom;
 
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "game_no")
