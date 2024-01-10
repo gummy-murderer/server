@@ -10,14 +10,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class NpcEnrollResponse {
+public class EnrollNpcResponse {
 
     private long npcNo;
     private String npcName;
     private String npcPersonality;
     private String npcFeature;
 
-    public NpcEnrollResponse(Npc npc) {
+    public EnrollNpcResponse(Npc npc) {
         this.npcNo = npc.getNpcNo();
         this.npcName = npc.getNpcName();
         this.npcPersonality = npc.getNpcPersonality();

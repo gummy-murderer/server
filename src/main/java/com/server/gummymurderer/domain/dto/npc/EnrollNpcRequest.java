@@ -1,6 +1,5 @@
 package com.server.gummymurderer.domain.dto.npc;
 
-import com.server.gummymurderer.domain.entity.Npc;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,7 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 @Builder
-public class NpcEnrollRequest {
+public class EnrollNpcRequest {
 
     private String npcName;
     private String npcPersonality;

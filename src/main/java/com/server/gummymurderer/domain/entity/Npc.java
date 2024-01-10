@@ -1,6 +1,7 @@
 package com.server.gummymurderer.domain.entity;
 
 
+import com.server.gummymurderer.domain.dto.npc.UpdateNpcRequest;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -29,4 +30,10 @@ public class Npc extends BaseEntity{
     @NotBlank
     @Column(name = "npc_features")
     private String npcFeature;
+
+    public void updateNpc(UpdateNpcRequest request) {
+        this.npcName = request.getNpcName();
+        this.npcPersonality = request.getNpcPersonality();
+        this.npcFeature = request.getNpcFeature();
+    }
 }
