@@ -1,9 +1,6 @@
 package com.server.gummymurderer.service;
 
-import com.server.gummymurderer.domain.dto.chat.AIChatResponse;
-import com.server.gummymurderer.domain.dto.chat.ChatListResponse;
-import com.server.gummymurderer.domain.dto.chat.ChatSaveRequest;
-import com.server.gummymurderer.domain.dto.chat.ChatSaveResponse;
+import com.server.gummymurderer.domain.dto.chat.*;
 import com.server.gummymurderer.domain.entity.Chat;
 import com.server.gummymurderer.domain.entity.Npc;
 import com.server.gummymurderer.domain.enum_class.ChatRoleType;
@@ -18,9 +15,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -74,12 +70,34 @@ public class ChatService {
 
     // AI로 채팅 내용 전송하고 AI에서 온 답장을 반환
     private Mono<ChatSaveResponse> sendChatToAIServer(ChatSaveRequest request) {
-        String aiServerUrl = "AI server url";
+        String aiServerUrl = "http://221.163.19.218:9090/api/chatbot/conversation_with_user";
         WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build(); // WebClient 인스턴스 생성
+
+        // 이전 대화 내용들 가져오기
+        List<Chat> previousChatContents = chatRepository.findAllByUserAndAINpc(request.getSender(), request.getReceiver());
+
+        // AI 서버에 보낼 요청 객체 생성
+        AIChatRequest aiChatRequest = new AIChatRequest();
+        aiChatRequest.setSender(request.getSender());
+        aiChatRequest.setReceiver(request.getReceiver());
+        aiChatRequest.setChatContent(request.getChatContent());
+        aiChatRequest.setChatDay(request.getChatDay());
+
+        // 이전 채팅 내용에서 필요한 정보만 추출
+        List<Map<String, String>> simplifiedPreviousChats = previousChatContents.stream()
+                .map(chat -> {
+                    Map<String, String> simpleChat = new HashMap<>();
+                    simpleChat.put("sender", chat.getSender());
+                    simpleChat.put("receiver", chat.getReceiver());
+                    simpleChat.put("chatContent", chat.getChatContent());
+                    return simpleChat;
+                })
+                .collect(Collectors.toList());
+        aiChatRequest.setPreviousChatContents(simplifiedPreviousChats);
 
         return webClient.post()
                 .uri(aiServerUrl)
-                .bodyValue(request)
+                .bodyValue(aiChatRequest)
                 .retrieve()
                 .bodyToMono(AIChatResponse.class)
                 .onErrorResume(e -> {
@@ -89,7 +107,7 @@ public class ChatService {
                 .map(aiResponse -> {
                     // AI에서 보낸 채팅 저장
                     ChatSaveRequest aiChat = new ChatSaveRequest();
-                    aiChat.setSender(aiResponse.getSender());
+                    aiChat.setSender(request.getReceiver());
                     aiChat.setReceiver(request.getSender());
                     aiChat.setChatContent(aiResponse.getChatContent());
                     aiChat.setChatDay(request.getChatDay());
