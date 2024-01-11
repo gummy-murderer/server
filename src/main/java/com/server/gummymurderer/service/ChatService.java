@@ -5,10 +5,12 @@ import com.server.gummymurderer.domain.dto.chat.ChatListResponse;
 import com.server.gummymurderer.domain.dto.chat.ChatSaveRequest;
 import com.server.gummymurderer.domain.dto.chat.ChatSaveResponse;
 import com.server.gummymurderer.domain.entity.Chat;
+import com.server.gummymurderer.domain.entity.Npc;
 import com.server.gummymurderer.domain.enum_class.ChatRoleType;
 import com.server.gummymurderer.exception.AppException;
 import com.server.gummymurderer.exception.ErrorCode;
 import com.server.gummymurderer.repository.ChatRepository;
+import com.server.gummymurderer.repository.NpcRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,7 @@ import reactor.core.publisher.Mono;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -26,9 +29,15 @@ import java.util.List;
 public class ChatService {
 
     private final ChatRepository chatRepository;
+    private final NpcRepository npcRepository;
 
     // 채팅 보내기
     public Mono<ChatSaveResponse> saveChat(ChatSaveRequest request) {
+
+        Optional<Npc> npc = npcRepository.findByNpcName(request.getReceiver());
+        if (npc.isPresent()) {
+            return Mono.error(new AppException(ErrorCode.NPC_NOT_FOUND));
+        }
 
         Chat chat = ChatSaveRequest.toEntity(request, LocalDateTime.now(), ChatRoleType.USER, ChatRoleType.AI);
 
@@ -73,6 +82,10 @@ public class ChatService {
                 .bodyValue(request)
                 .retrieve()
                 .bodyToMono(AIChatResponse.class)
+                .onErrorResume(e -> {
+                    log.error("🐻AI 통신 실패 : ", e);
+                    throw new AppException(ErrorCode.AI_INTERNAL_SERVER_ERROR);
+                })
                 .map(aiResponse -> {
                     // AI에서 보낸 채팅 저장
                     ChatSaveRequest aiChat = new ChatSaveRequest();
