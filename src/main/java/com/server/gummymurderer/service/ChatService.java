@@ -84,15 +84,25 @@ public class ChatService {
         aiChatRequest.setChatDay(request.getChatDay());
 
         // 이전 채팅 내용에서 필요한 정보만 추출
-        List<Map<String, String>> simplifiedPreviousChats = previousChatContents.stream()
+        List<Map<String, Object>> simplifiedPreviousChats = previousChatContents.stream()
                 .map(chat -> {
-                    Map<String, String> simpleChat = new HashMap<>();
+                    Map<String, Object> simpleChat = new HashMap<>();
                     simpleChat.put("sender", chat.getSender());
                     simpleChat.put("receiver", chat.getReceiver());
                     simpleChat.put("chatContent", chat.getChatContent());
+                    simpleChat.put("chatDay", chat.getChatDay());
                     return simpleChat;
                 })
                 .collect(Collectors.toList());
+
+        // 현재 채팅 내용을 리스트에서 제거
+        simplifiedPreviousChats = simplifiedPreviousChats.stream()
+                        .filter(chat ->
+                                !(chat.get("sender").equals(aiChatRequest.getSender()) &&
+                                chat.get("receiver").equals(aiChatRequest.getReceiver())&&
+                                chat.get("chatContent").equals(aiChatRequest.getChatContent())))
+                .collect(Collectors.toList());
+
         aiChatRequest.setPreviousChatContents(simplifiedPreviousChats);
 
         return webClient.post()

@@ -1,6 +1,5 @@
 package com.server.gummymurderer.domain.dto.chat;
 
-import com.server.gummymurderer.domain.entity.Chat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +18,6 @@ public class AIChatRequest {
     private String receiver;
     private String chatContent;
     private int chatDay;
-    private List<Map<String, String>> previousChatContents; // 이전 대화 내용들
+    private List<Map<String, Object>> previousChatContents; // 이전 대화 내용들
 
 }
