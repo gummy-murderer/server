@@ -15,8 +15,9 @@ public class ChatListResponse {
     private String sender;
     private String receiver;
     private String chatContent;
+    private int chatDay;
 
     public static ChatListResponse of(Chat chat) {
-        return new ChatListResponse(chat.getSender(), chat.getReceiver(), chat.getChatContent());
+        return new ChatListResponse(chat.getSender(), chat.getReceiver(), chat.getChatContent(), chat.getChatDay());
     }
 }
