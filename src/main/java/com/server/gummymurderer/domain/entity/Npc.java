@@ -28,12 +28,20 @@ public class Npc extends BaseEntity{
     private String npcPersonality;
 
     @NotBlank
+    @Column(name = "npc_personality_description")
+    private String npcPersonalityDescription;
+    @NotBlank
     @Column(name = "npc_features")
     private String npcFeature;
+
+    @NotBlank
+    @Column(name = "npc_features_description")
+    private String npcFeatureDescription;
 
     public void updateNpc(UpdateNpcRequest request) {
         this.npcName = request.getNpcName();
         this.npcPersonality = request.getNpcPersonality();
+        this.npcPersonalityDescription = request.getNpcPersonalityDescription();
         this.npcFeature = request.getNpcFeature();
     }
 }

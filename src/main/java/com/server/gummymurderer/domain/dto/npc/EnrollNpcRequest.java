@@ -11,6 +11,7 @@ public class EnrollNpcRequest {
 
     private String npcName;
     private String npcPersonality;
+    private String npcPersonalityDescription;
     private String npcFeature;
-
+    private String npcFeatureDescription;
 }
