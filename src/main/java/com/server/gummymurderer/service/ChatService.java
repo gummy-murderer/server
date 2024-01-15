@@ -31,7 +31,7 @@ public class ChatService {
     public Mono<ChatSaveResponse> saveChat(ChatSaveRequest request) {
 
         Optional<Npc> npc = npcRepository.findByNpcName(request.getReceiver());
-        if (npc.isPresent()) {
+        if (npc.isEmpty()) {
             return Mono.error(new AppException(ErrorCode.NPC_NOT_FOUND));
         }
 
@@ -76,12 +76,22 @@ public class ChatService {
         // 이전 대화 내용들 가져오기
         List<Chat> previousChatContents = chatRepository.findAllByUserAndAINpc(request.getSender(), request.getReceiver());
 
+        Npc npc = npcRepository.findByNpcName(request.getReceiver())
+                .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
+
         // AI 서버에 보낼 요청 객체 생성
         AIChatRequest aiChatRequest = new AIChatRequest();
         aiChatRequest.setSender(request.getSender());
         aiChatRequest.setReceiver(request.getReceiver());
         aiChatRequest.setChatContent(request.getChatContent());
         aiChatRequest.setChatDay(request.getChatDay());
+
+        //Npc 정보 추가
+        aiChatRequest.setNpcName(npc.getNpcName());
+        aiChatRequest.setNpcPersonality(npc.getNpcPersonality());
+        aiChatRequest.setNpcPersonalityDescription(npc.getNpcPersonalityDescription());
+        aiChatRequest.setNpcFeature(npc.getNpcFeature());
+        aiChatRequest.setNpcFeatureDescription(npc.getNpcFeatureDescription());
 
         // 이전 채팅 내용에서 필요한 정보만 추출
         List<Map<String, Object>> simplifiedPreviousChats = previousChatContents.stream()

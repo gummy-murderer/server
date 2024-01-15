@@ -19,5 +19,10 @@ public class AIChatRequest {
     private String chatContent;
     private int chatDay;
     private List<Map<String, Object>> previousChatContents; // 이전 대화 내용들
+    private String npcName;
+    private String npcPersonality;
+    private String npcPersonalityDescription;
+    private String npcFeature;
+    private String npcFeatureDescription;
 
 }
