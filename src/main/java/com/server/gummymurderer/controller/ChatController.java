@@ -1,8 +1,6 @@
 package com.server.gummymurderer.controller;
 
-import com.server.gummymurderer.domain.dto.chat.ChatListResponse;
-import com.server.gummymurderer.domain.dto.chat.ChatSaveRequest;
-import com.server.gummymurderer.domain.dto.chat.ChatSaveResponse;
+import com.server.gummymurderer.domain.dto.chat.*;
 import com.server.gummymurderer.exception.Response;
 import com.server.gummymurderer.service.ChatService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,5 +33,13 @@ public class ChatController {
     public Response<List<ChatListResponse>> getAllChatByUserAndAINpc(@RequestParam String userName, @RequestParam String aiNpcName) {
         List<ChatListResponse> chats = chatService.getAllChatByUserNameAndAINpc(userName, aiNpcName);
         return Response.success(chats);
+    }
+
+    @PostMapping("/npc")
+    public Mono<Response<List<NpcChatResponse>>> npcChat(@RequestBody NpcChatRequest request) {
+        Mono<List<NpcChatResponse>> npcChatResponseList = chatService.getNpcChat(request.getNpcName1(), request.getNpcName2());
+
+        return npcChatResponseList
+                .map(Response::success);
     }
 }
