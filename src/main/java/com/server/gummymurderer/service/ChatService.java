@@ -144,6 +144,59 @@ public class ChatService {
                 });
     }
 
+    // npc 채팅 요청 및 반환
+    public Mono<List<NpcChatResponse>> getNpcChat(String npcName1, String npcName2) {
+        return sendNpcChatToAIServer(npcName1, npcName2)
+                .doOnNext(responseList -> {
+                    responseList.forEach(response -> {
+                        Chat chat = NpcChatResponse.toEntity(response, LocalDateTime.now(), ChatRoleType.AI, ChatRoleType.AI);
+                        // Mono.fromCallable을 사용하여 이 작업을 비동기 방식으로 수행
+                        // subscribe를 호출하여 실제로 이 작업을 수행하도록 한다.
+                        Mono.fromCallable(() -> chatRepository.save(chat)).subscribe();
+                    });
+                });
+    }
+
+    private Mono<List<NpcChatResponse>> sendNpcChatToAIServer(String npcName1, String npcName2) {
+        String aiServerUrl = "";
+        WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build();
+
+        Npc npc1 = npcRepository.findByNpcName(npcName1)
+                .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
+
+        Npc npc2 = npcRepository.findByNpcName(npcName2)
+                .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
+
+        NpcChatRequest npcChatRequest = new NpcChatRequest();
+        npcChatRequest.setNpcName1(npc1.getNpcName());
+        npcChatRequest.setNpcPersonality1(npc1.getNpcPersonality());
+        npcChatRequest.setNpcPersonalityDescription1(npc1.getNpcPersonalityDescription());
+        npcChatRequest.setNpcFeature1(npc1.getNpcFeature());
+        npcChatRequest.setNpcFeatureDescription1(npc1.getNpcFeatureDescription());
+
+        npcChatRequest.setNpcName2(npc2.getNpcName());
+        npcChatRequest.setNpcPersonality2(npc2.getNpcPersonality());
+        npcChatRequest.setNpcPersonalityDescription2(npc2.getNpcPersonalityDescription());
+        npcChatRequest.setNpcFeature2(npc2.getNpcFeature());
+        npcChatRequest.setNpcFeatureDescription2(npc2.getNpcFeatureDescription());
+
+        // 요청 본문에는 npcChatRequest를 설정하고, 응답 본문은 NpcChatResponse 클래스로 변환
+        return webClient.post()
+                .uri(aiServerUrl)
+                .bodyValue(npcChatRequest)
+                .retrieve() //요청을 전송하고 응답을 받아오는 역할
+                .bodyToFlux(NpcChatResponse.class)
+                .onErrorResume(e -> {
+                    log.error("🐻AI 통신 실패 : ", e);
+                    throw new AppException(ErrorCode.AI_INTERNAL_SERVER_ERROR);
+                })
+
+                // collectList 연산자를 사용하여 NpcChatResponse 스트림의 모든 항목을 리스트로 모음
+                // Flux<NpcChatResponse>를 Mono<List<NpcChatResponse>>로 변환
+                .collectList();
+    }
+
+
     public List<ChatListResponse> getAllChatByUserNameAndAINpc(String userName, String aiNpcName) {
 
         List<Chat> chats = chatRepository.findAllByUserAndAINpc(userName, aiNpcName);
