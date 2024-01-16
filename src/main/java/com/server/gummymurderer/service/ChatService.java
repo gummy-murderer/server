@@ -161,9 +161,24 @@ public class ChatService {
         String aiServerUrl = "";
         WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build();
 
+        Npc npc1 = npcRepository.findByNpcName(npcName1)
+                .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
+
+        Npc npc2 = npcRepository.findByNpcName(npcName2)
+                .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
+
         NpcChatRequest npcChatRequest = new NpcChatRequest();
-        npcChatRequest.setNpcName1(npcName1);
-        npcChatRequest.setNpcName2(npcName2);
+        npcChatRequest.setNpcName1(npc1.getNpcName());
+        npcChatRequest.setNpcPersonality1(npc1.getNpcPersonality());
+        npcChatRequest.setNpcPersonalityDescription1(npc1.getNpcPersonalityDescription());
+        npcChatRequest.setNpcFeature1(npc1.getNpcFeature());
+        npcChatRequest.setNpcFeatureDescription1(npc1.getNpcFeatureDescription());
+
+        npcChatRequest.setNpcName2(npc2.getNpcName());
+        npcChatRequest.setNpcPersonality2(npc2.getNpcPersonality());
+        npcChatRequest.setNpcPersonalityDescription2(npc2.getNpcPersonalityDescription());
+        npcChatRequest.setNpcFeature2(npc2.getNpcFeature());
+        npcChatRequest.setNpcFeatureDescription2(npc2.getNpcFeatureDescription());
 
         // 요청 본문에는 npcChatRequest를 설정하고, 응답 본문은 NpcChatResponse 클래스로 변환
         return webClient.post()
