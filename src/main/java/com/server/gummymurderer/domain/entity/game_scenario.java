@@ -40,4 +40,8 @@ public class game_scenario extends BaseEntity{
     @Column(name = "scenario_token")
     private long scenarioToken;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "game_set_no")
+    private GameSet gameSet;
+
 }
