@@ -1,17 +1,13 @@
 package com.server.gummymurderer.domain.dto.chat;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class NpcChatRequest {
-
+public class NpcChatRequestDto {
     private String sender;
     private String npcName1;
     private String npcName2;
-    private String previousStory;
-
+    private int chatDay;
 }
