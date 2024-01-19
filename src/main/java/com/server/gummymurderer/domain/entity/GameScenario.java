@@ -1,7 +1,5 @@
 package com.server.gummymurderer.domain.entity;
 
-package com.server.gummymurderer.domain.entity;
-
 import jakarta.persistence.*;
 import lombok.*;
 
