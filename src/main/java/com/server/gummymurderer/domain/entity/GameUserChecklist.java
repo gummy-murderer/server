@@ -20,7 +20,7 @@ public class GameUserChecklist {
     private String checkJob;
 
     @Column(name = "confirmed_job")
-    private String confirmed_job;
+    private String confirmedJob;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_npc_no")

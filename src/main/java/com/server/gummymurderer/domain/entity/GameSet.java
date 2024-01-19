@@ -13,7 +13,7 @@ public class GameSet extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "gmae_set_no")
+    @Column(name = "game_set_no")
     private long gameSetNo;
 
     @Column(name = "game_status")
