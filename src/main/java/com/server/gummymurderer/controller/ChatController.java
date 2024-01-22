@@ -37,7 +37,7 @@ public class ChatController {
 
     @PostMapping("/npc")
     public Mono<Response<List<NpcChatResponse>>> npcChat(@RequestBody NpcChatRequestDto npcChatRequestDto) {
-        Mono<List<NpcChatResponse>> npcChatResponseList = chatService.getNpcChat(npcChatRequestDto.getSender(), npcChatRequestDto.getNpcName1(), npcChatRequestDto.getNpcName2(), npcChatRequestDto.getChatDay());
+        Mono<List<NpcChatResponse>> npcChatResponseList = chatService.getNpcChat(npcChatRequestDto);
 
         return npcChatResponseList
                 .map(Response::success);

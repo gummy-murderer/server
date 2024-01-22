@@ -64,7 +64,7 @@ public class ChatService {
         List<Chat> previousChatContents = chatRepository.findAllByUserAndAINpcAndGameSetNo(request.getSender(), request.getReceiver(), request.getGameSetNo());
 
         // 이전 스토리 내용 가져오기
-        Optional<GameScenario> gameScenarioOptional = gameScenarioRepository.findByGameSetNo(request.getGameSetNo());
+        Optional<GameScenario> gameScenarioOptional = gameScenarioRepository.findByGameSet_GameSetNo(request.getGameSetNo());
         String previousStory = gameScenarioOptional.map(GameScenario::getDailySummary).orElse(null);
 
         // AI 서버에 보낼 요청 객체 생성
@@ -137,18 +137,20 @@ public class ChatService {
     }
 
     // npc 채팅 요청 및 반환
-    public Mono<List<NpcChatResponse>> getNpcChat(String sender, String npcName1, String npcName2, int chatDay) {
-        return sendNpcChatToAIServer(sender, npcName1, npcName2)
+    public Mono<List<NpcChatResponse>> getNpcChat(NpcChatRequestDto npcChatRequestDto) {
+        return sendNpcChatToAIServer(npcChatRequestDto.getSender(), npcChatRequestDto.getNpcName1(), npcChatRequestDto.getNpcName2(), npcChatRequestDto.getGameSetNo())
                 .doOnNext(npcChatAIResponse -> {
                     npcChatAIResponse.getChatContent().forEach(response -> {
-                        Chat chat = NpcChatResponse.toEntity(response, chatDay, LocalDateTime.now(), ChatRoleType.AI, ChatRoleType.AI);
+                        Chat chat = NpcChatResponse.toEntity(response, npcChatRequestDto.getChatDay(), LocalDateTime.now(), ChatRoleType.AI, ChatRoleType.AI);
                         Mono.fromCallable(() -> chatRepository.save(chat)).subscribe();
                     });
+                    gameSetRepository.findByGameSetNo(npcChatRequestDto.getGameSetNo())
+                            .ifPresent(gameSet -> gameSet.updateGameToken(npcChatAIResponse.getTotalTokens()));
                 })
                 .map(NpcChatAIResponse::getChatContent);  // NpcChatAIResponse 객체의 chatContent 필드를 반환
     }
 
-    private Mono<NpcChatAIResponse> sendNpcChatToAIServer(String sender, String npcName1, String npcName2) {
+    private Mono<NpcChatAIResponse> sendNpcChatToAIServer(String sender, String npcName1, String npcName2, Long gameSetNo) {
         String aiServerUrl = "http://221.163.19.218:9090/api/chatbot/conversation_between_npcs";
         WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build();
 
@@ -156,7 +158,9 @@ public class ChatService {
         npcChatRequest.setSender(sender);
         npcChatRequest.setNpcName1(npcName1);
         npcChatRequest.setNpcName2(npcName2);
-        npcChatRequest.setPreviousStory("");
+
+        gameScenarioRepository.findByGameSet_GameSetNo(gameSetNo)
+                .ifPresent(gameScenario -> npcChatRequest.setPreviousStory(gameScenario.getDailySummary()));
 
         return webClient.post()
                 .uri(aiServerUrl)
