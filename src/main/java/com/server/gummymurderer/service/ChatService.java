@@ -2,11 +2,14 @@ package com.server.gummymurderer.service;
 
 import com.server.gummymurderer.domain.dto.chat.*;
 import com.server.gummymurderer.domain.entity.Chat;
-import com.server.gummymurderer.domain.entity.Npc;
+import com.server.gummymurderer.domain.entity.GameScenario;
+import com.server.gummymurderer.domain.entity.GameSet;
 import com.server.gummymurderer.domain.enum_class.ChatRoleType;
 import com.server.gummymurderer.exception.AppException;
 import com.server.gummymurderer.exception.ErrorCode;
 import com.server.gummymurderer.repository.ChatRepository;
+import com.server.gummymurderer.repository.GameScenarioRepository;
+import com.server.gummymurderer.repository.GameSetRepository;
 import com.server.gummymurderer.repository.NpcRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,16 +29,21 @@ public class ChatService {
 
     private final ChatRepository chatRepository;
     private final NpcRepository npcRepository;
+    private final GameSetRepository gameSetRepository;
+    private final GameScenarioRepository gameScenarioRepository;
 
     // 채팅 보내기
     public Mono<ChatSaveResponse> saveChat(ChatSaveRequest request) {
 
-        Optional<Npc> npc = npcRepository.findByNpcName(request.getReceiver());
-        if (npc.isEmpty()) {
-            return Mono.error(new AppException(ErrorCode.NPC_NOT_FOUND));
+        Optional<GameSet> optionalGameSet = gameSetRepository.findByGameSetNo(request.getGameSetNo());
+
+        if (optionalGameSet.isEmpty()) {
+            throw new AppException(ErrorCode.GAME_NOT_FOUND);
         }
 
-        Chat chat = ChatSaveRequest.toEntity(request, LocalDateTime.now(), ChatRoleType.USER, ChatRoleType.AI);
+        GameSet gameSet = optionalGameSet.get();
+
+        Chat chat = ChatSaveRequest.toEntity(request, LocalDateTime.now(), ChatRoleType.USER, ChatRoleType.AI, gameSet);
 
         chatRepository.save(chat);
 
@@ -47,34 +55,17 @@ public class ChatService {
         return sendChatToAIServer(request);
     }
 
-    //유니티 테스트용 메소드
-//    public Mono<ChatSaveResponse> saveChat(ChatSaveRequest request) {
-//        System.out.println("🐻service 로직 시작");
-//
-//        Chat chat = ChatSaveRequest.toEntity(request, LocalDateTime.now(), ChatRoleType.USER, ChatRoleType.AI);
-//
-//        chatRepository.save(chat);
-//
-//        log.info("🐻unity에서 전송한 채팅 내용: {}", chat.getChatContent());
-//        log.info("🐻unity에서 전송한 채팅 수신자 : {}", chat.getReceiver());
-//        log.info("🐻unity에서 전송한 채팅 발신자 : {}", chat.getSender());
-//
-//        // AI로 메시지를 전송하는 부분 제거
-//        // 유니티에서 보낸 채팅을 받았다는 응답을 반환
-//        ChatSaveResponse response = new ChatSaveResponse();
-//        response.setChatContent(chat.getChatContent());
-//        response.setSender(chat.getSender());
-//
-//        return Mono.just(response);
-//    }
-
     // AI로 채팅 내용 전송하고 AI에서 온 답장을 반환
     private Mono<ChatSaveResponse> sendChatToAIServer(ChatSaveRequest request) {
         String aiServerUrl = "http://221.163.19.218:9090/api/chatbot/conversation_with_user";
         WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build(); // WebClient 인스턴스 생성
 
         // 이전 대화 내용들 가져오기
-        List<Chat> previousChatContents = chatRepository.findAllByUserAndAINpc(request.getSender(), request.getReceiver());
+        List<Chat> previousChatContents = chatRepository.findAllByUserAndAINpcAndGameSetNo(request.getSender(), request.getReceiver(), request.getGameSetNo());
+
+        // 이전 스토리 내용 가져오기
+        Optional<GameScenario> gameScenarioOptional = gameScenarioRepository.findByGameSetNo(request.getGameSetNo());
+        String previousStory = gameScenarioOptional.map(GameScenario::getDailySummary).orElse(null);
 
         // AI 서버에 보낼 요청 객체 생성
         AIChatRequest aiChatRequest = new AIChatRequest();
@@ -82,6 +73,7 @@ public class ChatService {
         aiChatRequest.setReceiver(request.getReceiver());
         aiChatRequest.setChatContent(request.getChatContent());
         aiChatRequest.setChatDay(request.getChatDay());
+        aiChatRequest.setPreviousStory(previousStory);
 
         // 이전 채팅 내용에서 필요한 정보만 추출
         List<Map<String, Object>> simplifiedPreviousChats = previousChatContents.stream()
@@ -114,14 +106,24 @@ public class ChatService {
                     log.error("🐻AI 통신 실패 : ", e);
                     throw new AppException(ErrorCode.AI_INTERNAL_SERVER_ERROR);
                 })
-                .map(aiResponse -> {
+                .handle((aiResponse, sink) -> {
                     // AI에서 보낸 채팅 저장
                     ChatSaveRequest aiChat = new ChatSaveRequest();
                     aiChat.setSender(request.getReceiver());
                     aiChat.setReceiver(request.getSender());
                     aiChat.setChatContent(aiResponse.getChatContent());
                     aiChat.setChatDay(request.getChatDay());
-                    Chat aiChatEntity = ChatSaveRequest.toEntity(aiChat, LocalDateTime.now(), ChatRoleType.AI, ChatRoleType.USER);
+
+                    Optional<GameSet> optionalGameSet = gameSetRepository.findByGameSetNo(request.getGameSetNo());
+
+                    if (optionalGameSet.isEmpty()) {
+                        sink.error(new AppException(ErrorCode.GAME_NOT_FOUND));
+                        return;
+                    }
+
+                    GameSet gameSet = optionalGameSet.get();
+
+                    Chat aiChatEntity = ChatSaveRequest.toEntity(aiChat, LocalDateTime.now(), ChatRoleType.AI, ChatRoleType.USER, gameSet);
                     chatRepository.save(aiChatEntity);
 
                     log.info("🐻AI가 전송한 채팅 내용: {}", aiChatEntity.getChatContent());
@@ -130,7 +132,7 @@ public class ChatService {
                     ChatSaveResponse response = new ChatSaveResponse();
                     response.setChatContent(aiResponse.getChatContent());
                     response.setSender(aiResponse.getSender());
-                    return response;
+                    sink.next(response);
                 });
     }
 
@@ -150,12 +152,6 @@ public class ChatService {
         String aiServerUrl = "http://221.163.19.218:9090/api/chatbot/conversation_between_npcs";
         WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build();
 
-//        Npc npc1 = npcRepository.findByNpcName(npcName1)
-//                .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
-//
-//        Npc npc2 = npcRepository.findByNpcName(npcName2)
-//                .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
-
         NpcChatRequest npcChatRequest = new NpcChatRequest();
         npcChatRequest.setSender(sender);
         npcChatRequest.setNpcName1(npcName1);
@@ -173,9 +169,9 @@ public class ChatService {
                 });
     }
 
-    public List<ChatListResponse> getAllChatByUserNameAndAINpc(String userName, String aiNpcName) {
+    public List<ChatListResponse> getAllChatByUserNameAndAINpc(ChatListRequest chatListRequest) {
 
-        List<Chat> chats = chatRepository.findAllByUserAndAINpc(userName, aiNpcName);
+        List<Chat> chats = chatRepository.findAllByUserAndAINpcAndGameSetNo(chatListRequest.getUserName(), chatListRequest.getAiNpcName(), chatListRequest.getGameSetNo());
 
         if (chats.isEmpty()) {
             throw new AppException(ErrorCode.NO_CHAT_HISTORY);

@@ -2,6 +2,7 @@ package com.server.gummymurderer.domain.dto.chat;
 
 import com.server.gummymurderer.domain.entity.Chat;
 import com.server.gummymurderer.domain.entity.ChatRoom;
+import com.server.gummymurderer.domain.entity.GameSet;
 import com.server.gummymurderer.domain.enum_class.ChatRoleType;
 import lombok.*;
 
@@ -18,8 +19,9 @@ public class ChatSaveRequest {
     private String receiver;
     private String chatContent;
     private int chatDay;
+    private Long gameSetNo;
 
-    public static Chat toEntity(ChatSaveRequest request, LocalDateTime time,  ChatRoleType senderType, ChatRoleType receiverType) {
+    public static Chat toEntity(ChatSaveRequest request, LocalDateTime time, ChatRoleType senderType, ChatRoleType receiverType, GameSet gameSet) {
         return Chat.builder()
                 .sender(request.sender)
                 .receiver(request.receiver)
@@ -28,6 +30,7 @@ public class ChatSaveRequest {
                 .chatDate(time)
                 .senderType(senderType)
                 .receiverType(receiverType)
+                .gameSet(gameSet)
                 .build();
 
     }

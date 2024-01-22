@@ -11,5 +11,6 @@ public class ChatListRequest {
 
     private String userName;
     private String aiNpcName;
+    private Long gameSetNo;
 
 }
