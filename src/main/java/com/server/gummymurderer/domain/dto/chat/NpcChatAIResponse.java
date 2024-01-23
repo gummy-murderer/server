@@ -10,6 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NpcChatAIResponse {
+
     private List<NpcChatResponse> chatContent;
     private int totalTokens;
 

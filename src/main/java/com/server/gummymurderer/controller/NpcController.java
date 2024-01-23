@@ -1,7 +1,6 @@
 package com.server.gummymurderer.controller;
 
 import com.server.gummymurderer.domain.dto.npc.*;
-import com.server.gummymurderer.domain.dto.user.ReadAllUserResponse;
 import com.server.gummymurderer.exception.Response;
 import com.server.gummymurderer.service.NpcService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,7 +10,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -46,7 +44,7 @@ public class NpcController {
 
         Page<ReadAllNpcResponse> readAllUserResponsePage = npcService.readAll(pageable);
 
-        return  ResponseEntity.ok(Response.success(readAllUserResponsePage));
+        return ResponseEntity.ok(Response.success(readAllUserResponsePage));
     }
 
     @Operation(summary = "npc 번호로 조회", description = "특정 npc의 No으로 No, Name, Personality, Feature, CreatedAt, LastModifiedAt, DeletedAt 이 조회됩니다")
