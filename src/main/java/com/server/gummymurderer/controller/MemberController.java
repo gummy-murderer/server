@@ -16,14 +16,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/member")
+@RequestMapping("/api/v1/members")
 @RequiredArgsConstructor
 @Slf4j
 public class MemberController {
 
     private final MemberService memberService;
 
-    @GetMapping("members/{memberNo}")
+    @GetMapping("/{memberNo}")
     public ResponseEntity<Response<ReadMemberResponse>> readByMemberNickname(@PathVariable long memberNo) {
 
         ReadMemberResponse readMemberResponse = memberService.readByNo(memberNo);
@@ -31,7 +31,7 @@ public class MemberController {
         return ResponseEntity.ok(Response.success(readMemberResponse));
     }
 
-    @GetMapping("members")
+    @GetMapping("/all")
     public ResponseEntity<Response<Page<ReadAllMemberResponse>>> readAll() {
         PageRequest pageable = PageRequest.of(0, 10, Sort.by("memberNo").descending());
 
