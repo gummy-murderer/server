@@ -9,7 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 public class ChatListRequest {
 
-    private String userName;
+    private String nickName;
     private String aiNpcName;
     private Long gameSetNo;
 

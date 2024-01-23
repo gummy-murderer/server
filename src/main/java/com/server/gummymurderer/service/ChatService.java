@@ -10,7 +10,6 @@ import com.server.gummymurderer.exception.ErrorCode;
 import com.server.gummymurderer.repository.ChatRepository;
 import com.server.gummymurderer.repository.GameScenarioRepository;
 import com.server.gummymurderer.repository.GameSetRepository;
-import com.server.gummymurderer.repository.NpcRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,7 +27,6 @@ import java.util.stream.Collectors;
 public class ChatService {
 
     private final ChatRepository chatRepository;
-    private final NpcRepository npcRepository;
     private final GameSetRepository gameSetRepository;
     private final GameScenarioRepository gameScenarioRepository;
 
@@ -61,7 +59,7 @@ public class ChatService {
         WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build(); // WebClient 인스턴스 생성
 
         // 이전 대화 내용들 가져오기
-        List<Chat> previousChatContents = chatRepository.findAllByUserAndAINpcAndGameSetNo(request.getSender(), request.getReceiver(), request.getGameSetNo());
+        List<Chat> previousChatContents = chatRepository.findAllByMemberAndAINpcAndGameSetNo(request.getSender(), request.getReceiver(), request.getGameSetNo());
 
         // 이전 스토리 내용 가져오기
         Optional<GameScenario> gameScenarioOptional = gameScenarioRepository.findByGameSet_GameSetNo(request.getGameSetNo());
@@ -175,7 +173,7 @@ public class ChatService {
 
     public List<ChatListResponse> getAllChatByUserNameAndAINpc(ChatListRequest chatListRequest) {
 
-        List<Chat> chats = chatRepository.findAllByUserAndAINpcAndGameSetNo(chatListRequest.getUserName(), chatListRequest.getAiNpcName(), chatListRequest.getGameSetNo());
+        List<Chat> chats = chatRepository.findAllByMemberAndAINpcAndGameSetNo(chatListRequest.getNickName(), chatListRequest.getAiNpcName(), chatListRequest.getGameSetNo());
 
         if (chats.isEmpty()) {
             throw new AppException(ErrorCode.NO_CHAT_HISTORY);

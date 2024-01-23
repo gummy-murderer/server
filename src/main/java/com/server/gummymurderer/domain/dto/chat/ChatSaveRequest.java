@@ -1,7 +1,6 @@
 package com.server.gummymurderer.domain.dto.chat;
 
 import com.server.gummymurderer.domain.entity.Chat;
-import com.server.gummymurderer.domain.entity.ChatRoom;
 import com.server.gummymurderer.domain.entity.GameSet;
 import com.server.gummymurderer.domain.enum_class.ChatRoleType;
 import lombok.*;
