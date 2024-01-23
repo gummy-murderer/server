@@ -50,4 +50,18 @@ public class GameNpc extends BaseEntity{
     @JoinColumn(name = "game_set_no")
     private GameSet gameSet;
 
+
+    public GameNpc(Npc npc, String npcJob, GameSet gameSet) {
+        this.npcName = npc.getNpcName();
+        this.npcJob = npcJob;
+        this.npcPersonality = npc.getNpcPersonality();
+        this.npcFeature = npc.getNpcFeature();
+        this.npcStatus = "alive";
+        this.npcDeathLocationX = 0;
+        this.npcDeathLocationY = 0;
+        this.npcDeathLocationZ = 0;
+        this.npcDeathNightNumber = 0;
+        this.npcToken = 0;
+        this.gameSet = gameSet;
+    }
 }
