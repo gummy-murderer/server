@@ -1,4 +1,4 @@
-package com.server.gummymurderer.domain.dto.user;
+package com.server.gummymurderer.domain.dto.member;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class JoinUserResponse {
+public class JoinMemberResponse {
 
-    private long userNo;
-    private String userId;
-    private String userNickname;
+    private long memberNo;
+    private String account;
+    private String nickname;
 }
