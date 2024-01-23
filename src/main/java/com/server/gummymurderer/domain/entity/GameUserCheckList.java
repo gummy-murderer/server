@@ -9,18 +9,18 @@ import lombok.*;
 @Builder
 @Getter
 @Table(name = "game_user_checklist_tb")
-public class GameUserChecklist {
+public class GameUserCheckList {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_checklist_no")
-    private long userChecklistNo;
+    private Long userChecklistNo;
+
+    @Column(name = "mark")
+    private String mark;  // 수정(○, △, X) ->
 
     @Column(name = "check_job")
-    private String checkJob;
-
-    @Column(name = "confirmed_job")
-    private String confirmedJob;
+    private String checkJob; // 수정(사용자가 끌어다 놓은 직업)
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_npc_no")
