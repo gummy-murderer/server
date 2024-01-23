@@ -24,4 +24,8 @@ public class GameSet extends BaseEntity{
 
     @Column(name = "game_chat_summary")
     private long gameSummary;
+
+    public void updateGameToken(long gameToken) {
+        this.gameToken = gameToken;
+    }
 }

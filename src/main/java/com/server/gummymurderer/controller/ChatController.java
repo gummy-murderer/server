@@ -31,13 +31,13 @@ public class ChatController {
     // aiNpc 별 채팅 조회
     @PostMapping("/list")
     public Response<List<ChatListResponse>> getAllChatByUserAndAINpc(@RequestBody ChatListRequest chatListRequest) {
-        List<ChatListResponse> chats = chatService.getAllChatByUserNameAndAINpc(chatListRequest.getUserName(), chatListRequest.getAiNpcName());
+        List<ChatListResponse> chats = chatService.getAllChatByUserNameAndAINpc(chatListRequest);
         return Response.success(chats);
     }
 
     @PostMapping("/npc")
     public Mono<Response<List<NpcChatResponse>>> npcChat(@RequestBody NpcChatRequestDto npcChatRequestDto) {
-        Mono<List<NpcChatResponse>> npcChatResponseList = chatService.getNpcChat(npcChatRequestDto.getSender(), npcChatRequestDto.getNpcName1(), npcChatRequestDto.getNpcName2(), npcChatRequestDto.getChatDay());
+        Mono<List<NpcChatResponse>> npcChatResponseList = chatService.getNpcChat(npcChatRequestDto);
 
         return npcChatResponseList
                 .map(Response::success);
