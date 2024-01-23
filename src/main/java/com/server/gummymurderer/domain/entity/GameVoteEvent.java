@@ -1,5 +1,6 @@
 package com.server.gummymurderer.domain.entity;
 
+import com.server.gummymurderer.domain.dto.game.SaveGameRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,7 +15,7 @@ public class GameVoteEvent extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "game_vote_event_no")
-    private long gameVoteEventNo;
+    private Long gameVoteEventNo;
 
     @Column(name = "vote_npc_name")
     private String voteNpcName;
@@ -23,9 +24,16 @@ public class GameVoteEvent extends BaseEntity{
     private String voteResult;
 
     @Column(name = "vote_night_number")
-    private long voteNightNumber;
+    private Long voteNightNumber;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_set_no")
     private GameSet gameSet;
+
+    public GameVoteEvent(SaveGameRequest saveGameRequest, GameSet gameSet) {
+        this.voteNpcName = saveGameRequest.getVoteNpcName();
+        this.voteResult = saveGameRequest.getVoteResult();
+        this.voteNightNumber = saveGameRequest.getVoteNightNumber();
+        this.gameSet = gameSet;
+    }
 }

@@ -9,7 +9,7 @@ import lombok.*;
 @Builder
 @Getter
 @Table(name = "game_npc_tb")
-public class GameNpc extends BaseEntity{
+public class GameNpc extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -63,5 +63,9 @@ public class GameNpc extends BaseEntity{
         this.npcDeathNightNumber = 0;
         this.npcToken = 0;
         this.gameSet = gameSet;
+    }
+
+    public void voteEvent() {
+        this.npcStatus = "dead";
     }
 }

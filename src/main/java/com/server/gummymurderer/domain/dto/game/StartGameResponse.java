@@ -2,6 +2,7 @@ package com.server.gummymurderer.domain.dto.game;
 
 
 import com.server.gummymurderer.domain.entity.GameNpc;
+import com.server.gummymurderer.domain.entity.GameScenario;
 import com.server.gummymurderer.domain.entity.GameSet;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,6 +18,7 @@ import java.util.List;
 public class StartGameResponse {
 
     private GameSet gameSet;
+    private GameScenario gameScenario;
     private List<GameNpc> gameNpcList;
 
 }
