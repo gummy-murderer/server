@@ -23,11 +23,11 @@ public class GameSet extends BaseEntity{
     private long gameToken;
 
     @Column(name = "game_chat_summary")
-    private long gameSummary;
+    private String gameSummary;
 
     @ManyToOne(fetch =FetchType.LAZY)
-    @JoinColumn(name = "user_no")
-    private User user;
+    @JoinColumn(name = "member_no")
+    private Member member;
 
     public void updateGameToken(long gameToken) {
         this.gameToken = gameToken;
