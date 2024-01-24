@@ -3,6 +3,7 @@ package com.server.gummymurderer.controller;
 import com.server.gummymurderer.domain.dto.member.ReadAllMemberResponse;
 import com.server.gummymurderer.domain.dto.member.ReadMemberResponse;
 import com.server.gummymurderer.exception.Response;
+import com.server.gummymurderer.service.CustomUserDetails;
 import com.server.gummymurderer.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,8 +34,10 @@ public class MemberController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<Response<Page<ReadAllMemberResponse>>> readAll() {
+    public ResponseEntity<Response<Page<ReadAllMemberResponse>>> readAll(@AuthenticationPrincipal CustomUserDetails userDetails) {
         PageRequest pageable = PageRequest.of(0, 10, Sort.by("memberNo").descending());
+
+        log.info("🤖User Name : {}",userDetails.getMember().getName());
 
         Page<ReadAllMemberResponse> readAllMemberResponsePage = memberService.readAllMember(pageable);
 

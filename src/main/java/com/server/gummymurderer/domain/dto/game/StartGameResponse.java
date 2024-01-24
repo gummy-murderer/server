@@ -1,9 +1,7 @@
 package com.server.gummymurderer.domain.dto.game;
 
 
-import com.server.gummymurderer.domain.entity.GameNpc;
-import com.server.gummymurderer.domain.entity.GameScenario;
-import com.server.gummymurderer.domain.entity.GameSet;
+import com.server.gummymurderer.domain.dto.gameNpc.GameNpcDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,8 +15,10 @@ import java.util.List;
 @Builder
 public class StartGameResponse {
 
-    private GameSet gameSet;
-    private GameScenario gameScenario;
-    private List<GameNpc> gameNpcList;
+    private String playerName;
+    private String playerNickName;
+    private Long gameStatus;
+    private Long gameSetNo;
+    private List<GameNpcDTO> gameNpcList;
 
 }

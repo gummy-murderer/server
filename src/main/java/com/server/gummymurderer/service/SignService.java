@@ -1,6 +1,7 @@
 package com.server.gummymurderer.service;
 
 import com.server.gummymurderer.configuration.jwt.JwtProvider;
+import com.server.gummymurderer.domain.dto.member.JoinMemberResponse;
 import com.server.gummymurderer.domain.dto.member.LoginRequest;
 import com.server.gummymurderer.domain.dto.member.SignRequest;
 import com.server.gummymurderer.domain.dto.member.SignResponse;
@@ -27,7 +28,7 @@ public class SignService {
 
     public SignResponse login(LoginRequest request) throws Exception {
         Member member = memberRepository.findByAccount(request.getAccount()).orElseThrow(
-                () -> new AppException(ErrorCode.DUPLICATED_ACCOUNT)
+                () -> new AppException(ErrorCode.INVALID_ACCOUNT_OR_PASSWORD)
         );
 
         if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
@@ -43,8 +44,8 @@ public class SignService {
                 .build();
     }
 
-    public boolean register(SignRequest request) throws Exception {
-        try {
+    public SignResponse register(SignRequest request) {
+
             Member member = Member.builder()
                     .account(request.getAccount())
                     .password(passwordEncoder.encode(request.getPassword()))
@@ -55,11 +56,15 @@ public class SignService {
 
             member.setRoles(Collections.singletonList(Authority.builder().name("ROLE_USER").build()));
 
-            memberRepository.save(member);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            throw new AppException(ErrorCode.INVALID_MEMBER_REGISTRATION_REQUEST);
-        }
-        return true;
+            Member savedMember = memberRepository.save(member);
+
+
+        return SignResponse.builder()
+                .memberNo(savedMember.getMemberNo())
+                .account(savedMember.getAccount())
+                .name(savedMember.getName())
+                .email(savedMember.getEmail())
+                .roles(savedMember.getRoles())
+                .build();
     }
 }

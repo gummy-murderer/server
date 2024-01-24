@@ -3,6 +3,7 @@ package com.server.gummymurderer.service;
 import com.server.gummymurderer.domain.dto.game.SaveGameRequest;
 import com.server.gummymurderer.domain.dto.game.SaveGameResponse;
 import com.server.gummymurderer.domain.dto.game.StartGameResponse;
+import com.server.gummymurderer.domain.dto.gameNpc.GameNpcDTO;
 import com.server.gummymurderer.domain.entity.*;
 import com.server.gummymurderer.exception.AppException;
 import com.server.gummymurderer.exception.ErrorCode;
@@ -44,24 +45,31 @@ public class GameService {
 
         List<Npc> npcList = npcRepository.findRandom7Npc();
 
-        log.info(String.valueOf(npcList.get(0)));
         List<GameNpc> gameNpcList = new ArrayList<>();
 
         for (int i = 0; i < npcList.size(); i++) {
             Npc npc = npcList.get(i);
-            String npcJob = (i < npcList.size() -1) ? "Resident" : "Murderer";
+            String npcJob = (i < npcList.size() - 1) ? "Resident" : "Murderer";
             gameNpcList.add(createGameNpc(npc, npcJob, savedGameSet));
         }
-
         List<GameNpc> savedGameNpcList = gameNpcRepository.saveAll(gameNpcList);
 
+        List<GameNpcDTO> gameNpcDTOList = new ArrayList<>();
 
-        //AI에 Scenario 요청하는 로직 넣어야함.
-        GameScenario gameScenario = GameScenario.builder().build();
+        for (GameNpc gameNpc : savedGameNpcList) {
+            GameNpcDTO gameNpcDTO = new GameNpcDTO(gameNpc);
+            gameNpcDTOList.add(gameNpcDTO);
+        }
 
-        GameScenario savedGameScenario = gameScenarioRepository.save(gameScenario);
 
-        return new StartGameResponse(savedGameSet,savedGameScenario, savedGameNpcList);
+
+        return StartGameResponse.builder()
+                .playerName(loginMember.getName())
+                .playerNickName(loginMember.getNickname())
+                .gameSetNo(savedGameSet.getGameSetNo())
+                .gameStatus(gameSet.getGameStatus())
+                .gameNpcList(gameNpcDTOList)
+                .build();
     }
 
     @Transactional
@@ -75,7 +83,7 @@ public class GameService {
         GameSet gameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameSetNo(), loginMember)
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
         Long gameDate = gameVoteEventRepository.countAllByGameSet(gameSet);
-        gameSet.updateGameStatus(gameDate + 1 );
+        gameSet.updateGameStatus(gameDate + 1);
 
 
         GameVoteEvent gameVoteEvent = new GameVoteEvent(request, gameSet);
@@ -87,6 +95,6 @@ public class GameService {
         voteGameNpc.voteEvent();
         gameVoteEventRepository.save(gameVoteEvent);
 
-        return new SaveGameResponse(gameSet,voteGameNpc,gameVoteEvent);
+        return new SaveGameResponse(gameSet, voteGameNpc, gameVoteEvent);
     }
 }
