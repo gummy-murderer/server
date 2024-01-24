@@ -17,13 +17,10 @@ public class GameUserCheckListController {
 
     private final GameUserCheckListService gameUserCheckListService;
 
-    @PostMapping("/save")
+    @PostMapping
     public Response<CheckListSaveResponse> saveCheckList(@RequestBody CheckListSaveRequest request) {
 
-        gameUserCheckListService.saveCheckList(request);
-        CheckListSaveResponse response = new CheckListSaveResponse(request.getMark(), request.getCheckJob());
-
+        CheckListSaveResponse response = gameUserCheckListService.saveAndReturnCheckList(request);
         return Response.success(response);
     }
-
 }
