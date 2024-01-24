@@ -4,6 +4,7 @@ import com.server.gummymurderer.domain.dto.game.SaveGameRequest;
 import com.server.gummymurderer.domain.dto.game.SaveGameResponse;
 import com.server.gummymurderer.domain.dto.game.StartGameResponse;
 import com.server.gummymurderer.domain.entity.Member;
+import com.server.gummymurderer.exception.Response;
 import com.server.gummymurderer.service.CustomUserDetails;
 import com.server.gummymurderer.service.GameService;
 import lombok.RequiredArgsConstructor;
@@ -24,10 +25,10 @@ public class GameController {
     private final GameService gameService;
 
     @PostMapping("/start")
-    public ResponseEntity<StartGameResponse> startGame(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<Response<StartGameResponse>> startGame(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         Member loginMember = customUserDetails.getMember();
         StartGameResponse response = gameService.startGame(loginMember);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok().body(Response.success(response));
     }
 
     @PostMapping("/save")
