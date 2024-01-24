@@ -1,5 +1,6 @@
 package com.server.gummymurderer.domain.entity;
 
+import com.server.gummymurderer.domain.dto.AiMakeScenarioResponse;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,20 +29,30 @@ public class GameScenario extends BaseEntity{
     @Column(name = "witness")
     private String witness;
 
-    @Column(name = "testimony")
-    private String testimony;
-
-    @Column(name = "body_condition")
-    private String bodyCondition;
-
+    @Column(name = "eyewitness_information")
+    private String eyewitnessInformation;
     @Column(name = "daily_summary")
     private String dailySummary;
 
-    @Column(name = "scenario_token")
-    private long scenarioToken;
+    @Column(name = "scenario_prompt_token")
+    private long scenarioPromptToken;
+
+    @Column(name = "scenario_completion_token")
+    private long scenarioCompletionToken;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_set_no")
     private GameSet gameSet;
 
+    public GameScenario(AiMakeScenarioResponse result, GameSet gameSet) {
+        this.victim = result.getAnswer().getVictim();
+        this.crimeScene = result.getAnswer().getCrimeScene();
+        this.method = result.getAnswer().getMethod();
+        this.witness = result.getAnswer().getWitness();
+        this.eyewitnessInformation = result.getAnswer().getEyewitnessInformation();
+        this.dailySummary = result.getAnswer().getDailySummary();
+        this.scenarioCompletionToken = result.getTokens().getCompletionTokens();
+        this.scenarioPromptToken = result.getTokens().getPromptTokens();
+        this.gameSet = gameSet;
+    }
 }

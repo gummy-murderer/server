@@ -34,8 +34,8 @@ public class GameService {
 
         // Game Set 구성
         GameSet gameSet = GameSet.builder()
-                .gameStatus("start")
-                .gameSummary("empty")
+                .gameStatus(0L)
+                .gameSummary("")
                 .gameToken(0)
                 .member(loginMember)
                 .build();
@@ -75,7 +75,7 @@ public class GameService {
         GameSet gameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameSetNo(), loginMember)
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
         Long gameDate = gameVoteEventRepository.countAllByGameSet(gameSet);
-        gameSet.updateGameStatus(gameDate + 1 + "일차 진행됨");
+        gameSet.updateGameStatus(gameDate + 1 );
 
 
         GameVoteEvent gameVoteEvent = new GameVoteEvent(request, gameSet);
