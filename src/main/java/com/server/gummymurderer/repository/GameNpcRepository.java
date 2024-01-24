@@ -14,4 +14,6 @@ public interface GameNpcRepository extends JpaRepository<GameNpc, Long> {
     Optional<GameNpc> findByNpcName(String npcName);
 
     List<GameNpc> findAllByGameSet(GameSet gameSet);
+
+    Optional<GameNpc> findByGameNpcNoAndGameSet(Long gameNpcNo, GameSet gameSet);
 }
