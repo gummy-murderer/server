@@ -49,7 +49,7 @@ public class GameService {
 
         for (int i = 0; i < npcList.size(); i++) {
             Npc npc = npcList.get(i);
-            String npcJob = (i < npcList.size() / 2 - 1) ? "Murderer" : "Resident";
+            String npcJob = (i < npcList.size() -1) ? "Resident" : "Murderer";
             gameNpcList.add(createGameNpc(npc, npcJob, savedGameSet));
         }
 
