@@ -13,5 +13,5 @@ public class JoinMemberResponse {
 
     private long memberNo;
     private String account;
-    private String nickname;
+    private String name;
 }

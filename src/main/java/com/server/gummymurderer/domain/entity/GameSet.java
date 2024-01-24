@@ -19,7 +19,7 @@ public class GameSet extends BaseEntity {
     private long gameSetNo;
 
     @Column(name = "game_status")
-    private String gameStatus;
+    private Long gameStatus;
 
     @Column(name = "game_token")
     private long gameToken;
@@ -35,7 +35,7 @@ public class GameSet extends BaseEntity {
         this.gameToken = gameToken;
     }
 
-    public void updateGameStatus(String gameStatus) {
+    public void updateGameStatus(Long gameStatus) {
         this.gameStatus = gameStatus;
     }
 
