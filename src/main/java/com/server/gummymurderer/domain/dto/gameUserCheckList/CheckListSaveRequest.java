@@ -14,6 +14,7 @@ public class CheckListSaveRequest {
     private String mark;
     private String checkJob;
     private Long gameNpcNo;
+    private Long gameSetNo;
 
     public static GameUserCheckList toEntity(CheckListSaveRequest request, GameNpc gameNpc) {
         return GameUserCheckList.builder()
