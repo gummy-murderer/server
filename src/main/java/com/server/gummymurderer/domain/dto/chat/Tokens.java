@@ -1,5 +1,6 @@
 package com.server.gummymurderer.domain.dto.chat;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,12 +10,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AIChatResponse {
-
-    private String sender;       // 수신자 이름
-    private String receiver;     // 발신자 이름
-    private String chatContent;  // 채팅 내용
-    private Tokens tokens;
-
+public class Tokens {
+    private long totalTokens;
+    private long promptTokens;
+    private long completionTokens;
+    private String totalCost;
 }
-

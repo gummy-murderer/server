@@ -11,4 +11,5 @@ public class NpcChatRequestDto {
     private String npcName2;
     private int chatDay;
     private Long gameSetNo;
+    private String secretKey="";
 }

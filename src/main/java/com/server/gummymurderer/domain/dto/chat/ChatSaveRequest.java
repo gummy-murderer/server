@@ -19,6 +19,7 @@ public class ChatSaveRequest {
     private String chatContent;
     private int chatDay;
     private Long gameSetNo;
+    private String secretKey = "";
 
     public static Chat toEntity(ChatSaveRequest request, LocalDateTime time, ChatRoleType senderType, ChatRoleType receiverType, GameSet gameSet) {
         return Chat.builder()
