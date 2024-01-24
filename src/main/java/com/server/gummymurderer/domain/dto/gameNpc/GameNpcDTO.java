@@ -20,7 +20,6 @@ public class GameNpcDTO {
     private float npcDeathLocationY;
     private float npcDeathLocationZ;
     private long npcDeathNightNumber;
-    private long npcToken;
 
 
     public  GameNpcDTO(GameNpc gameNpc) {
@@ -34,7 +33,6 @@ public class GameNpcDTO {
         this.npcDeathLocationY = gameNpc.getNpcDeathLocationY();
         this.npcDeathLocationZ = gameNpc.getNpcDeathLocationZ();
         this.npcDeathNightNumber = gameNpc.getNpcDeathNightNumber();
-        this.npcToken = gameNpc.getNpcToken();
     }
 
 

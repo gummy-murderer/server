@@ -12,6 +12,6 @@ import java.util.List;
 public class NpcChatAIResponse {
 
     private List<NpcChatResponse> chatContent;
-    private int totalTokens;
+    private Tokens tokens;
 
 }

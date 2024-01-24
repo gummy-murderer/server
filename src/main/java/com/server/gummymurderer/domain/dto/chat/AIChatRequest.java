@@ -14,6 +14,8 @@ import java.util.Map;
 @AllArgsConstructor
 public class AIChatRequest {
 
+    private Long gameSetNo;
+    private String secretKey;
     private String sender;
     private String receiver;
     private String chatContent;

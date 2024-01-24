@@ -23,5 +23,9 @@ public interface GameNpcRepository extends JpaRepository<GameNpc, Long> {
     @Query(value = "SELECT npc_name FROM gummymurderer.game_npc_tb WHERE game_set_no = :gameSetNo AND npc_job = 'Murderer'", nativeQuery = true)
     String findMurderByGameSetNo(@Param("gameSetNo") Long gameSetNo);
 
-    Optional<GameNpc> findByGameNpcNoAndGameSet(Long gameNpcNo, GameSet gameSet);
+    Optional<GameNpc> findByNpcNameAndGameSet(String npcName, GameSet gameSet);
+
+    Optional<GameNpc> findByNpcNameAndGameSet_GameSetNo(String npcName, Long gameSetNo);
+
+    List<GameNpc> findAllByNpcNameInAndGameSet_GameSetNo(List<String> npcNames, Long gameSetNo);
 }
