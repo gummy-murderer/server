@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.server.gummymurderer.domain.dto.scenario.MakeScenarioRequest;
 import com.server.gummymurderer.domain.dto.scenario.MakeScenarioResponse;
 import com.server.gummymurderer.domain.entity.Member;
+import com.server.gummymurderer.exception.Response;
 import com.server.gummymurderer.service.CustomUserDetails;
 import com.server.gummymurderer.service.ScenarioService;
 import lombok.RequiredArgsConstructor;
@@ -24,10 +25,10 @@ public class ScenarioController {
     private final ScenarioService scenarioService;
 
     @PostMapping("/save")
-    public ResponseEntity<MakeScenarioResponse> scenarioMake(@RequestBody MakeScenarioRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails) throws JsonProcessingException {
+    public ResponseEntity<Response<MakeScenarioResponse>> scenarioMake(@RequestBody MakeScenarioRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails) throws JsonProcessingException {
         Member loginMember = customUserDetails.getMember();
         MakeScenarioResponse makeScenarioResponse = scenarioService.makeScenario(request, loginMember);
 
-        return ResponseEntity.ok(new MakeScenarioResponse());
+        return ResponseEntity.ok().body(Response.success(makeScenarioResponse));
     }
 }
