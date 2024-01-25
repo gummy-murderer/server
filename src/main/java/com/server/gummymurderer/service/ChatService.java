@@ -58,7 +58,7 @@ public class ChatService {
 
     // AI로 채팅 내용 전송하고 AI에서 온 답장을 반환
     private Mono<ChatSaveResponse> sendChatToAIServer(ChatSaveRequest request) {
-        String aiServerUrl = "http://221.163.19.218:9090/api/chatbot/conversation_with_user";
+        String aiServerUrl = "http://221.163.19.218:9090/api/user/conversation_with_user";
         WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build(); // WebClient 인스턴스 생성
 
         // 이전 대화 내용들 가져오기
@@ -76,7 +76,7 @@ public class ChatService {
         aiChatRequest.setChatDay(request.getChatDay());
         aiChatRequest.setPreviousStory(previousStory);
         aiChatRequest.setSecretKey(request.getSecretKey());
-        aiChatRequest.setGameSetNo(request.getGameSetNo());
+        aiChatRequest.setGameNo(request.getGameSetNo());
 
         // 이전 채팅 내용에서 필요한 정보만 추출
         List<Map<String, Object>> simplifiedPreviousChats = previousChatContents.stream()
