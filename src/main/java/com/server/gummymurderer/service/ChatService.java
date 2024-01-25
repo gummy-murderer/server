@@ -1,10 +1,7 @@
 package com.server.gummymurderer.service;
 
 import com.server.gummymurderer.domain.dto.chat.*;
-import com.server.gummymurderer.domain.entity.Chat;
-import com.server.gummymurderer.domain.entity.GameNpc;
-import com.server.gummymurderer.domain.entity.GameScenario;
-import com.server.gummymurderer.domain.entity.GameSet;
+import com.server.gummymurderer.domain.entity.*;
 import com.server.gummymurderer.domain.enum_class.ChatRoleType;
 import com.server.gummymurderer.exception.AppException;
 import com.server.gummymurderer.exception.ErrorCode;
@@ -34,7 +31,7 @@ public class ChatService {
     private final GameScenarioRepository gameScenarioRepository;
 
     // 채팅 보내기
-    public Mono<ChatSaveResponse> saveChat(ChatSaveRequest request) {
+    public Mono<ChatSaveResponse> saveChat(CustomUserDetails userDetails, ChatSaveRequest request) {
 
         Optional<GameSet> optionalGameSet = gameSetRepository.findByGameSetNo(request.getGameSetNo());
 
@@ -43,6 +40,9 @@ public class ChatService {
         }
 
         GameSet gameSet = optionalGameSet.get();
+
+        Member member = userDetails.getMember();
+        request.setSender(member.getNickname());
 
         Chat chat = ChatSaveRequest.toEntity(request, LocalDateTime.now(), ChatRoleType.USER, ChatRoleType.AI, gameSet);
 
@@ -92,8 +92,8 @@ public class ChatService {
 
         // 현재 채팅 내용을 리스트에서 제거
         simplifiedPreviousChats = simplifiedPreviousChats.stream()
-                        .filter(chat ->
-                                !(chat.get("sender").equals(aiChatRequest.getSender()) &&
+                .filter(chat ->
+                        !(chat.get("sender").equals(aiChatRequest.getSender()) &&
                                 chat.get("receiver").equals(aiChatRequest.getReceiver())&&
                                 chat.get("chatContent").equals(aiChatRequest.getChatContent())))
                 .collect(Collectors.toList());

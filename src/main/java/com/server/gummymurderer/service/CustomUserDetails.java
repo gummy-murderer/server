@@ -20,6 +20,10 @@ public class CustomUserDetails implements UserDetails {
         return member;
     }
 
+    public String getNickname() {
+        return member.getNickname();
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return member.getRoles().stream().map(o -> new SimpleGrantedAuthority(
