@@ -43,8 +43,11 @@ public class GameNpc extends BaseEntity {
     @Column(name = "npc_death_night_number")
     private long npcDeathNightNumber;
 
-    @Column(name = "npc_token")
-    private long npcToken;
+    @Column(name = "prompt_tokens")
+    private long gameNpcPromptTokens;
+
+    @Column(name = "completion_tokens")
+    private long gameNpcCompletionTokens;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_set_no")
@@ -61,11 +64,16 @@ public class GameNpc extends BaseEntity {
         this.npcDeathLocationY = 0;
         this.npcDeathLocationZ = 0;
         this.npcDeathNightNumber = 0;
-        this.npcToken = 0;
         this.gameSet = gameSet;
     }
 
     public void voteEvent() {
         this.npcStatus = "dead";
     }
+
+    public void updateTokens(long promptTokens, long completionTokens) {
+        this.gameNpcPromptTokens += promptTokens;
+        this.gameNpcCompletionTokens += completionTokens;
+    }
+
 }

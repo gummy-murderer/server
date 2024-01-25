@@ -21,6 +21,7 @@ public class GameNpcDTO {
     private Float npcDeathLocationZ;
     private long npcDeathNightNumber;
 
+
     public  GameNpcDTO(GameNpc gameNpc) {
         this.gameNpcNo = gameNpc.getGameNpcNo();
         this.npcName = gameNpc.getNpcName();
@@ -32,6 +33,7 @@ public class GameNpcDTO {
         this.npcDeathLocationY = gameNpc.getNpcDeathLocationY();
         this.npcDeathLocationZ = gameNpc.getNpcDeathLocationZ();
         this.npcDeathNightNumber = gameNpc.getNpcDeathNightNumber();
+        this.npcToken = gameNpc.getNpcToken();
     }
 
 

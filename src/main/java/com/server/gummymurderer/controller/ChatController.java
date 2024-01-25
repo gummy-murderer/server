@@ -29,8 +29,8 @@ public class ChatController {
     }
 
     // aiNpc 별 채팅 조회
-    @PostMapping("/list")
-    public Response<List<ChatListResponse>> getAllChatByUserAndAINpc(@RequestBody ChatListRequest chatListRequest) {
+    @GetMapping("/list")
+    public Response<List<ChatListResponse>> getAllChatByUserAndAINpc(@RequestParam ChatListRequest chatListRequest) {
         List<ChatListResponse> chats = chatService.getAllChatByUserNameAndAINpc(chatListRequest);
         return Response.success(chats);
     }

@@ -1,5 +1,6 @@
 package com.server.gummymurderer.service;
 
+import com.server.gummymurderer.domain.dto.gameUserCheckList.CheckListRequest;
 import com.server.gummymurderer.domain.dto.gameUserCheckList.CheckListSaveRequest;
 import com.server.gummymurderer.domain.dto.gameUserCheckList.CheckListSaveResponse;
 import com.server.gummymurderer.domain.entity.GameNpc;
@@ -13,6 +14,9 @@ import com.server.gummymurderer.repository.GameUserCheckListRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class GameUserCheckListService {
@@ -21,18 +25,25 @@ public class GameUserCheckListService {
     private final GameNpcRepository gameNpcRepository;
     private final GameSetRepository gameSetRepository;
 
-    public CheckListSaveResponse saveAndReturnCheckList(CheckListSaveRequest request) {
+    public List<CheckListSaveResponse> saveAndReturnCheckList(CheckListSaveRequest request) {
 
         GameSet gameSet = gameSetRepository.findByGameSetNo(request.getGameSetNo())
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
-        GameNpc gameNpc = gameNpcRepository.findByGameNpcNoAndGameSet(request.getGameNpcNo(), gameSet)
-                .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
+        List<CheckListSaveResponse> responses = new ArrayList<>();
 
-        GameUserCheckList gameUserCheckList = CheckListSaveRequest.toEntity(request, gameNpc);
+        for (CheckListRequest checkListRequest : request.getCheckList()) {
 
-        gameUserCheckList = gameUserChecklistRepository.save(gameUserCheckList);
+            GameNpc gameNpc = gameNpcRepository.findByNpcNameAndGameSet(checkListRequest.getNpcName(), gameSet)
+                    .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
 
-        return new CheckListSaveResponse(gameUserCheckList.getMark(), gameUserCheckList.getCheckJob());
+            GameUserCheckList gameUserCheckList = checkListRequest.toEntity(gameNpc);
+
+            gameUserCheckList = gameUserChecklistRepository.save(gameUserCheckList);
+
+            responses.add(CheckListSaveResponse.of(gameUserCheckList));
+
+        }
+        return responses;
     }
 }
