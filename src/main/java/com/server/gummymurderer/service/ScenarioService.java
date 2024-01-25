@@ -35,10 +35,11 @@ public class ScenarioService {
     private final GameNpcRepository gameNpcRepository;
     private final GameScenarioRepository gameScenarioRepository;
 
+    @Transactional
     public MakeScenarioResponse makeScenario(MakeScenarioRequest request, Member loginMember) throws JsonProcessingException {
 
         // 일치하는 게임이 없을경우 에러 발생
-        GameSet foundGameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameNo(), loginMember)
+        GameSet foundGameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameSetNo(), loginMember)
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
         // AI에게 시나리오 생성 요청보내는 로직
@@ -85,6 +86,6 @@ public class ScenarioService {
 
         GameScenario savedGameScenario = gameScenarioRepository.save(new GameScenario(result, foundGameSet));
 
-        return new MakeScenarioResponse();
+        return new MakeScenarioResponse(savedGameScenario);
     }
 }

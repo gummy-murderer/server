@@ -87,8 +87,8 @@ public class GameService {
 
 
         GameVoteEvent gameVoteEvent = new GameVoteEvent(request, gameSet);
-        String npcName = gameVoteEvent.getVoteNpcName();
-        GameNpc voteGameNpc = gameNpcRepository.findByNpcName(npcName)
+        String voteNpcName = gameVoteEvent.getVoteNpcName();
+        GameNpc voteGameNpc = gameNpcRepository.findByNpcName(voteNpcName)
                 .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
 
         // npc 상태 dead 로 변경

@@ -5,6 +5,6 @@ import lombok.Getter;
 @Getter
 public class MakeScenarioRequest {
 
-    private Long gameNo;
+    private Long gameSetNo;
 
 }
