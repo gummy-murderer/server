@@ -33,9 +33,6 @@ public class GameNpcDTO {
         this.npcDeathLocationY = gameNpc.getNpcDeathLocationY();
         this.npcDeathLocationZ = gameNpc.getNpcDeathLocationZ();
         this.npcDeathNightNumber = gameNpc.getNpcDeathNightNumber();
-        this.npcToken = gameNpc.getNpcToken();
     }
-
-
 
 }
