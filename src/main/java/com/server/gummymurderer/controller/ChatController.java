@@ -32,14 +32,14 @@ public class ChatController {
 
     // aiNpc 별 채팅 조회
     @GetMapping("/list")
-    public Response<List<ChatListResponse>> getAllChatByUserAndAINpc(@RequestParam ChatListRequest chatListRequest) {
-        List<ChatListResponse> chats = chatService.getAllChatByUserNameAndAINpc(chatListRequest);
+    public Response<List<ChatListResponse>> getAllChatByUserAndAINpc(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestParam ChatListRequest chatListRequest) {
+        List<ChatListResponse> chats = chatService.getAllChatByUserNameAndAINpc(userDetails, chatListRequest);
         return Response.success(chats);
     }
 
     @PostMapping("/npc")
-    public Mono<Response<List<NpcChatResponse>>> npcChat(@RequestBody NpcChatRequestDto npcChatRequestDto) {
-        Mono<List<NpcChatResponse>> npcChatResponseList = chatService.getNpcChat(npcChatRequestDto);
+    public Mono<Response<List<NpcChatResponse>>> npcChat(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody NpcChatRequestDto npcChatRequestDto) {
+        Mono<List<NpcChatResponse>> npcChatResponseList = chatService.getNpcChat(userDetails, npcChatRequestDto);
 
         return npcChatResponseList
                 .map(Response::success);
