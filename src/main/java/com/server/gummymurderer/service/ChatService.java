@@ -146,11 +146,23 @@ public class ChatService {
     }
 
     // npc 채팅 요청 및 반환
-    public Mono<List<NpcChatResponse>> getNpcChat(NpcChatRequestDto npcChatRequestDto) {
+    public Mono<List<NpcChatResponse>> getNpcChat(CustomUserDetails userDetails, NpcChatRequestDto npcChatRequestDto) {
+
+        Optional<GameSet> optionalGameSet = gameSetRepository.findByGameSetNo(npcChatRequestDto.getGameSetNo());
+
+        if (optionalGameSet.isEmpty()) {
+            throw new AppException(ErrorCode.GAME_NOT_FOUND);
+        }
+
+        GameSet gameSet = optionalGameSet.get();
+
+        Member member = userDetails.getMember();
+        npcChatRequestDto.setSender(member.getNickname());
+
         return sendNpcChatToAIServer(npcChatRequestDto)
                 .doOnNext(npcChatAIResponse -> {
                     npcChatAIResponse.getChatContent().forEach(response -> {
-                        Chat chat = NpcChatResponse.toEntity(response, npcChatRequestDto.getChatDay(), LocalDateTime.now(), ChatRoleType.AI, ChatRoleType.AI);
+                        Chat chat = NpcChatResponse.toEntity(response, npcChatRequestDto.getChatDay(), LocalDateTime.now(), ChatRoleType.AI, ChatRoleType.AI, gameSet);
                         Mono.fromCallable(() -> chatRepository.save(chat)).subscribe();
                     });
                     // tokens 업데이트
@@ -195,7 +207,16 @@ public class ChatService {
                 });
     }
 
-    public List<ChatListResponse> getAllChatByUserNameAndAINpc(ChatListRequest chatListRequest) {
+    public List<ChatListResponse> getAllChatByUserNameAndAINpc(CustomUserDetails userDetails, ChatListRequest chatListRequest) {
+
+        Optional<GameSet> optionalGameSet = gameSetRepository.findByGameSetNo(chatListRequest.getGameSetNo());
+
+        if (optionalGameSet.isEmpty()) {
+            throw new AppException(ErrorCode.GAME_NOT_FOUND);
+        }
+
+        Member member = userDetails.getMember();
+        chatListRequest.setNickName(member.getNickname());
 
         List<Chat> chats = chatRepository.findAllByMemberAndAINpcAndGameSetNo(chatListRequest.getNickName(), chatListRequest.getAiNpcName(), chatListRequest.getGameSetNo());
 
