@@ -146,7 +146,7 @@ public class ChatService {
     }
 
     // npc 채팅 요청 및 반환
-    public Mono<List<NpcChatResponse>> getNpcChat(CustomUserDetails userDetails, NpcChatRequestDto npcChatRequestDto) {
+    public Mono<NpcChatResponse> getNpcChat(CustomUserDetails userDetails, NpcChatRequestDto npcChatRequestDto) {
 
         Optional<GameSet> optionalGameSet = gameSetRepository.findByGameSetNo(npcChatRequestDto.getGameSetNo());
 
@@ -160,28 +160,21 @@ public class ChatService {
         npcChatRequestDto.setSender(member.getNickname());
 
         return sendNpcChatToAIServer(npcChatRequestDto)
-                .doOnNext(npcChatAIResponse -> {
-                    npcChatAIResponse.getChatContent().forEach(response -> {
-                        Chat chat = NpcChatResponse.toEntity(response, npcChatRequestDto.getChatDay(), LocalDateTime.now(), ChatRoleType.AI, ChatRoleType.AI, gameSet);
-                        Mono.fromCallable(() -> chatRepository.save(chat)).subscribe();
-                    });
+                .flatMap(npcChatResponse -> {
+                    Chat chat = NpcChatResponse.toEntity(npcChatResponse, npcChatRequestDto.getChatDay(), LocalDateTime.now(), ChatRoleType.AI, ChatRoleType.AI, gameSet);  // 변경된 부분
+                    Mono<Chat> savedChat = Mono.fromCallable(() -> chatRepository.save(chat));
+
                     // tokens 업데이트
-                    List<String> npcNames = Arrays.asList(npcChatRequestDto.getNpcName1(), npcChatRequestDto.getNpcName2());
+                    GameNpc gameNpc = gameNpcRepository.findByNpcNameAndGameSet_GameSetNo(npcChatResponse.getSender(), npcChatRequestDto.getGameSetNo())
+                            .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
 
-                    long promptTokensPerNpc = Math.round((float)npcChatAIResponse.getTokens().getPromptTokens() / 2);
-                    long completionTokensPerNpc = Math.round((float)npcChatAIResponse.getTokens().getCompletionTokens() / 2);
+                    gameNpc.updateTokens(npcChatResponse.getTokens().getPromptTokens(), npcChatResponse.getTokens().getCompletionTokens());
 
-                    List<GameNpc> gameNpcs = gameNpcRepository.findAllByNpcNameInAndGameSet_GameSetNo(npcNames, npcChatRequestDto.getGameSetNo());
-
-                    for (GameNpc gameNpc : gameNpcs) {
-                        gameNpc.updateTokens(promptTokensPerNpc, completionTokensPerNpc);
-                    }
-
-                })
-                .map(NpcChatAIResponse::getChatContent);  // NpcChatAIResponse 객체의 chatContent 필드를 반환
+                    return savedChat.map(c -> npcChatResponse);  // 저장된 채팅을 반환
+                });
     }
 
-    private Mono<NpcChatAIResponse> sendNpcChatToAIServer(NpcChatRequestDto npcChatRequestDto) {
+    private Mono<NpcChatResponse> sendNpcChatToAIServer(NpcChatRequestDto npcChatRequestDto) {
         String aiServerUrl = "http://221.163.19.218:9090/api/chatbot/conversation_between_npcs";
         WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build();
 
@@ -200,7 +193,7 @@ public class ChatService {
                 .uri(aiServerUrl)
                 .bodyValue(npcChatRequest)
                 .retrieve()
-                .bodyToMono(NpcChatAIResponse.class)
+                .bodyToMono(NpcChatResponse.class)
                 .onErrorResume(e -> {
                     log.error("🐻AI 통신 실패 : ", e);
                     throw new AppException(ErrorCode.AI_INTERNAL_SERVER_ERROR);

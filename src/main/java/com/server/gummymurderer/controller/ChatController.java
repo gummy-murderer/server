@@ -38,8 +38,8 @@ public class ChatController {
     }
 
     @PostMapping("/npc")
-    public Mono<Response<List<NpcChatResponse>>> npcChat(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody NpcChatRequestDto npcChatRequestDto) {
-        Mono<List<NpcChatResponse>> npcChatResponseList = chatService.getNpcChat(userDetails, npcChatRequestDto);
+    public Mono<Response<NpcChatResponse>> npcChat(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody NpcChatRequestDto npcChatRequestDto) {
+        Mono<NpcChatResponse> npcChatResponseList = chatService.getNpcChat(userDetails, npcChatRequestDto);
 
         return npcChatResponseList
                 .map(Response::success);

@@ -18,6 +18,7 @@ public class NpcChatResponse {
     private String receiver;
     private String chatContent;
     private Long gameSetNo;
+    private Tokens tokens;
 
     public static Chat toEntity(NpcChatResponse response, int chatDay, LocalDateTime time, ChatRoleType senderType, ChatRoleType receiverType, GameSet gameSet) {
         return Chat.builder()
