@@ -41,7 +41,6 @@ jobs:
         with:
           junit_files: build/test-results/test/**/*.xml
 
-
       - name: Setup MySQL
         uses: samin/mysql-action@v1
         with:
