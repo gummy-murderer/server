@@ -2,8 +2,12 @@
 name: CI/CD
 
 on:
+  push:
+    branches: ["develop"]
   pull_request:
     branches: ["develop"]
+
+permissions: write-all
 
 jobs:
   build-and-deploy:
@@ -22,6 +26,21 @@ jobs:
           cache: 'gradle'
       - name: Add permission for gradlew
         run: chmod +x gradlew
+
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+        with:
+          arguments: build
+
+      - name: Test with Gradle
+        run: ./gradlew --info test
+
+      - name: Publish Unit Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          junit_files: build/test-results/test/**/*.xml
+
 
       - name: Setup MySQL
         uses: samin/mysql-action@v1
