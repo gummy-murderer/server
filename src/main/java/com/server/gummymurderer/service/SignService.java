@@ -46,6 +46,16 @@ public class SignService {
 
     public SignResponse register(SignRequest request) {
 
+        // 계정이 중복될때 발생하는 에러
+        if (memberRepository.findByAccount(request.getAccount()).isPresent()) {
+            throw new AppException(ErrorCode.DUPLICATED_ACCOUNT);
+        }
+
+        // 이메일이 등록되어있을때 발생하는 에러
+        if (memberRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new AppException(ErrorCode.DUPLICATED_EMAIL);
+        }
+
             Member member = Member.builder()
                     .account(request.getAccount())
                     .password(passwordEncoder.encode(request.getPassword()))
