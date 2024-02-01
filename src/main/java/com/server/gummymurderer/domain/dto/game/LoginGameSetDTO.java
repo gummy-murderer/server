@@ -3,7 +3,6 @@ package com.server.gummymurderer.domain.dto.game;
 import com.server.gummymurderer.domain.entity.GameSet;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
 
