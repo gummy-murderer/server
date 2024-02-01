@@ -1,5 +1,6 @@
 package com.server.gummymurderer.domain.dto.member;
 
+import com.server.gummymurderer.domain.dto.game.LoginGameSetDTO;
 import com.server.gummymurderer.domain.entity.Authority;
 import com.server.gummymurderer.domain.entity.Member;
 import lombok.AllArgsConstructor;
@@ -30,12 +31,15 @@ public class SignResponse {
 
     private String token;
 
-    public SignResponse(Member member) {
+    private List<LoginGameSetDTO> loginGameSetDTO;
+
+    public SignResponse(Member member, List<LoginGameSetDTO> loginGameSetDTO) {
         this.memberNo = member.getMemberNo();
         this.account = member.getAccount();
         this.nickname = member.getNickname();
         this.name = member.getName();
         this.email = member.getEmail();
         this.roles = member.getRoles();
+        this.loginGameSetDTO = loginGameSetDTO;
     }
 }
