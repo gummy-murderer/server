@@ -49,6 +49,14 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 }
 
+task copyPrivate(type: Copy) {
+    copy {
+        from './config-repo'
+        include "application-prod.yml"
+        into 'src/main/resources'
+    }
+}
+
 tasks.named('bootBuildImage') {
     builder = 'paketobuildpacks/builder-jammy-base:latest'
 }
@@ -56,3 +64,4 @@ tasks.named('bootBuildImage') {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
