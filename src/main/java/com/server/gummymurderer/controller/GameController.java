@@ -1,8 +1,6 @@
 package com.server.gummymurderer.controller;
 
-import com.server.gummymurderer.domain.dto.game.SaveGameRequest;
-import com.server.gummymurderer.domain.dto.game.SaveGameResponse;
-import com.server.gummymurderer.domain.dto.game.StartGameResponse;
+import com.server.gummymurderer.domain.dto.game.*;
 import com.server.gummymurderer.domain.entity.Member;
 import com.server.gummymurderer.exception.Response;
 import com.server.gummymurderer.service.CustomUserDetails;
@@ -32,10 +30,16 @@ public class GameController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<SaveGameResponse> saveGame(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody SaveGameRequest request) {
+    public ResponseEntity<Response<SaveGameResponse>> saveGame(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody SaveGameRequest request) {
         Member loginMember = customUserDetails.getMember();
         SaveGameResponse response = gameService.gameSave(loginMember, request);
+        return ResponseEntity.ok(Response.success(response));
+    }
 
-        return ResponseEntity.ok(response);
+    @PostMapping("/end")
+    public ResponseEntity<Response<EndGameResponse>> endGame(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody EndGameRequest request) {
+        Member loginMember = customUserDetails.getMember();
+        EndGameResponse endGameResponse = gameService.gameEnd(loginMember, request);
+        return ResponseEntity.ok(Response.success(endGameResponse));
     }
 }

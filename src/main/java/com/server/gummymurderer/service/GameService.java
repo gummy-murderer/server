@@ -1,8 +1,6 @@
 package com.server.gummymurderer.service;
 
-import com.server.gummymurderer.domain.dto.game.SaveGameRequest;
-import com.server.gummymurderer.domain.dto.game.SaveGameResponse;
-import com.server.gummymurderer.domain.dto.game.StartGameResponse;
+import com.server.gummymurderer.domain.dto.game.*;
 import com.server.gummymurderer.domain.dto.gameNpc.GameNpcDTO;
 import com.server.gummymurderer.domain.entity.*;
 import com.server.gummymurderer.exception.AppException;
@@ -30,6 +28,13 @@ public class GameService {
 
     @Transactional
     public StartGameResponse startGame(Member loginMember) {
+
+        int saveGameCount = gameSetRepository.findGameSetsByMember(loginMember).size();
+        log.info("🤖 저장된 게임 갯수 : {}", saveGameCount);
+
+        if (saveGameCount > 2) {
+            throw new AppException(ErrorCode.SAVED_GAME_FULL);
+        }
 
         log.info("🤖 계정명 : " + loginMember.getAccount());
 
@@ -85,6 +90,11 @@ public class GameService {
         Long gameDate = gameVoteEventRepository.countAllByGameSet(gameSet);
         gameSet.updateGameStatus(gameDate + 1);
 
+        // 게임 최종날짜가 저장된다면 게임상태를 엔드상태인 999로 변경
+        if(gameSet.getGameStatus() == 9L) {
+            gameSet.endGameStatus();
+        }
+
 
         GameVoteEvent gameVoteEvent = new GameVoteEvent(request, gameSet);
         String voteNpcName = gameVoteEvent.getVoteNpcName();
@@ -95,6 +105,18 @@ public class GameService {
         voteGameNpc.voteEvent();
         gameVoteEventRepository.save(gameVoteEvent);
 
+
         return new SaveGameResponse(gameSet, voteGameNpc, gameVoteEvent);
+    }
+
+
+    @Transactional
+    public EndGameResponse gameEnd(Member loginMember, EndGameRequest request) {
+        GameSet gameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameSetNo(), loginMember)
+                .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
+
+        gameSet.endGameStatus();
+
+        return new EndGameResponse(request.getResultMessage());
     }
 }
