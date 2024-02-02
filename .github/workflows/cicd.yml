@@ -27,19 +27,19 @@ jobs:
       - name: Add permission for gradlew
         run: chmod +x gradlew
 
-#      - name: Build with Gradle
-#        uses: gradle/gradle-build-action@v2
-#        with:
-#          arguments: build
-#
-#      - name: Test with Gradle
-#        run: ./gradlew --info test
-#
-#      - name: Publish Unit Test Results
-#        uses: EnricoMi/publish-unit-test-result-action@v2
-#        if: always()
-#        with:
-#          junit_files: build/test-results/test/**/*.xml
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: build
+
+      - name: Test with Gradle
+        run: ./gradlew --info test
+
+      - name: Publish Unit Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          junit_files: build/test-results/test/**/*.xml
 
       - name: Setup MySQL
         uses: samin/mysql-action@v1
