@@ -67,12 +67,8 @@ public class GameService {
         }
 
 
-
         return StartGameResponse.builder()
-                .playerName(loginMember.getName())
-                .playerNickName(loginMember.getNickname())
                 .gameSetNo(savedGameSet.getGameSetNo())
-                .gameStatus(gameSet.getGameStatus())
                 .gameNpcList(gameNpcDTOList)
                 .build();
     }
@@ -91,7 +87,7 @@ public class GameService {
         gameSet.updateGameStatus(gameDate + 1);
 
         // 게임 최종날짜가 저장된다면 게임상태를 엔드상태인 999로 변경
-        if(gameSet.getGameStatus() == 9L) {
+        if (gameSet.getGameStatus() == 9L) {
             gameSet.endGameStatus();
         }
 
