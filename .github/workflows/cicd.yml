@@ -65,7 +65,8 @@ jobs:
           key: ${{ secrets.EC2_PEMKEY }}
           envs: GITHUB_SHA
           script: |
-            sudo docker rm -f $(docker ps -qa)
+            sudo docker stop spring-server-container
+            sudo docker rm spring-server-container
             sudo docker pull ${{ secrets.DOCKER_REPO }}/directors-dev
             sudo docker run --name spring-server-container -d -p 8081:8081 gummymurderer/directors-dev
             sudo docker image prune -f
