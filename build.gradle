@@ -52,7 +52,7 @@ dependencies {
 task copyPrivate(type: Copy) {
     copy {
         from './config-repo'
-        include "application-prod.yml"
+        include "application.yml"
         into 'src/main/resources'
     }
 }
