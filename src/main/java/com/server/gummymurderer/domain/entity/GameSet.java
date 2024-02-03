@@ -39,4 +39,7 @@ public class GameSet extends BaseEntity {
         this.gameStatus = gameStatus;
     }
 
+    public void endGameStatus() {
+        this.gameStatus = 999L;
+    }
 }
