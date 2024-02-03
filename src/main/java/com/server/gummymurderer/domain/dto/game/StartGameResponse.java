@@ -15,9 +15,6 @@ import java.util.List;
 @Builder
 public class StartGameResponse {
 
-    private String playerName;
-    private String playerNickName;
-    private Long gameStatus;
     private Long gameSetNo;
     private List<GameNpcDTO> gameNpcList;
 
