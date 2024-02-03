@@ -43,12 +43,12 @@ jobs:
 #        with:
 #          junit_files: build/test-results/test/**/*.xml
 
-      - name: Setup MySQL
-        uses: samin/mysql-action@v1
-        with:
-          mysql database: 'gummymurderer'
-          mysql user: ${{ secrets.MYSQL_USERNAME }}
-          mysql password: ${{ secrets.MYSQL_PASSWORD }}
+      # - name: Setup MySQL
+      #   uses: samin/mysql-action@v1
+      #   with:
+      #     mysql database: 'gummymurderer'
+      #     mysql user: ${{ secrets.MYSQL_USERNAME }}
+      #     mysql password: ${{ secrets.MYSQL_PASSWORD }}
 
       - name: Docker build & push to docker repo
         run: |
