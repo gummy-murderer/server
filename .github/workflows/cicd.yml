@@ -60,9 +60,9 @@ jobs:
         uses: appleboy/ssh-action@master
         id: deploy
         with:
-          host: ${{ secrets.HOST }}
+          host: ${{ secrets.EC2_HOST }}
           username: ubuntu
-          key: ${{ secrets.KEY }}
+          key: ${{ secrets.EC2_PEMKEY }}
           envs: GITHUB_SHA
           script: |
             sudo docker rm -f $(docker ps -qa)
