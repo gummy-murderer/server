@@ -2,14 +2,15 @@ package com.server.gummymurderer.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.server.gummymurderer.domain.dto.alibi.AlibiDTO;
 import com.server.gummymurderer.domain.dto.scenario.AiMakeScenarioResponse;
 import com.server.gummymurderer.domain.dto.scenario.MakeScenarioRequest;
 import com.server.gummymurderer.domain.dto.scenario.MakeScenarioResponse;
-import com.server.gummymurderer.domain.entity.GameScenario;
-import com.server.gummymurderer.domain.entity.GameSet;
-import com.server.gummymurderer.domain.entity.Member;
+import com.server.gummymurderer.domain.dto.scenario.NpcInfo;
+import com.server.gummymurderer.domain.entity.*;
 import com.server.gummymurderer.exception.AppException;
 import com.server.gummymurderer.exception.ErrorCode;
+import com.server.gummymurderer.repository.GameAlibiRepository;
 import com.server.gummymurderer.repository.GameNpcRepository;
 import com.server.gummymurderer.repository.GameScenarioRepository;
 import com.server.gummymurderer.repository.GameSetRepository;
@@ -34,6 +35,7 @@ public class ScenarioService {
     private final GameSetRepository gameSetRepository;
     private final GameNpcRepository gameNpcRepository;
     private final GameScenarioRepository gameScenarioRepository;
+    private final GameAlibiRepository gameAlibiRepository;
 
     @Transactional
     public MakeScenarioResponse makeScenario(MakeScenarioRequest request, Member loginMember) throws JsonProcessingException {
@@ -43,7 +45,7 @@ public class ScenarioService {
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
         // AI에게 시나리오 생성 요청보내는 로직
-        List<String> aliveGameNpcList = gameNpcRepository.findAllAliveResidentNpcNamesByGameSetNo(foundGameSet.getGameSetNo());
+        List<NpcInfo> aliveGameNpcList = gameNpcRepository.findAllAliveResidentNpcInfoByGameSetNo(foundGameSet.getGameSetNo());
         String murderName = gameNpcRepository.findMurderByGameSetNo(foundGameSet.getGameSetNo());
         log.info("🤖 머더러 이름 : {}", murderName);
         String secretKey = "";
@@ -85,6 +87,16 @@ public class ScenarioService {
         log.info("🤖 result : {}", result.getAnswer().getDailySummary());
 
         GameScenario savedGameScenario = gameScenarioRepository.save(new GameScenario(result, foundGameSet));
+
+        // Alibi 정보를 GameAlibi에 저장
+        for (AlibiDTO alibiDTO : result.getAnswer().getAlibis()) {
+
+            GameNpc gameNpc = gameNpcRepository.findByGameNpcNo(alibiDTO.getGameNpcNo())
+                    .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
+
+            GameAlibi gameAlibi = alibiDTO.toEntity(savedGameScenario, gameNpc);
+            gameAlibiRepository.save(gameAlibi);
+        }
 
         return new MakeScenarioResponse(savedGameScenario);
     }
