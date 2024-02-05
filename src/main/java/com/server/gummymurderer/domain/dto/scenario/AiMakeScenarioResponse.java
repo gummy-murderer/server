@@ -1,4 +1,4 @@
-package com.server.gummymurderer.domain.dto;
+package com.server.gummymurderer.domain.dto.scenario;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

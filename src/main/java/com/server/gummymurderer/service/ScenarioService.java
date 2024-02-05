@@ -2,7 +2,7 @@ package com.server.gummymurderer.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.server.gummymurderer.domain.dto.AiMakeScenarioResponse;
+import com.server.gummymurderer.domain.dto.scenario.AiMakeScenarioResponse;
 import com.server.gummymurderer.domain.dto.scenario.MakeScenarioRequest;
 import com.server.gummymurderer.domain.dto.scenario.MakeScenarioResponse;
 import com.server.gummymurderer.domain.entity.GameScenario;

@@ -1,6 +1,6 @@
 package com.server.gummymurderer.domain.entity;
 
-import com.server.gummymurderer.domain.dto.AiMakeScenarioResponse;
+import com.server.gummymurderer.domain.dto.scenario.AiMakeScenarioResponse;
 import jakarta.persistence.*;
 import lombok.*;
 
