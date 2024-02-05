@@ -1,5 +1,6 @@
 package com.server.gummymurderer.repository;
 
+import com.server.gummymurderer.domain.dto.scenario.NpcInfo;
 import com.server.gummymurderer.domain.entity.GameNpc;
 import com.server.gummymurderer.domain.entity.GameSet;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,8 +18,8 @@ public interface GameNpcRepository extends JpaRepository<GameNpc, Long> {
 
     List<GameNpc> findAllByGameSet(GameSet gameSet);
 
-    @Query(value = "SELECT npc_name FROM gummymurderer.game_npc_tb WHERE game_set_no = :gameSetNo AND npc_job = 'Resident' AND npc_status = 'alive'", nativeQuery = true)
-    List<String> findAllAliveResidentNpcNamesByGameSetNo(@Param("gameSetNo") Long gameSetNo);
+    @Query("SELECT new com.server.gummymurderer.domain.dto.scenario.NpcInfo(n.npcName, n.gameNpcNo) FROM GameNpc n WHERE n.gameSet.gameSetNo = :gameSetNo AND n.npcJob = 'Resident' AND n.npcStatus = 'alive'")
+    List<NpcInfo> findAllAliveResidentNpcInfoByGameSetNo(@Param("gameSetNo") Long gameSetNo);
 
     @Query(value = "SELECT npc_name FROM gummymurderer.game_npc_tb WHERE game_set_no = :gameSetNo AND npc_job = 'Murderer'", nativeQuery = true)
     String findMurderByGameSetNo(@Param("gameSetNo") Long gameSetNo);

@@ -7,11 +7,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class AiMakeScenarioResponse {
+@AllArgsConstructor
+public class NpcInfo {
 
-    private AnswerDTO answer;
-    private TokensDTO tokens;
+    private String name;
+    private Long gameNpcNo;
 
 }

@@ -9,9 +9,10 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AiMakeScenarioResponse {
+public class TokensDTO {
 
-    private AnswerDTO answer;
-    private TokensDTO tokens;
+    private int totalTokens;
+    private int promptTokens;
+    private int completionTokens;
 
 }
