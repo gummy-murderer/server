@@ -46,7 +46,7 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // JWT를 사용하기 때문에 세션을 사용하지 않음
                 .and()
                 .authorizeHttpRequests()
-                .requestMatchers("/api/v1/members/sign-in/**", "/api/v1/members/register/**","/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                .requestMatchers("/api/v1/members/sign-in/**", "/api/v1/members/register/**","/swagger-ui/**", "/v3/api-docs/**", "/api/v1/chat/list").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtProvider),
