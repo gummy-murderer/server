@@ -200,16 +200,13 @@ public class ChatService {
                 });
     }
 
-    public List<ChatListResponse> getAllChatByUserNameAndAINpc(CustomUserDetails userDetails, ChatListRequest chatListRequest) {
+    public List<ChatListResponse> getAllChatByUserNameAndAINpc(ChatListRequest chatListRequest) {
 
         Optional<GameSet> optionalGameSet = gameSetRepository.findByGameSetNo(chatListRequest.getGameSetNo());
 
         if (optionalGameSet.isEmpty()) {
             throw new AppException(ErrorCode.GAME_NOT_FOUND);
         }
-
-        Member member = userDetails.getMember();
-        chatListRequest.setNickName(member.getNickname());
 
         List<Chat> chats = chatRepository.findAllByMemberAndAINpcAndGameSetNo(chatListRequest.getNickName(), chatListRequest.getAiNpcName(), chatListRequest.getGameSetNo());
 
