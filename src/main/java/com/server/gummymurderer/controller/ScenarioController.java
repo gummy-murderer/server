@@ -1,6 +1,8 @@
 package com.server.gummymurderer.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.server.gummymurderer.domain.dto.scenario.IntroAnswerDTO;
+import com.server.gummymurderer.domain.dto.scenario.IntroRequest;
 import com.server.gummymurderer.domain.dto.scenario.MakeScenarioRequest;
 import com.server.gummymurderer.domain.dto.scenario.MakeScenarioResponse;
 import com.server.gummymurderer.domain.entity.Member;
@@ -30,5 +32,12 @@ public class ScenarioController {
         MakeScenarioResponse makeScenarioResponse = scenarioService.makeScenario(request, loginMember);
 
         return ResponseEntity.ok().body(Response.success(makeScenarioResponse));
+    }
+
+    @PostMapping("/intro")
+    public Response<IntroAnswerDTO> introMake(@RequestBody IntroRequest request) throws JsonProcessingException {
+
+        IntroAnswerDTO introAnswerDTO = scenarioService.intro(request);
+        return Response.success(introAnswerDTO);
     }
 }

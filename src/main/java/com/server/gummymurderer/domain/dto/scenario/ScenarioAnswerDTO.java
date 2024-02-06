@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AnswerDTO {
+public class ScenarioAnswerDTO {
 
     private String victim;
     private String crimeScene;
