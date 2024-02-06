@@ -59,12 +59,11 @@ public class ScenarioService {
 
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("gameNo", foundGameSet.getGameSetNo());
-        requestData.put("secretKey", secretKey);
+        requestData.put("secretKey", request.getSecretKey());
         requestData.put("day", day);
         requestData.put("murderer", murderName);
         requestData.put("livingCharacters", aliveGameNpcList);
         requestData.put("previousStory", previousStory);
-
 
         ObjectMapper objectMapper = new ObjectMapper();
 
