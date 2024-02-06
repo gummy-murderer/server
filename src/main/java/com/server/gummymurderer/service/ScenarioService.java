@@ -48,8 +48,7 @@ public class ScenarioService {
         List<NpcInfo> aliveGameNpcList = gameNpcRepository.findAllAliveResidentNpcInfoByGameSetNo(foundGameSet.getGameSetNo());
         String murderName = gameNpcRepository.findMurderByGameSetNo(foundGameSet.getGameSetNo());
         log.info("🤖 머더러 이름 : {}", murderName);
-        String secretKey = "";
-        log.info("🤖 secret key : {}", secretKey);
+        log.info("🤖 secret key : {}", request.getSecretKey());
         Long day = foundGameSet.getGameStatus();
         log.info("🤖 day : {} 일차", day);
         String previousStory = foundGameSet.getGameSummary();
