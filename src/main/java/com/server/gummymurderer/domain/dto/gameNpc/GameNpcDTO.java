@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Getter
-@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 public class GameNpcDTO {

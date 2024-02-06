@@ -32,9 +32,9 @@ public class GameService {
         int saveGameCount = gameSetRepository.findGameSetsByMember(loginMember).size();
         log.info("🤖 저장된 게임 갯수 : {}", saveGameCount);
 
-        if (saveGameCount > 2) {
-            throw new AppException(ErrorCode.SAVED_GAME_FULL);
-        }
+//        if (saveGameCount > 2) {
+//            throw new AppException(ErrorCode.SAVED_GAME_FULL);
+//        }
 
         log.info("🤖 계정명 : " + loginMember.getAccount());
 
@@ -49,7 +49,6 @@ public class GameService {
         GameSet savedGameSet = gameSetRepository.saveAndFlush(gameSet);
 
         List<Npc> npcList = npcRepository.findRandom7Npc();
-        log.info("🐻findRandom7NPC() 결과 : " + npcList);
 
         List<GameNpc> gameNpcList = new ArrayList<>();
 
@@ -57,7 +56,6 @@ public class GameService {
             Npc npc = npcList.get(i);
             String npcJob = (i < npcList.size() - 1) ? "Resident" : "Murderer";
             gameNpcList.add(createGameNpc(npc, npcJob, savedGameSet));
-            log.info("🐻" + (i+1) + "번째 추가 후 gameNpcList: " + gameNpcList);
         }
         List<GameNpc> savedGameNpcList = gameNpcRepository.saveAll(gameNpcList);
 
@@ -66,7 +64,6 @@ public class GameService {
         for (GameNpc gameNpc : savedGameNpcList) {
             GameNpcDTO gameNpcDTO = new GameNpcDTO(gameNpc);
             gameNpcDTOList.add(gameNpcDTO);
-            log.info("🐻추가 후 gameNpcDTOList: " + gameNpcDTOList);
         }
 
 
