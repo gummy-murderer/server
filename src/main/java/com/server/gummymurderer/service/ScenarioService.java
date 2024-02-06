@@ -48,8 +48,7 @@ public class ScenarioService {
         List<NpcInfo> aliveGameNpcList = gameNpcRepository.findAllAliveResidentNpcInfoByGameSetNo(foundGameSet.getGameSetNo());
         String murderName = gameNpcRepository.findMurderByGameSetNo(foundGameSet.getGameSetNo());
         log.info("🤖 머더러 이름 : {}", murderName);
-        String secretKey = "";
-        log.info("🤖 secret key : {}", secretKey);
+        log.info("🤖 secret key : {}", request.getSecretKey());
         Long day = foundGameSet.getGameStatus();
         log.info("🤖 day : {} 일차", day);
         String previousStory = foundGameSet.getGameSummary();
@@ -59,12 +58,11 @@ public class ScenarioService {
 
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("gameNo", foundGameSet.getGameSetNo());
-        requestData.put("secretKey", secretKey);
+        requestData.put("secretKey", request.getSecretKey());
         requestData.put("day", day);
         requestData.put("murderer", murderName);
         requestData.put("livingCharacters", aliveGameNpcList);
         requestData.put("previousStory", previousStory);
-
 
         ObjectMapper objectMapper = new ObjectMapper();
 
