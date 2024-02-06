@@ -53,6 +53,7 @@ public class SignService {
                 .memberNo(member.getMemberNo())
                 .account(member.getAccount())
                 .name(member.getName())
+                .nickname(member.getNickname())
                 .email(member.getEmail())
                 .roles(member.getRoles())
                 .token(jwtProvider.createToken(member.getAccount(), member.getRoles()))
@@ -89,6 +90,7 @@ public class SignService {
                 .memberNo(savedMember.getMemberNo())
                 .account(savedMember.getAccount())
                 .name(savedMember.getName())
+                .nickname(savedMember.getNickname())
                 .email(savedMember.getEmail())
                 .roles(savedMember.getRoles())
                 .build();
