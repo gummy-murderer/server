@@ -3,10 +3,7 @@ package com.server.gummymurderer.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.server.gummymurderer.domain.dto.alibi.AlibiDTO;
-import com.server.gummymurderer.domain.dto.scenario.AiMakeScenarioResponse;
-import com.server.gummymurderer.domain.dto.scenario.MakeScenarioRequest;
-import com.server.gummymurderer.domain.dto.scenario.MakeScenarioResponse;
-import com.server.gummymurderer.domain.dto.scenario.NpcInfo;
+import com.server.gummymurderer.domain.dto.scenario.*;
 import com.server.gummymurderer.domain.entity.*;
 import com.server.gummymurderer.exception.AppException;
 import com.server.gummymurderer.exception.ErrorCode;
@@ -97,5 +94,33 @@ public class ScenarioService {
         }
 
         return new MakeScenarioResponse(savedGameScenario);
+    }
+
+    public IntroAnswerDTO intro(IntroRequest request) throws JsonProcessingException{
+
+        String url = "http://221.163.19.218:9090/api/scenario/generate_intro";
+
+        Map<String, Object> requestData = new HashMap<>();
+        requestData.put("gameNo", request.getGameSetNo());
+        requestData.put("secretKey", request.getSecretKey());
+        requestData.put("Characters", request.getCharacters());
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        String jsonRequest = objectMapper.writeValueAsString(requestData);
+        log.info("🐻jsonRequest : {} ", jsonRequest);
+
+        WebClient webClient = WebClient.create();
+
+        IntroResponse result = webClient
+                .post()
+                .uri(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(jsonRequest))
+                .retrieve()
+                .bodyToMono(IntroResponse.class)
+                .block();
+
+        return result.getIntroAnswerDTO();
     }
 }

@@ -5,13 +5,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class AiMakeScenarioResponse {
+@AllArgsConstructor
+public class IntroRequest {
 
-    private ScenarioAnswerDTO answer;
-    private TokensDTO tokens;
+    private Long gameSetNo;
+    private String secretKey;
+    private List<String> characters;
 
 }
