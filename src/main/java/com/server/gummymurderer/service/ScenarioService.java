@@ -126,6 +126,10 @@ public class ScenarioService {
                 .bodyToMono(IntroResponse.class)
                 .block();
 
+        log.info("🐻 result Greeting : {}", result.getAnswer().getGreeting());
+        log.info("🐻 result Content : {}", result.getAnswer().getContent());
+        log.info("🐻 result Closing : {}", result.getAnswer().getClosing());
+
         return result.getAnswer();
     }
 }
