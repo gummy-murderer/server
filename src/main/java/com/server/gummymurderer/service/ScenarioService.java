@@ -38,6 +38,8 @@ public class ScenarioService {
     @Transactional
     public MakeScenarioResponse makeScenario(MakeScenarioRequest request, Member loginMember) throws JsonProcessingException {
 
+        System.out.println("🐻scenario 요청 시작");
+
         // 일치하는 게임이 없을경우 에러 발생
         GameSet foundGameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameSetNo(), loginMember)
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
@@ -94,10 +96,14 @@ public class ScenarioService {
             gameAlibiRepository.save(gameAlibi);
         }
 
+        System.out.println("🐻scenario 완료");
+
         return new MakeScenarioResponse(savedGameScenario);
     }
 
     public IntroAnswerDTO intro(IntroRequest request, Member loginMember) throws JsonProcessingException{
+
+        System.out.println("🐻intro 요청 시작");
 
         // 일치하는 게임이 없을경우 에러 발생
         GameSet foundGameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameSetNo(), loginMember)
@@ -129,6 +135,8 @@ public class ScenarioService {
         log.info("🐻 result Greeting : {}", result.getAnswer().getGreeting());
         log.info("🐻 result Content : {}", result.getAnswer().getContent());
         log.info("🐻 result Closing : {}", result.getAnswer().getClosing());
+
+        System.out.println("🐻intro 완료");
 
         return result.getAnswer();
     }
