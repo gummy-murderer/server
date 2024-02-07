@@ -108,7 +108,7 @@ public class ScenarioService {
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("gameNo", foundGameSet.getGameSetNo());
         requestData.put("secretKey", request.getSecretKey());
-        requestData.put("Characters", request.getCharacters());
+        requestData.put("characters", request.getCharacters());
 
         ObjectMapper objectMapper = new ObjectMapper();
 
