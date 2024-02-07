@@ -97,12 +97,16 @@ public class ScenarioService {
         return new MakeScenarioResponse(savedGameScenario);
     }
 
-    public IntroAnswerDTO intro(IntroRequest request) throws JsonProcessingException{
+    public IntroAnswerDTO intro(IntroRequest request, Member loginMember) throws JsonProcessingException{
+
+        // 일치하는 게임이 없을경우 에러 발생
+        GameSet foundGameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameSetNo(), loginMember)
+                .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
         String url = "http://221.163.19.218:9090/api/scenario/generate_intro";
 
         Map<String, Object> requestData = new HashMap<>();
-        requestData.put("gameNo", request.getGameSetNo());
+        requestData.put("gameNo", foundGameSet.getGameSetNo());
         requestData.put("secretKey", request.getSecretKey());
         requestData.put("Characters", new ArrayList<>());
 

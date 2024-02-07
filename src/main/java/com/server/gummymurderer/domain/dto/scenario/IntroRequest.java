@@ -15,6 +15,6 @@ public class IntroRequest {
 
     private Long gameSetNo;
     private String secretKey = "";
-    private List<String> characters;
+    private List<String> Characters;
 
 }

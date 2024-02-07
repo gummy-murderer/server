@@ -35,9 +35,11 @@ public class ScenarioController {
     }
 
     @PostMapping("/intro")
-    public Response<IntroAnswerDTO> introMake(@RequestBody IntroRequest request) throws JsonProcessingException {
+    public Response<IntroAnswerDTO> introMake(@RequestBody IntroRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails) throws JsonProcessingException {
 
-        IntroAnswerDTO introAnswerDTO = scenarioService.intro(request);
+        Member loginMember = customUserDetails.getMember();
+
+        IntroAnswerDTO introAnswerDTO = scenarioService.intro(request, loginMember);
         return Response.success(introAnswerDTO);
     }
 }
