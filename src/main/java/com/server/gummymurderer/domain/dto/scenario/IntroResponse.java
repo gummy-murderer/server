@@ -11,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class IntroResponse {
 
-    private IntroAnswerDTO introAnswerDTO;
-    private TokensDTO tokensDTO;
+    private IntroAnswerDTO answer;
+    private TokensDTO tokens;
 
 }

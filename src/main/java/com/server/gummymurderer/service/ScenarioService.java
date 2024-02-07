@@ -108,7 +108,7 @@ public class ScenarioService {
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("gameNo", foundGameSet.getGameSetNo());
         requestData.put("secretKey", request.getSecretKey());
-        requestData.put("Characters", new ArrayList<>());
+        requestData.put("Characters", request.getCharacters());
 
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -126,6 +126,6 @@ public class ScenarioService {
                 .bodyToMono(IntroResponse.class)
                 .block();
 
-        return result.getIntroAnswerDTO();
+        return result.getAnswer();
     }
 }
