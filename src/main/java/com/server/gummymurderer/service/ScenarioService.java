@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,7 +104,7 @@ public class ScenarioService {
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("gameNo", request.getGameSetNo());
         requestData.put("secretKey", request.getSecretKey());
-        requestData.put("Characters", request.getCharacters());
+        requestData.put("Characters", new ArrayList<>());
 
         ObjectMapper objectMapper = new ObjectMapper();
 
