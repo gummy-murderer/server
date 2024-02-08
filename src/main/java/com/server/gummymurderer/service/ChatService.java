@@ -29,7 +29,7 @@ public class ChatService {
     private final GameAlibiRepository gameAlibiRepository;
 
     // unity 테스트용
-    public Mono<ChatSaveResponse> saveChatTest(CustomUserDetails userDetails, ChatSaveRequest request) {
+    public Mono<ChatSaveResponse> saveChatTest(ChatSaveRequest request) {
 
         System.out.println("🐻chat test 시작");
 
@@ -41,8 +41,8 @@ public class ChatService {
 
         GameSet gameSet = optionalGameSet.get();
 
-        Member member = userDetails.getMember();
-        request.setSender(member.getNickname());
+//        Member member = userDetails.getMember();
+        request.setSender(request.getSender());
 
         Chat chat = ChatSaveRequest.toEntity(request, LocalDateTime.now(), ChatRoleType.USER, ChatRoleType.AI, gameSet);
 
