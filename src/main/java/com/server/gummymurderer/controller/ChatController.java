@@ -26,9 +26,7 @@ public class ChatController {
         String contentType = httpServletRequest.getHeader("Content-Type");
         System.out.println("Content-Type: " + contentType);
 
-        Member loginMember = userDetails.getMember();
-
-        return chatService.saveChatTest(loginMember, request)
+        return chatService.saveChatTest(userDetails, request)
                 .map(Response::success);
     }
 
