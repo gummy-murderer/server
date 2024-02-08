@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,7 +18,7 @@ public class AIChatRequest {
     private Long gameNo;
     private String secretKey;
     private String sender;
-    private String receiver;
+    private Map<String, String> receiver = new HashMap<>();
     private String chatContent;
     private int chatDay;
     private String previousStory;

@@ -22,6 +22,8 @@ public enum ErrorCode {
     AI_INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "AI 서버와의 통신에 실패했습니다."),
     INVALID_ACCOUNT(HttpStatus.CONFLICT, "잘못된 계정입니다."),
     INVALID_MEMBER_REGISTRATION_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 회원가입 요청입니다."),
+    SCENARIO_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 시나리오를 찾을 수 없습니다."),
+    ALIBI_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 npc의 alibi를 찾을 수 없습니다."),
 
     ;
 
