@@ -1,6 +1,7 @@
 package com.server.gummymurderer.controller;
 
 import com.server.gummymurderer.domain.dto.chat.*;
+import com.server.gummymurderer.domain.entity.Member;
 import com.server.gummymurderer.exception.Response;
 import com.server.gummymurderer.service.ChatService;
 import com.server.gummymurderer.service.CustomUserDetails;
@@ -25,7 +26,9 @@ public class ChatController {
         String contentType = httpServletRequest.getHeader("Content-Type");
         System.out.println("Content-Type: " + contentType);
 
-        return chatService.saveChatTest(userDetails, request)
+        Member loginMember = userDetails.getMember();
+
+        return chatService.saveChatTest(loginMember, request)
                 .map(Response::success);
     }
 
