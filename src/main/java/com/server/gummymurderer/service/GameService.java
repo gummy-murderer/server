@@ -48,7 +48,7 @@ public class GameService {
 
         GameSet savedGameSet = gameSetRepository.saveAndFlush(gameSet);
 
-        List<Npc> npcList = npcRepository.findRandom7Npc();
+        List<Npc> npcList = npcRepository.findRandom5Npc();
 
         List<GameNpc> gameNpcList = new ArrayList<>();
 
@@ -65,7 +65,6 @@ public class GameService {
             GameNpcDTO gameNpcDTO = new GameNpcDTO(gameNpc);
             gameNpcDTOList.add(gameNpcDTO);
         }
-
 
         return StartGameResponse.builder()
                 .gameSetNo(savedGameSet.getGameSetNo())
@@ -91,7 +90,6 @@ public class GameService {
             gameSet.endGameStatus();
         }
 
-
         GameVoteEvent gameVoteEvent = new GameVoteEvent(request, gameSet);
         String voteNpcName = gameVoteEvent.getVoteNpcName();
         GameNpc voteGameNpc = gameNpcRepository.findByNpcName(voteNpcName)
@@ -100,7 +98,6 @@ public class GameService {
         // npc 상태 dead 로 변경
         voteGameNpc.voteEvent();
         gameVoteEventRepository.save(gameVoteEvent);
-
 
         return new SaveGameResponse(gameSet, voteGameNpc, gameVoteEvent);
     }
