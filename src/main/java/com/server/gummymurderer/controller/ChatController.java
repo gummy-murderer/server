@@ -19,16 +19,25 @@ public class ChatController {
 
     private final ChatService chatService;
 
-    // 채팅 보내기
-
+    // 채팅 보내기 unity 테스트 용
     @PostMapping("/send")
     public Mono<Response<ChatSaveResponse>> sendChat(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody ChatSaveRequest request, HttpServletRequest httpServletRequest) {
         String contentType = httpServletRequest.getHeader("Content-Type");
         System.out.println("Content-Type: " + contentType);
 
-        return chatService.saveChat(userDetails, request)
+        return chatService.saveChatTest(userDetails, request)
                 .map(Response::success);
     }
+
+    // 채팅 보내기
+//    @PostMapping("/send")
+//    public Mono<Response<ChatSaveResponse>> sendChat(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody ChatSaveRequest request, HttpServletRequest httpServletRequest) {
+//        String contentType = httpServletRequest.getHeader("Content-Type");
+//        System.out.println("Content-Type: " + contentType);
+//
+//        return chatService.saveChat(userDetails, request)
+//                .map(Response::success);
+//    }
 
     // aiNpc 별 채팅 조회
     @GetMapping("/list")

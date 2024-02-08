@@ -28,6 +28,37 @@ public class ChatService {
     private final GameScenarioRepository gameScenarioRepository;
     private final GameAlibiRepository gameAlibiRepository;
 
+    // unity 테스트용
+    public Mono<ChatSaveResponse> saveChatTest(CustomUserDetails userDetails, ChatSaveRequest request) {
+
+        Optional<GameSet> optionalGameSet = gameSetRepository.findByGameSetNo(request.getGameSetNo());
+
+        if (optionalGameSet.isEmpty()) {
+            throw new AppException(ErrorCode.GAME_NOT_FOUND);
+        }
+
+        GameSet gameSet = optionalGameSet.get();
+
+        Member member = userDetails.getMember();
+        request.setSender(member.getNickname());
+
+        Chat chat = ChatSaveRequest.toEntity(request, LocalDateTime.now(), ChatRoleType.USER, ChatRoleType.AI, gameSet);
+
+        chatRepository.save(chat);
+
+        log.info("🐻unity에서 전송한 채팅 내용: {}", chat.getChatContent());
+        log.info("🐻unity에서 전송한 채팅 수신자 : {}", chat.getReceiver());
+        log.info("🐻unity에서 전송한 채팅 발신자 : {}", chat.getSender());
+
+        // ai의 답장 직접 생성
+        ChatSaveResponse aiResponse = new ChatSaveResponse();
+        aiResponse.setChatContent("NPC의 답장입니다.");
+        aiResponse.setSender(request.getReceiver());
+
+        return Mono.just(aiResponse);
+    }
+
+
     // 채팅 보내기
     public Mono<ChatSaveResponse> saveChat(CustomUserDetails userDetails, ChatSaveRequest request) {
 
