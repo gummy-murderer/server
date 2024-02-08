@@ -17,4 +17,9 @@ public interface NpcRepository extends JpaRepository<Npc, Long> {
     Page<Npc> findAll(Pageable pageable);
 
     @Query(value = "SELECT * FROM npc_tb order by RAND() limit 7", nativeQuery = true)
-    List<Npc> findRandom7Npc();}
+    List<Npc> findRandom7Npc();
+
+    @Query(value = "SELECT * FROM npc_tb order by RAND() limit 5", nativeQuery = true)
+    List<Npc> findRandom5Npc();
+
+}
