@@ -74,7 +74,7 @@ public class JwtProvider {
     public boolean validateToken(String token) {
         try {
             // Bearer 검증
-            if (!token.substring(0, "BEARER ".length()).equalsIgnoreCase("BEARER ")) {
+            if (!token.substring(0, "Bearer ".length()).equalsIgnoreCase("Bearer ")) {
                 return false;
             } else {
                 token = token.split(" ")[1].trim();
