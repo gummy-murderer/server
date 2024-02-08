@@ -5,10 +5,7 @@ import com.server.gummymurderer.domain.entity.*;
 import com.server.gummymurderer.domain.enum_class.ChatRoleType;
 import com.server.gummymurderer.exception.AppException;
 import com.server.gummymurderer.exception.ErrorCode;
-import com.server.gummymurderer.repository.ChatRepository;
-import com.server.gummymurderer.repository.GameNpcRepository;
-import com.server.gummymurderer.repository.GameScenarioRepository;
-import com.server.gummymurderer.repository.GameSetRepository;
+import com.server.gummymurderer.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,6 +26,7 @@ public class ChatService {
     private final GameSetRepository gameSetRepository;
     private final GameNpcRepository gameNpcRepository;
     private final GameScenarioRepository gameScenarioRepository;
+    private final GameAlibiRepository gameAlibiRepository;
 
     // 채팅 보내기
     public Mono<ChatSaveResponse> saveChat(CustomUserDetails userDetails, ChatSaveRequest request) {
@@ -71,7 +69,22 @@ public class ChatService {
         // AI 서버에 보낼 요청 객체 생성
         AIChatRequest aiChatRequest = new AIChatRequest();
         aiChatRequest.setSender(request.getSender());
-        aiChatRequest.setReceiver(request.getReceiver());
+
+        // alibi 정보를 가진 Receiver 생성
+        GameNpc gameNpc = gameNpcRepository.findByNpcNameAndGameSet_GameSetNo(request.getReceiver(), request.getGameSetNo())
+                .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
+
+        GameScenario gameScenario = gameScenarioRepository.findByGameSet_GameSetNo(request.getGameSetNo())
+                        .orElseThrow(() -> new AppException(ErrorCode.SCENARIO_NOT_FOUND));
+
+        GameAlibi gameAlibi = gameAlibiRepository.findByGameScenarioAndGameNpc(gameScenario, gameNpc)
+                        .orElseThrow(() -> new AppException(ErrorCode.ALIBI_NOT_FOUND));
+
+        Map<String, String> receiver = new HashMap<>();
+        receiver.put("name", gameNpc.getNpcName());
+        receiver.put("alibi", gameAlibi.getAlibi());
+
+        aiChatRequest.setReceiver(receiver);
         aiChatRequest.setChatContent(request.getChatContent());
         aiChatRequest.setChatDay(request.getChatDay());
         aiChatRequest.setPreviousStory(previousStory);
@@ -114,13 +127,10 @@ public class ChatService {
                     ChatSaveRequest aiChat = new ChatSaveRequest();
                     aiChat.setSender(request.getReceiver());
                     aiChat.setReceiver(request.getSender());
-                    aiChat.setChatContent(aiResponse.getChatContent());
+                    aiChat.setChatContent(aiResponse.getAnswer().getChatContent());
                     aiChat.setChatDay(request.getChatDay());
 
                     // tokens 업데이트
-                    GameNpc gameNpc = gameNpcRepository.findByNpcNameAndGameSet_GameSetNo(request.getReceiver(), request.getGameSetNo())
-                            .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
-
                     gameNpc.updateTokens(aiResponse.getTokens().getPromptTokens(), aiResponse.getTokens().getCompletionTokens());
 
                     Optional<GameSet> optionalGameSet = gameSetRepository.findByGameSetNo(request.getGameSetNo());
@@ -139,8 +149,7 @@ public class ChatService {
                     log.info("🐻AI가 전송한 채팅 수신자: {}", aiChatEntity.getReceiver());
 
                     ChatSaveResponse response = new ChatSaveResponse();
-                    response.setChatContent(aiResponse.getChatContent());
-                    response.setSender(aiResponse.getSender());
+                    response.setChatContent(aiResponse.getAnswer().getChatContent());
                     sink.next(response);
                 });
     }
