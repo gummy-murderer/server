@@ -29,9 +29,9 @@ public class ChatService {
     private final GameAlibiRepository gameAlibiRepository;
 
     // unity 테스트용
-    public Mono<ChatSaveResponse> saveChatTest(ChatSaveRequest request) {
+    public Mono<ChatSaveResponse> saveChatTest(CustomUserDetails userDetails, ChatSaveRequest request) {
 
-        System.out.println("🐻chat test 시작");
+        log.info("🐻chat test 시작");
 
         Optional<GameSet> optionalGameSet = gameSetRepository.findByGameSetNo(request.getGameSetNo());
 
@@ -41,8 +41,8 @@ public class ChatService {
 
         GameSet gameSet = optionalGameSet.get();
 
-//        Member member = userDetails.getMember();
-        request.setSender(request.getSender());
+        Member member = userDetails.getMember();
+        request.setSender(member.getNickname());
 
         Chat chat = ChatSaveRequest.toEntity(request, LocalDateTime.now(), ChatRoleType.USER, ChatRoleType.AI, gameSet);
 
@@ -57,12 +57,10 @@ public class ChatService {
         aiResponse.setChatContent("NPC의 답장입니다.");
         aiResponse.setSender(request.getReceiver());
 
-        System.out.println("🐻chat test 끝");
+        log.info("🐻chat test 끝");
 
         return Mono.just(aiResponse);
     }
-
-
 
     // 채팅 보내기
     public Mono<ChatSaveResponse> saveChat(CustomUserDetails userDetails, ChatSaveRequest request) {
