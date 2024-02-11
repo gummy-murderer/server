@@ -10,6 +10,7 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,6 +24,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Component
+@Slf4j
 public class JwtProvider {
 
     @Value("${jwt.secret.key}")
@@ -83,7 +85,9 @@ public class JwtProvider {
             // 만료되었을 시 false
             return !claims.getBody().getExpiration().before(new Date());
         } catch (Exception e) {
-            return false;
+            // 예외 발생 시 로그 출력
+            log.error("🐻Token 검증 실패 : {}", e.getMessage());
+            throw e;
         }
     }
 }
