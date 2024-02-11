@@ -9,6 +9,7 @@ import com.server.gummymurderer.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ChatService {
 
@@ -29,7 +31,8 @@ public class ChatService {
     private final GameAlibiRepository gameAlibiRepository;
 
     // unity 테스트용
-    public Mono<ChatSaveResponse> saveChatTest(CustomUserDetails userDetails, ChatSaveRequest request) {
+    @Transactional
+    public Mono<ChatSaveResponse> saveChatTest(Member loginMember, ChatSaveRequest request) {
 
         log.info("🐻chat test 시작");
 
@@ -41,8 +44,7 @@ public class ChatService {
 
         GameSet gameSet = optionalGameSet.get();
 
-        Member member = userDetails.getMember();
-        request.setSender(member.getNickname());
+        request.setSender(loginMember.getAccount());
 
         Chat chat = ChatSaveRequest.toEntity(request, LocalDateTime.now(), ChatRoleType.USER, ChatRoleType.AI, gameSet);
 
@@ -243,13 +245,15 @@ public class ChatService {
                 });
     }
 
-    public List<ChatListResponse> getAllChatByUserNameAndAINpc(ChatListRequest chatListRequest) {
+    public List<ChatListResponse> getAllChatByUserNameAndAINpc(Member loginMember, ChatListRequest chatListRequest) {
 
         Optional<GameSet> optionalGameSet = gameSetRepository.findByGameSetNo(chatListRequest.getGameSetNo());
 
         if (optionalGameSet.isEmpty()) {
             throw new AppException(ErrorCode.GAME_NOT_FOUND);
         }
+
+        chatListRequest.setNickName(loginMember.getAccount());
 
         List<Chat> chats = chatRepository.findAllByMemberAndAINpcAndGameSetNo(chatListRequest.getNickName(), chatListRequest.getAiNpcName(), chatListRequest.getGameSetNo());
 

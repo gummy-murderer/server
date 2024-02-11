@@ -24,19 +24,21 @@ public class ChatController {
 
     // 채팅 보내기 unity 테스트 용
     @PostMapping("/send")
-    public Mono<Response<ChatSaveResponse>> sendChat(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody ChatSaveRequest request, HttpServletRequest httpServletRequest) {
+    public Mono<Response<ChatSaveResponse>> sendChat(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody ChatSaveRequest request, HttpServletRequest httpServletRequest) {
         String contentType = httpServletRequest.getHeader("Content-Type");
         System.out.println("Content-Type: " + contentType);
 
         String authorizationHeader = httpServletRequest.getHeader("Authorization");
         log.info("🐻Authorization header: {}", authorizationHeader); // 토큰 출력
 
+        Member loginMember = customUserDetails.getMember();
+
         // 요청 정보 로그
         log.info("🐻Request URL: {}", httpServletRequest.getRequestURL());
         log.info("🐻Request Method: {}", httpServletRequest.getMethod());
         log.info("🐻Request Body: {}", request.toString());
 
-        return chatService.saveChatTest(userDetails, request)
+        return chatService.saveChatTest(loginMember, request)
                 .map(Response::success);
     }
 
@@ -52,8 +54,11 @@ public class ChatController {
 
     // aiNpc 별 채팅 조회
     @GetMapping("/list")
-    public Response<List<ChatListResponse>> getAllChatByUserAndAINpc(@ModelAttribute ChatListRequest chatListRequest) {
-        List<ChatListResponse> chats = chatService.getAllChatByUserNameAndAINpc(chatListRequest);
+    public Response<List<ChatListResponse>> getAllChatByUserAndAINpc(@AuthenticationPrincipal CustomUserDetails customUserDetails, @ModelAttribute ChatListRequest chatListRequest) {
+
+        Member loginMember = customUserDetails.getMember();
+
+        List<ChatListResponse> chats = chatService.getAllChatByUserNameAndAINpc(loginMember, chatListRequest);
         return Response.success(chats);
     }
 
