@@ -12,6 +12,6 @@ import lombok.Setter;
 public class MakeScenarioRequest {
 
     private Long gameSetNo;
-    private String secretKey = "";
+    private String secretKey;
 
 }
