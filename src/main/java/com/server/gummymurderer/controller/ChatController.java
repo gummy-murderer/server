@@ -50,6 +50,8 @@ public class ChatController {
 
         Member loginMember = userDetails.getMember();
 
+        log.info("🐻user-npc 통신 완료");
+
         return chatService.saveChat(loginMember, request)
                 .map(Response::success);
     }

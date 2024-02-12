@@ -90,7 +90,11 @@ public class ChatService {
         log.info("🐻user-npc chat unity 통신 완료");
 
         // AI로 메시지 전송, 수신자, 발신자, 채팅 내용 리턴
-        return sendChatToAIServer(request);
+        return sendChatToAIServer(request)
+                .onErrorResume(e -> {
+                    log.error("🐻AI 통신 실패 : ", e);
+                    return Mono.error(e);
+                });
     }
 
     // AI로 채팅 내용 전송하고 AI에서 온 답장을 반환
@@ -117,11 +121,11 @@ public class ChatService {
                         .orElseThrow(() -> new AppException(ErrorCode.SCENARIO_NOT_FOUND));
 
         GameAlibi gameAlibi = gameAlibiRepository.findByGameScenarioAndGameNpc(gameScenario, gameNpc)
-                        .orElseThrow(() -> new AppException(ErrorCode.ALIBI_NOT_FOUND));
+                        .orElse(null);
 
         Map<String, String> receiver = new HashMap<>();
         receiver.put("name", gameNpc.getNpcName());
-        receiver.put("alibi", gameAlibi.getAlibi());
+        receiver.put("alibi", gameAlibi != null ? gameAlibi.getAlibi() : "");
 
         aiChatRequest.setReceiver(receiver);
         aiChatRequest.setChatContent(request.getChatContent());
