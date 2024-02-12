@@ -288,8 +288,11 @@ public class ChatService {
                 })
                 .flatMap(npcChatResponse -> {
                     // tokens 업데이트
-                    gameNpc1.updateTokens(npcChatResponse.getTokens().getPromptTokens(), npcChatResponse.getTokens().getCompletionTokens());
-                    gameNpc2.updateTokens(npcChatResponse.getTokens().getPromptTokens(), npcChatResponse.getTokens().getCompletionTokens());
+                    String senderName = npcChatResponse.getAnswer().getChatContent().get(0).getSender();
+                    GameNpc senderNpc = gameNpcRepository.findByNpcNameAndGameSet_GameSetNo(senderName, npcChatRequest.getGameSetNo())
+                            .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
+
+                    senderNpc.updateTokens(npcChatResponse.getTokens().getPromptTokens(), npcChatResponse.getTokens().getCompletionTokens());
 
                     Optional<GameSet> optionalGameSet = gameSetRepository.findByGameSetNo(npcChatRequest.getGameSetNo());
 
