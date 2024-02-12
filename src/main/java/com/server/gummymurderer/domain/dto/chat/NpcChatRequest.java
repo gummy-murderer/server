@@ -16,6 +16,4 @@ public class NpcChatRequest {
     private Long gameSetNo;
     private String secretKey="";
 
-    private String previousStory;
-
 }
