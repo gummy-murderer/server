@@ -68,7 +68,7 @@ public class ChatService {
     }
 
     // 채팅 보내기
-    public Mono<ChatSaveResponse> saveChat(CustomUserDetails userDetails, ChatSaveRequest request) {
+    public Mono<ChatSaveResponse> saveChat(Member loginMember, ChatSaveRequest request) {
 
         Optional<GameSet> optionalGameSet = gameSetRepository.findByGameSetNo(request.getGameSetNo());
 
@@ -78,8 +78,7 @@ public class ChatService {
 
         GameSet gameSet = optionalGameSet.get();
 
-        Member member = userDetails.getMember();
-        request.setSender(member.getNickname());
+        request.setSender(loginMember.getNickname());
 
         Chat chat = ChatSaveRequest.toEntity(request, LocalDateTime.now(), ChatRoleType.USER, ChatRoleType.AI, gameSet);
 
@@ -207,15 +206,7 @@ public class ChatService {
         npcChatRequest.setSender(loginMember.getNickname());
 
         return sendNpcChatToAIServer(npcChatRequest)
-                .flatMap(npcChatResponse -> {
-                    return Flux.fromIterable(npcChatResponse.getAnswer().getChatContent())
-                            .flatMap(chatContent -> {
-                                Chat chat = ChatContent.toEntity(chatContent, npcChatRequest.getChatDay(), LocalDateTime.now(), ChatRoleType.AI, ChatRoleType.AI, gameSet);
-                                return Mono.fromCallable(() -> chatRepository.save(chat))
-                                        .thenReturn(chatContent);
-                            })
-                            .next(); // 첫 번째 ChatContent 반환
-                });
+                .map(npcChatResponse -> npcChatResponse.getAnswer().getChatContent().get(npcChatResponse.getAnswer().getChatContent().size() - 1));
     }
 
     private Mono<NpcChatResponse> sendNpcChatToAIServer(NpcChatRequest npcChatRequest) {
@@ -312,7 +303,7 @@ public class ChatService {
             throw new AppException(ErrorCode.GAME_NOT_FOUND);
         }
 
-        chatListRequest.setNickName(loginMember.getAccount());
+        chatListRequest.setNickName(loginMember.getNickname());
 
         List<Chat> chats = chatRepository.findAllByMemberAndAINpcAndGameSetNo(chatListRequest.getNickName(), chatListRequest.getAiNpcName(), chatListRequest.getGameSetNo());
 
