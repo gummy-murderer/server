@@ -209,13 +209,9 @@ public class ChatService {
 
         npcChatRequest.setSender(loginMember.getNickname());
 
-        try {
-            return sendNpcChatToAIServer(npcChatRequest)
-                    .map(npcChatResponse -> npcChatResponse.getAnswer().getChatContent().get(npcChatResponse.getAnswer().getChatContent().size() - 1));
-        } catch (Exception e) {
-            log.error("🐻채팅을 AI 로 보내는 중 오류 발생: {}", e.getMessage(), e);
-            throw e;
-        }
+        return sendNpcChatToAIServer(npcChatRequest)
+                .doOnError(e -> log.error("🐻채팅을 AI 로 보내는 중 오류 발생: {}", e.getMessage(), e))
+                .map(npcChatResponse -> npcChatResponse.getAnswer().getChatContent().get(npcChatResponse.getAnswer().getChatContent().size() - 1));
     }
 
     private Mono<NpcChatResponse> sendNpcChatToAIServer(NpcChatRequest npcChatRequest) {
