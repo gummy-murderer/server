@@ -24,14 +24,14 @@ public class ChatController {
 
     // 채팅 보내기 unity 테스트 용
     @PostMapping("/send")
-    public Mono<Response<ChatSaveResponse>> sendChat(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody ChatSaveRequest request, HttpServletRequest httpServletRequest) {
+    public Mono<Response<ChatSaveResponse>> sendChat(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody ChatSaveRequest request, HttpServletRequest httpServletRequest) {
         String contentType = httpServletRequest.getHeader("Content-Type");
         System.out.println("Content-Type: " + contentType);
 
         String authorizationHeader = httpServletRequest.getHeader("Authorization");
         log.info("🐻Authorization header: {}", authorizationHeader); // 토큰 출력
 
-        Member loginMember = customUserDetails.getMember();
+        Member loginMember = userDetails.getMember();
 
         // 요청 정보 로그
         log.info("🐻Request URL: {}", httpServletRequest.getRequestURL());
@@ -42,31 +42,39 @@ public class ChatController {
                 .map(Response::success);
     }
 
-    // 채팅 보내기
+    // user-npc 채팅
 //    @PostMapping("/send")
 //    public Mono<Response<ChatSaveResponse>> sendChat(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody ChatSaveRequest request, HttpServletRequest httpServletRequest) {
 //        String contentType = httpServletRequest.getHeader("Content-Type");
 //        System.out.println("Content-Type: " + contentType);
+
+//        Member loginMember = userDetails.getMember();
 //
-//        return chatService.saveChat(userDetails, request)
+//        return chatService.saveChat(loginMember, request)
+//                .map(Response::success);
+//    }
+
+    // npc-npc 채팅
+//    @PostMapping("/npc")
+//    public Mono<Response<NpcChatResponse>> npcChat(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody NpcChatRequestDto npcChatRequestDto) {
+//
+//        Member loginMember = userDetails.getMember();
+//
+//        Mono<NpcChatResponse> npcChatResponseList = chatService.getNpcChat(loginMember, npcChatRequestDto);
+//
+//        return npcChatResponseList
 //                .map(Response::success);
 //    }
 
     // aiNpc 별 채팅 조회
     @GetMapping("/list")
-    public Response<List<ChatListResponse>> getAllChatByUserAndAINpc(@AuthenticationPrincipal CustomUserDetails customUserDetails, @ModelAttribute ChatListRequest chatListRequest) {
+    public Response<List<ChatListResponse>> getAllChatByUserAndAINpc(@AuthenticationPrincipal CustomUserDetails userDetails, @ModelAttribute ChatListRequest chatListRequest) {
 
-        Member loginMember = customUserDetails.getMember();
+        Member loginMember = userDetails.getMember();
 
         List<ChatListResponse> chats = chatService.getAllChatByUserNameAndAINpc(loginMember, chatListRequest);
         return Response.success(chats);
     }
 
-    @PostMapping("/npc")
-    public Mono<Response<NpcChatResponse>> npcChat(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody NpcChatRequestDto npcChatRequestDto) {
-        Mono<NpcChatResponse> npcChatResponseList = chatService.getNpcChat(userDetails, npcChatRequestDto);
 
-        return npcChatResponseList
-                .map(Response::success);
-    }
 }
