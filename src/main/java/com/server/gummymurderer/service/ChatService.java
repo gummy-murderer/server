@@ -87,6 +87,8 @@ public class ChatService {
         log.info("🐻unity에서 전송한 채팅 수신자 : {}", chat.getReceiver());
         log.info("🐻unity에서 전송한 채팅 발신자 : {}", chat.getSender());
 
+        log.info("🐻user-npc chat unity 통신 완료");
+
         // AI로 메시지 전송, 수신자, 발신자, 채팅 내용 리턴
         return sendChatToAIServer(request);
     }
@@ -188,6 +190,9 @@ public class ChatService {
                     ChatSaveResponse response = new ChatSaveResponse();
                     response.setChatContent(aiResponse.getAnswer().getChatContent());
                     sink.next(response);
+
+                    log.info("🐻user-npc chat ai 통신 완료");
+
                 });
     }
 
