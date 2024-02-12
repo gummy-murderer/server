@@ -164,9 +164,9 @@ public class ChatService {
         // 현재 채팅 내용을 리스트에서 제거
         simplifiedPreviousChats = simplifiedPreviousChats.stream()
                 .filter(chat ->
-                        !(chat.get("sender").equals(aiChatRequest.getSender()) &&
-                                chat.get("receiver").equals(aiChatRequest.getReceiver())&&
-                                chat.get("chatContent").equals(aiChatRequest.getChatContent())))
+                        !(chat.get("sender").equals(request.getSender()) &&
+                                chat.get("receiver").equals(request.getReceiver())&&
+                                chat.get("chatContent").equals(request.getChatContent())))
                 .collect(Collectors.toList());
 
         aiChatRequest.setPreviousChatContents(simplifiedPreviousChats);
