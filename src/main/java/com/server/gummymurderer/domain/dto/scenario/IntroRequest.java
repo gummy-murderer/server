@@ -15,7 +15,7 @@ import java.util.List;
 public class IntroRequest {
 
     private Long gameSetNo;
-    private String secretKey = "";
+    private String secretKey;
     private List<String> characters = new ArrayList<>();
 
 }
