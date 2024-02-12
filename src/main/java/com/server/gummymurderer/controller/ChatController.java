@@ -52,7 +52,7 @@ public class ChatController {
 
         log.info("🐻user-npc 통신 완료");
 
-        return chatService.saveChat(loginMember, request)
+        return chatService.saveChat(loginMember, request, httpServletRequest)
                 .map(Response::success);
     }
 

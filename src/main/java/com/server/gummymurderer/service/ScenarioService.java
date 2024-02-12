@@ -54,7 +54,7 @@ public class ScenarioService {
         String previousStory = foundGameSet.getGameSummary();
         log.info("🤖 previousStory : {} ", previousStory);
 
-        String url = "https://01a2-122-128-55-17.ngrok-free.app/api/scenario/generate_victim";
+        String url = "http://221.163.19.218:9090/api/scenario/generate_victim";
 
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("gameNo", foundGameSet.getGameSetNo());
@@ -109,7 +109,7 @@ public class ScenarioService {
         GameSet foundGameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameSetNo(), loginMember)
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
-        String url = "https://01a2-122-128-55-17.ngrok-free.app/api/scenario/generate_intro";
+        String url = "http://221.163.19.218:9090/api/scenario/generate_intro";
 
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("gameNo", foundGameSet.getGameSetNo());

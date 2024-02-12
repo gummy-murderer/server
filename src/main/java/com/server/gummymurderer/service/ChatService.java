@@ -1,11 +1,13 @@
 package com.server.gummymurderer.service;
 
+import com.server.gummymurderer.configuration.jwt.JwtProvider;
 import com.server.gummymurderer.domain.dto.chat.*;
 import com.server.gummymurderer.domain.entity.*;
 import com.server.gummymurderer.domain.enum_class.ChatRoleType;
 import com.server.gummymurderer.exception.AppException;
 import com.server.gummymurderer.exception.ErrorCode;
 import com.server.gummymurderer.repository.*;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -31,6 +33,7 @@ public class ChatService {
     private final GameNpcRepository gameNpcRepository;
     private final GameScenarioRepository gameScenarioRepository;
     private final GameAlibiRepository gameAlibiRepository;
+    private final JwtProvider jwtProvider;
 
     // unity 테스트용
     @Transactional
@@ -67,7 +70,19 @@ public class ChatService {
     }
 
     // 채팅 보내기
-    public Mono<ChatSaveResponse> saveChat(Member loginMember, ChatSaveRequest request) {
+    public Mono<ChatSaveResponse> saveChat(Member loginMember, ChatSaveRequest request, HttpServletRequest httpServletRequest) {
+
+        String authHeader = httpServletRequest.getHeader("Authorization");
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+        }
+
+        String token = authHeader.substring(7);
+
+        if (!jwtProvider.validateToken(token)) {
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+        }
 
         Optional<GameSet> optionalGameSet = gameSetRepository.findByGameSetNo(request.getGameSetNo());
 
@@ -99,7 +114,7 @@ public class ChatService {
 
     // AI로 채팅 내용 전송하고 AI에서 온 답장을 반환
     private Mono<ChatSaveResponse> sendChatToAIServer(ChatSaveRequest request) {
-        String aiServerUrl = "https://01a2-122-128-55-17.ngrok-free.app/api/user/conversation_with_user";
+        String aiServerUrl = "http://221.163.19.218:9090/api/user/conversation_with_user";
         WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build(); // WebClient 인스턴스 생성
 
         // 이전 대화 내용들 가져오기
@@ -219,7 +234,7 @@ public class ChatService {
     }
 
     private Mono<NpcChatResponse> sendNpcChatToAIServer(NpcChatRequest npcChatRequest) {
-        String aiServerUrl = "https://01a2-122-128-55-17.ngrok-free.app/api/chatbot/conversation_between_npcs";
+        String aiServerUrl = "http://221.163.19.218:9090/api/chatbot/conversation_between_npcs";
         WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build();
 
         // 이전 대화 내용들 가져오기

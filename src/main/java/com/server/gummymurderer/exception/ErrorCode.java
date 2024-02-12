@@ -24,6 +24,7 @@ public enum ErrorCode {
     INVALID_MEMBER_REGISTRATION_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 회원가입 요청입니다."),
     SCENARIO_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 시나리오를 찾을 수 없습니다."),
     ALIBI_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 npc의 alibi를 찾을 수 없습니다."),
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증되지 않은 사용자입니다."),
 
     ;
 
