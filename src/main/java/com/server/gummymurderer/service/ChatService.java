@@ -33,7 +33,6 @@ public class ChatService {
     private final GameNpcRepository gameNpcRepository;
     private final GameScenarioRepository gameScenarioRepository;
     private final GameAlibiRepository gameAlibiRepository;
-    private final JwtProvider jwtProvider;
 
     // unity 테스트용
     @Transactional
@@ -70,19 +69,7 @@ public class ChatService {
     }
 
     // 채팅 보내기
-    public Mono<ChatSaveResponse> saveChat(Member loginMember, ChatSaveRequest request, HttpServletRequest httpServletRequest) {
-
-        String authHeader = httpServletRequest.getHeader("Authorization");
-
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new AppException(ErrorCode.UNAUTHORIZED);
-        }
-
-        String token = authHeader.substring(7);
-
-        if (!jwtProvider.validateToken(token)) {
-            throw new AppException(ErrorCode.UNAUTHORIZED);
-        }
+    public Mono<ChatSaveResponse> saveChat(Member loginMember, ChatSaveRequest request) {
 
         Optional<GameSet> optionalGameSet = gameSetRepository.findByGameSetNo(request.getGameSetNo());
 
