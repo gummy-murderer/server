@@ -1,5 +1,6 @@
 package com.server.gummymurderer.domain.entity;
 
+import com.server.gummymurderer.domain.enum_class.NpcStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,8 +29,9 @@ public class GameNpc extends BaseEntity {
     @Column(name = "npc_feature")
     private String npcFeature;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "npc_status")
-    private String npcStatus;
+    private NpcStatus npcStatus;
 
     @Column(name = "npc_death_location_x")
     private float npcDeathLocationX;
@@ -59,7 +61,7 @@ public class GameNpc extends BaseEntity {
         this.npcJob = npcJob;
         this.npcPersonality = npc.getNpcPersonality();
         this.npcFeature = npc.getNpcFeature();
-        this.npcStatus = "alive";
+        this.npcStatus = NpcStatus.ALIVE;
         this.npcDeathLocationX = 0;
         this.npcDeathLocationY = 0;
         this.npcDeathLocationZ = 0;
@@ -68,7 +70,11 @@ public class GameNpc extends BaseEntity {
     }
 
     public void voteEvent() {
-        this.npcStatus = "dead";
+        this.npcStatus = NpcStatus.DEAD;
+    }
+
+    public void dead() {
+        this.npcStatus = NpcStatus.DEAD;
     }
 
     public void updateTokens(long promptTokens, long completionTokens) {

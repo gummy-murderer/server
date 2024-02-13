@@ -1,6 +1,7 @@
 package com.server.gummymurderer.domain.dto.gameNpc;
 
 import com.server.gummymurderer.domain.entity.GameNpc;
+import com.server.gummymurderer.domain.enum_class.NpcStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,14 +17,14 @@ public class GameNpcDTO {
     private String npcJob;
     private String npcPersonality;
     private String npcFeature;
-    private String npcStatus;
+    private NpcStatus npcStatus;
     private Float npcDeathLocationX;
     private Float npcDeathLocationY;
     private Float npcDeathLocationZ;
     private long npcDeathNightNumber;
 
 
-    public  GameNpcDTO(GameNpc gameNpc) {
+    public GameNpcDTO(GameNpc gameNpc) {
         this.gameNpcNo = gameNpc.getGameNpcNo();
         this.npcName = gameNpc.getNpcName();
         this.npcJob = gameNpc.getNpcJob();
@@ -35,5 +36,10 @@ public class GameNpcDTO {
         this.npcDeathLocationZ = gameNpc.getNpcDeathLocationZ();
         this.npcDeathNightNumber = gameNpc.getNpcDeathNightNumber();
     }
+
+    public String getNpcStatus() {
+        return this.npcStatus.name();
+    }
+
 
 }

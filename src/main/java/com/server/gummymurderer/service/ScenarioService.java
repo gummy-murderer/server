@@ -86,6 +86,13 @@ public class ScenarioService {
 
         GameScenario savedGameScenario = gameScenarioRepository.save(new GameScenario(result, foundGameSet));
 
+        // 피해자 NpcStatus Dead로 변경
+        String victim = result.getAnswer().getVictim();
+        GameNpc victimNpc = gameNpcRepository.findByNpcName(victim)
+                .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
+        victimNpc.dead();
+        gameNpcRepository.save(victimNpc);
+
         // Alibi 정보를 GameAlibi에 저장
         for (AlibiDTO alibiDTO : result.getAnswer().getAlibis()) {
 
