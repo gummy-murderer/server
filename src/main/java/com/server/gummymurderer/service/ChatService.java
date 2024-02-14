@@ -101,7 +101,7 @@ public class ChatService {
 
     // AI로 채팅 내용 전송하고 AI에서 온 답장을 반환
     private Mono<ChatSaveResponse> sendChatToAIServer(ChatSaveRequest request) {
-        String aiServerUrl = "http://221.163.19.218:9090/api/user/conversation_with_user";
+        String aiServerUrl = "http://ec2-3-39-225-186.ap-northeast-2.compute.amazonaws.com:8000/api/user/conversation_with_user";
         WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build(); // WebClient 인스턴스 생성
 
         // 이전 대화 내용들 가져오기
@@ -221,7 +221,7 @@ public class ChatService {
     }
 
     private Mono<NpcChatResponse> sendNpcChatToAIServer(NpcChatRequest npcChatRequest) {
-        String aiServerUrl = "http://221.163.19.218:9090/api/chatbot/conversation_between_npcs";
+        String aiServerUrl = "http://ec2-3-39-225-186.ap-northeast-2.compute.amazonaws.com:8000/api/chatbot/conversation_between_npcs";
         WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build();
 
         // 이전 대화 내용들 가져오기
