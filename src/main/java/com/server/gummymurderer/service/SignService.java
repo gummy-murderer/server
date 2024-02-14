@@ -43,11 +43,9 @@ public class SignService {
 
         List<GameSet> memberGameSet = gameSetRepository.findGameSetsByMember(member);
 
-
         List<LoginGameSetDTO> loginGameSetDTOList = memberGameSet.stream()
                 .map(LoginGameSetDTO::new) // Assuming LoginGameSetDTO has a constructor that accepts a GameSet
                 .toList();
-
 
         return SignResponse.builder()
                 .memberNo(member.getMemberNo())

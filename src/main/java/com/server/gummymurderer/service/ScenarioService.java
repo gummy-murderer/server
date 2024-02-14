@@ -49,7 +49,7 @@ public class ScenarioService {
         String murderName = gameNpcRepository.findMurderByGameSetNo(foundGameSet.getGameSetNo());
         log.info("🤖 머더러 이름 : {}", murderName);
         log.info("🤖 secret key : {}", request.getSecretKey());
-        Long day = foundGameSet.getGameStatus();
+        int day = foundGameSet.getGameDay();
         log.info("🤖 day : {} 일차", day);
         String previousStory = foundGameSet.getGameSummary();
         log.info("🤖 previousStory : {} ", previousStory);

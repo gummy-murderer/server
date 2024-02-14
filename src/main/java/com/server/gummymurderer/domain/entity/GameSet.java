@@ -1,5 +1,6 @@
 package com.server.gummymurderer.domain.entity;
 
+import com.server.gummymurderer.domain.enum_class.GameStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
@@ -18,8 +19,12 @@ public class GameSet extends BaseEntity {
     @Column(name = "game_set_no")
     private long gameSetNo;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "game_status")
-    private Long gameStatus;
+    private GameStatus gameStatus;
+
+    @Column(name = "game_day")
+    private int gameDay;
 
     @Column(name = "game_token")
     private long gameToken;
@@ -35,11 +40,7 @@ public class GameSet extends BaseEntity {
         this.gameToken = gameToken;
     }
 
-    public void updateGameStatus(Long gameStatus) {
-        this.gameStatus = gameStatus;
-    }
-
     public void endGameStatus() {
-        this.gameStatus = 999L;
+        this.gameStatus = GameStatus.GAME_END;
     }
 }

@@ -3,6 +3,7 @@ package com.server.gummymurderer.service;
 import com.server.gummymurderer.domain.dto.game.*;
 import com.server.gummymurderer.domain.dto.gameNpc.GameNpcDTO;
 import com.server.gummymurderer.domain.entity.*;
+import com.server.gummymurderer.domain.enum_class.GameStatus;
 import com.server.gummymurderer.exception.AppException;
 import com.server.gummymurderer.exception.ErrorCode;
 import com.server.gummymurderer.repository.*;
@@ -40,7 +41,8 @@ public class GameService {
 
         // Game Set 구성
         GameSet gameSet = GameSet.builder()
-                .gameStatus(0L)
+                .gameStatus(GameStatus.GAME_START)
+                .gameDay(1)
                 .gameSummary("")
                 .gameToken(0)
                 .member(loginMember)
@@ -83,12 +85,6 @@ public class GameService {
         GameSet gameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameSetNo(), loginMember)
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
         Long gameDate = gameVoteEventRepository.countAllByGameSet(gameSet);
-        gameSet.updateGameStatus(gameDate + 1);
-
-        // 게임 최종날짜가 저장된다면 게임상태를 엔드상태인 999로 변경
-        if (gameSet.getGameStatus() == 9L) {
-            gameSet.endGameStatus();
-        }
 
         GameVoteEvent gameVoteEvent = new GameVoteEvent(request, gameSet);
         String voteNpcName = gameVoteEvent.getVoteNpcName();

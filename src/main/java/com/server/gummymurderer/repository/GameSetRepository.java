@@ -16,6 +16,8 @@ public interface GameSetRepository extends JpaRepository<GameSet, Long> {
     Optional<GameSet> findByGameSetNoAndMember(Long gameSetNo, Member member);
 
 
-    @Query("SELECT gs FROM GameSet gs JOIN FETCH gs.member m WHERE m = :member AND gs.gameStatus <> 999")
+    @Query("SELECT gs FROM GameSet gs JOIN FETCH gs.member m WHERE m = :member AND gs.gameStatus <> 'GAME_END'")
     List<GameSet> findGameSetsByMember(@Param("member") Member member);
+
+
 }
