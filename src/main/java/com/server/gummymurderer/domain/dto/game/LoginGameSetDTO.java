@@ -13,11 +13,13 @@ public class LoginGameSetDTO {
     private Long gameSetNo;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
-    private Long gameStatus;
+    private int gameDay;
+    private String gameStatus;
 
     public LoginGameSetDTO(GameSet gameSet) {
         this.gameSetNo = gameSet.getGameSetNo();
-        this.gameStatus = gameSet.getGameStatus();
+        this.gameDay = gameSet.getGameDay();
+        this.gameStatus = gameSet.getGameStatus().name();
         this.createdAt = gameSet.getCreatedAt();
         this.modifiedAt = gameSet.getLastModifiedAt();
     }
