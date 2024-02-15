@@ -44,7 +44,7 @@ public class ChatController {
 
     // user-npc 채팅
     @PostMapping("/send")
-    public Mono<Response<ChatSaveResponse>> sendChat(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody ChatSaveRequest request, HttpServletRequest httpServletRequest) {
+    public Response<ChatSaveResponse> sendChat(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody ChatSaveRequest request, HttpServletRequest httpServletRequest) {
         String contentType = httpServletRequest.getHeader("Content-Type");
         System.out.println("Content-Type: " + contentType);
 
@@ -52,8 +52,8 @@ public class ChatController {
 
         log.info("🐻user-npc 통신 완료");
 
-        return chatService.saveChat(loginMember, request)
-                .map(Response::success);
+        ChatSaveResponse chatSaveResponse = chatService.saveChat(loginMember, request, httpServletRequest);
+        return Response.success(chatSaveResponse);
     }
 
     // npc-npc 채팅
