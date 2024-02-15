@@ -10,12 +10,9 @@ import com.server.gummymurderer.repository.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
@@ -33,6 +30,7 @@ public class ChatService {
     private final GameNpcRepository gameNpcRepository;
     private final GameScenarioRepository gameScenarioRepository;
     private final GameAlibiRepository gameAlibiRepository;
+    private final JwtProvider jwtProvider;
 
     // unity 테스트용
     @Transactional
@@ -69,7 +67,38 @@ public class ChatService {
     }
 
     // 채팅 보내기
-    public Mono<ChatSaveResponse> saveChat(Member loginMember, ChatSaveRequest request) {
+    public ChatSaveResponse saveChat(Member loginMember, ChatSaveRequest request, HttpServletRequest httpServletRequest) {
+
+        String authHeader = httpServletRequest.getHeader("Authorization");
+
+        // 요청에서 받은 Authorization 헤더 출력
+        log.info("🐻Received Authorization header: {}", authHeader);
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+        }
+
+        // 토큰 부분만 출력
+        String token = authHeader.substring(7);
+        log.info("🐻Extracted token: {}", token);
+
+        if (loginMember == null) {
+            log.error("🐻loginMember is null");
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+        } else {
+            if (loginMember.getNickname() == null) {
+                log.error("🐻loginMember nickname is null");
+                throw new AppException(ErrorCode.UNAUTHORIZED);
+            }
+        }
+
+        // 토큰 유효성 검사 결과 출력
+        boolean isValid = jwtProvider.validateToken(authHeader);
+        log.info("🐻Token validation result: {}", isValid);
+
+        if (!isValid) {
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+        }
 
         Optional<GameSet> optionalGameSet = gameSetRepository.findByGameSetNo(request.getGameSetNo());
 
@@ -92,16 +121,17 @@ public class ChatService {
         log.info("🐻user-npc chat unity 통신 완료");
 
         // AI로 메시지 전송, 수신자, 발신자, 채팅 내용 리턴
-        return sendChatToAIServer(request)
-                .onErrorResume(e -> {
-                    log.error("🐻AI 통신 실패 : ", e);
-                    return Mono.error(e);
-                });
+        try {
+            return sendChatToAIServer(request);
+        } catch (Exception e) {
+            log.error("🐻AI 통신 실패 : ", e);
+            throw e;
+        }
     }
 
     // AI로 채팅 내용 전송하고 AI에서 온 답장을 반환
-    private Mono<ChatSaveResponse> sendChatToAIServer(ChatSaveRequest request) {
-        String aiServerUrl = "http://ec2-3-39-225-186.ap-northeast-2.compute.amazonaws.com:8000/api/user/conversation_with_user";
+    private ChatSaveResponse sendChatToAIServer(ChatSaveRequest request) {
+        String aiServerUrl = "http://ec2-52-79-128-189.ap-northeast-2.compute.amazonaws.com:8000/api/user/conversation_with_user";
         WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build(); // WebClient 인스턴스 생성
 
         // 이전 대화 내용들 가져오기
@@ -120,10 +150,10 @@ public class ChatService {
                 .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
 
         GameScenario gameScenario = gameScenarioRepository.findByGameSet_GameSetNo(request.getGameSetNo())
-                        .orElseThrow(() -> new AppException(ErrorCode.SCENARIO_NOT_FOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.SCENARIO_NOT_FOUND));
 
         GameAlibi gameAlibi = gameAlibiRepository.findByGameScenarioAndGameNpc(gameScenario, gameNpc)
-                        .orElse(null);
+                .orElse(null);
 
         Map<String, String> receiver = new HashMap<>();
         receiver.put("name", gameNpc.getNpcName());
@@ -167,7 +197,7 @@ public class ChatService {
                     log.error("🐻AI 통신 실패 : ", e);
                     throw new AppException(ErrorCode.AI_INTERNAL_SERVER_ERROR);
                 })
-                .handle((aiResponse, sink) -> {
+                .map(aiResponse -> {
                     // AI에서 보낸 채팅 저장
                     ChatSaveRequest aiChat = new ChatSaveRequest();
                     aiChat.setSender(request.getReceiver());
@@ -181,8 +211,7 @@ public class ChatService {
                     Optional<GameSet> optionalGameSet = gameSetRepository.findByGameSetNo(request.getGameSetNo());
 
                     if (optionalGameSet.isEmpty()) {
-                        sink.error(new AppException(ErrorCode.GAME_NOT_FOUND));
-                        return;
+                        throw new AppException(ErrorCode.GAME_NOT_FOUND);
                     }
 
                     GameSet gameSet = optionalGameSet.get();
@@ -195,11 +224,13 @@ public class ChatService {
 
                     ChatSaveResponse response = new ChatSaveResponse();
                     response.setChatContent(aiResponse.getAnswer().getChatContent());
-                    sink.next(response);
 
                     log.info("🐻user-npc chat ai 통신 완료");
 
-                });
+                    return response;
+
+                })
+                .block();
     }
 
     // npc 채팅 요청 및 반환
@@ -221,7 +252,7 @@ public class ChatService {
     }
 
     private Mono<NpcChatResponse> sendNpcChatToAIServer(NpcChatRequest npcChatRequest) {
-        String aiServerUrl = "http://ec2-3-39-225-186.ap-northeast-2.compute.amazonaws.com:8000/api/chatbot/conversation_between_npcs";
+        String aiServerUrl = "http://ec2-52-79-128-189.ap-northeast-2.compute.amazonaws.com:8000/api/chatbot/conversation_between_npcs";
         WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build();
 
         // 이전 대화 내용들 가져오기

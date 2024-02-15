@@ -54,7 +54,7 @@ public class ScenarioService {
         String previousStory = foundGameSet.getGameSummary();
         log.info("🤖 previousStory : {} ", previousStory);
 
-        String url = "http://ec2-3-39-225-186.ap-northeast-2.compute.amazonaws.com:8000/api/scenario/generate_victim";
+        String url = "http://ec2-52-79-128-189.ap-northeast-2.compute.amazonaws.com:8000/api/scenario/generate_victim";
 
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("gameNo", foundGameSet.getGameSetNo());
@@ -116,7 +116,7 @@ public class ScenarioService {
         GameSet foundGameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameSetNo(), loginMember)
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
-        String url = "http://ec2-3-39-225-186.ap-northeast-2.compute.amazonaws.com:8000/api/scenario/generate_intro";
+        String url = "http://ec2-52-79-128-189.ap-northeast-2.compute.amazonaws.com:8000/api/scenario/generate_intro";
 
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("gameNo", foundGameSet.getGameSetNo());
