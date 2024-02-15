@@ -221,8 +221,10 @@ public class ChatService {
 
                     log.info("🐻AI가 전송한 채팅 내용: {}", aiChatEntity.getChatContent());
                     log.info("🐻AI가 전송한 채팅 수신자: {}", aiChatEntity.getReceiver());
+                    log.info("🐻AI가 전송한 채팅 발신자: {}", aiChatEntity.getSender());
 
                     ChatSaveResponse response = new ChatSaveResponse();
+                    response.setSender(aiChatEntity.getSender());
                     response.setChatContent(aiResponse.getAnswer().getChatContent());
 
                     log.info("🐻user-npc chat ai 통신 완료");
