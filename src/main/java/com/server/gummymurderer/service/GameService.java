@@ -3,6 +3,7 @@ package com.server.gummymurderer.service;
 import com.server.gummymurderer.domain.dto.game.*;
 import com.server.gummymurderer.domain.dto.gameNpc.GameNpcDTO;
 import com.server.gummymurderer.domain.entity.*;
+import com.server.gummymurderer.domain.enum_class.GameResult;
 import com.server.gummymurderer.domain.enum_class.GameStatus;
 import com.server.gummymurderer.exception.AppException;
 import com.server.gummymurderer.exception.ErrorCode;
@@ -42,6 +43,7 @@ public class GameService {
         // Game Set 구성
         GameSet gameSet = GameSet.builder()
                 .gameStatus(GameStatus.GAME_START)
+                .gameResult(GameResult.IN_PROGRESS)
                 .gameDay(1)
                 .gameSummary("")
                 .gameToken(0)

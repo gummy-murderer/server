@@ -1,5 +1,6 @@
 package com.server.gummymurderer.domain.entity;
 
+import com.server.gummymurderer.domain.enum_class.GameResult;
 import com.server.gummymurderer.domain.enum_class.GameStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,6 +23,10 @@ public class GameSet extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "game_status")
     private GameStatus gameStatus;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "game_result")
+    private GameResult gameResult;
 
     @Column(name = "game_day")
     private int gameDay;
