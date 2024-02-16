@@ -3,6 +3,7 @@ package com.server.gummymurderer.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.server.gummymurderer.domain.dto.alibi.AlibiDTO;
+import com.server.gummymurderer.domain.dto.gameNpc.GameNpcDTO;
 import com.server.gummymurderer.domain.dto.scenario.*;
 import com.server.gummymurderer.domain.entity.*;
 import com.server.gummymurderer.exception.AppException;
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -90,6 +92,7 @@ public class ScenarioService {
         String victim = result.getAnswer().getVictim();
         GameNpc victimNpc = gameNpcRepository.findByNpcNameAndGameSet(victim, foundGameSet)
                 .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
+        log.info("🐻 피해자 npc : {}", victimNpc);
         victimNpc.dead();
         gameNpcRepository.save(victimNpc);
 
@@ -103,14 +106,25 @@ public class ScenarioService {
             gameAlibiRepository.save(gameAlibi);
         }
 
-        System.out.println("🐻scenario 완료");
+        // 해당 게임의 npc list
+        List<GameNpc> gameNpcs = gameNpcRepository.findAllByGameSet(foundGameSet);
 
-        return new MakeScenarioResponse(savedGameScenario);
+        List<GameNpcDTO> npcList = new ArrayList<>();
+        for (GameNpc gameNpc : gameNpcs) {
+            GameNpcDTO dto = new GameNpcDTO(gameNpc);
+            npcList.add(dto);
+        }
+
+        MakeScenarioResponse response = MakeScenarioResponse.of(savedGameScenario, npcList);
+
+        log.info("🐻scenario 완료");
+
+        return response;
     }
 
     public IntroAnswerDTO intro(IntroRequest request, Member loginMember) throws JsonProcessingException{
 
-        System.out.println("🐻intro 요청 시작");
+        log.info("🐻intro 요청 시작");
 
         // 일치하는 게임이 없을경우 에러 발생
         GameSet foundGameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameSetNo(), loginMember)
@@ -143,7 +157,7 @@ public class ScenarioService {
         log.info("🐻 result Content : {}", result.getAnswer().getContent());
         log.info("🐻 result Closing : {}", result.getAnswer().getClosing());
 
-        System.out.println("🐻intro 완료");
+        log.info("🐻intro 완료");
 
         return result.getAnswer();
     }
