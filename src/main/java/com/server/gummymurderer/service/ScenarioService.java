@@ -88,7 +88,7 @@ public class ScenarioService {
 
         // 피해자 NpcStatus Dead로 변경
         String victim = result.getAnswer().getVictim();
-        GameNpc victimNpc = gameNpcRepository.findByNpcName(victim)
+        GameNpc victimNpc = gameNpcRepository.findByNpcNameAndGameSet(victim, foundGameSet)
                 .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
         victimNpc.dead();
         gameNpcRepository.save(victimNpc);
