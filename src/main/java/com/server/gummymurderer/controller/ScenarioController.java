@@ -1,10 +1,7 @@
 package com.server.gummymurderer.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.server.gummymurderer.domain.dto.scenario.IntroAnswerDTO;
-import com.server.gummymurderer.domain.dto.scenario.IntroRequest;
-import com.server.gummymurderer.domain.dto.scenario.MakeScenarioRequest;
-import com.server.gummymurderer.domain.dto.scenario.MakeScenarioResponse;
+import com.server.gummymurderer.domain.dto.scenario.*;
 import com.server.gummymurderer.domain.entity.Member;
 import com.server.gummymurderer.exception.Response;
 import com.server.gummymurderer.service.CustomUserDetails;
@@ -41,5 +38,14 @@ public class ScenarioController {
 
         IntroAnswerDTO introAnswerDTO = scenarioService.intro(request, loginMember);
         return Response.success(introAnswerDTO);
+    }
+
+    @PostMapping("/final-words")
+    public Response<FinalWordAnswerDTO> finalWordsMake(@RequestBody FinalWordRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails) throws JsonProcessingException {
+
+        Member loginMember = customUserDetails.getMember();
+
+        FinalWordAnswerDTO finalWordAnswerDTO = scenarioService.finalWords(request, loginMember);
+        return Response.success(finalWordAnswerDTO);
     }
 }

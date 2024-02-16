@@ -161,4 +161,62 @@ public class ScenarioService {
 
         return result.getAnswer();
     }
+
+    public FinalWordAnswerDTO finalWords(FinalWordRequest request, Member loginMember) throws JsonProcessingException {
+
+        log.info("🐻finalWords 요청 시작");
+
+        // 일치하는 게임이 없을 경우 에러 발생
+        GameSet foundGameSet = gameSetRepository.findByGameSetNo(request.getGameSetNo())
+                .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
+
+        // gameResult 정보 가져오기
+        String gameResult = switch (foundGameSet.getGameResult()) {
+            case SUCCESS -> "victory";
+            case FAILURE -> "defeat";
+            default -> "in_progress";
+        };
+
+        // murderer 정보 가져오기
+        String murderer = gameNpcRepository.findMurderByGameSetNo(foundGameSet.getGameSetNo());
+
+        // previousStory 정보 가져오기
+        String previousStory = gameScenarioRepository.findTopByGameSetOrderByScenarioNoDesc(foundGameSet)
+                .map(GameScenario::getDailySummary)
+                .orElseThrow(() -> new AppException(ErrorCode.SCENARIO_NOT_FOUND));
+
+        // livingCharacters 정보 가져오기
+        List<NpcInfo> livingCharacters = gameNpcRepository.findAllAliveResidentNpcInfoByGameSetNo(foundGameSet.getGameSetNo());
+
+        String url = "http://ec2-52-79-128-189.ap-northeast-2.compute.amazonaws.com:8000/api/scenario/generate_final_words";
+
+        Map<String, Object> requestData = new HashMap<>();
+        requestData.put("gameNo", foundGameSet.getGameSetNo());
+        requestData.put("secretKey", request.getSecretKey());
+        requestData.put("gameResult", gameResult);
+        requestData.put("murderer", murderer);
+        requestData.put("livingCharacters", livingCharacters);
+        requestData.put("previousStory", previousStory);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        String jsonRequest = objectMapper.writeValueAsString(requestData);
+        log.info("🐻jsonRequest : {} ", jsonRequest);
+
+        WebClient webClient = WebClient.create();
+
+        FinalWordResponse result = webClient
+                .post()
+                .uri(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(jsonRequest))
+                .retrieve()
+                .bodyToMono(FinalWordResponse.class)
+                .block();
+
+        log.info("🐻 result finalWords : {}", result.getAnswer().getFinalWords());
+        log.info("🐻finalWords 완료");
+
+        return result.getAnswer();
+    }
 }
