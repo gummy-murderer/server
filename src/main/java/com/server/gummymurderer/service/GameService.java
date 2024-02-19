@@ -61,18 +61,11 @@ public class GameService {
             String npcJob = (i < npcList.size() - 1) ? "Resident" : "Murderer";
             gameNpcList.add(createGameNpc(npc, npcJob, savedGameSet));
         }
-        List<GameNpc> savedGameNpcList = gameNpcRepository.saveAll(gameNpcList);
 
-        List<GameNpcDTO> gameNpcDTOList = new ArrayList<>();
-
-        for (GameNpc gameNpc : savedGameNpcList) {
-            GameNpcDTO gameNpcDTO = new GameNpcDTO(gameNpc);
-            gameNpcDTOList.add(gameNpcDTO);
-        }
+        gameNpcRepository.saveAll(gameNpcList);
 
         return StartGameResponse.builder()
                 .gameSetNo(savedGameSet.getGameSetNo())
-                .gameNpcList(gameNpcDTOList)
                 .build();
     }
 
