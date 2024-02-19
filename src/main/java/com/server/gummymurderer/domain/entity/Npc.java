@@ -17,7 +17,7 @@ public class Npc extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "npc_no")
-    private long npcNo;
+    private Long npcNo;
 
     @NotBlank
     @Column(name = "npc_name")

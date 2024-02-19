@@ -15,7 +15,7 @@ public class GameNpc extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "game_npc_no")
-    private long gameNpcNo;
+    private Long gameNpcNo;
 
     @Column(name = "npc_name")
     private String npcName;

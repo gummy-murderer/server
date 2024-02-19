@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Builder
 public class ReadMemberResponse {
 
-    private long memberNo;
+    private Long memberNo;
     private String account;
     private String nickname;
     private LocalDateTime createdAt;

@@ -18,7 +18,7 @@ public class GameSet extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "game_set_no")
-    private long gameSetNo;
+    private Long gameSetNo;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "game_status")
