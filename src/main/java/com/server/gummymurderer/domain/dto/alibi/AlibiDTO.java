@@ -3,13 +3,11 @@ package com.server.gummymurderer.domain.dto.alibi;
 import com.server.gummymurderer.domain.entity.GameAlibi;
 import com.server.gummymurderer.domain.entity.GameNpc;
 import com.server.gummymurderer.domain.entity.GameScenario;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class AlibiDTO {
