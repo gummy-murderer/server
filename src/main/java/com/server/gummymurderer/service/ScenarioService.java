@@ -82,9 +82,10 @@ public class ScenarioService {
                 .bodyToMono(AiMakeScenarioResponse.class)
                 .block();
 
-        log.info("🤖 result victim : {}", result.getAnswer().getVictim());
-        log.info("🤖 result token : {}", result.getTokens().getTotalTokens());
-        log.info("🤖 result : {}", result.getAnswer().getDailySummary());
+        log.info("🐻 result victim : {}", result.getAnswer().getVictim());
+        log.info("🐻 result token : {}", result.getTokens().getTotalTokens());
+        log.info("🐻 result dailySummary: {}", result.getAnswer().getDailySummary());
+        log.info("🐻 result alibis: {}", result.getAnswer().getAlibis());
 
         GameScenario savedGameScenario = gameScenarioRepository.save(new GameScenario(result, foundGameSet));
 
@@ -101,6 +102,9 @@ public class ScenarioService {
 
             GameNpc gameNpc = gameNpcRepository.findByGameNpcNo(alibiDTO.getGameNpcNo())
                     .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
+
+            // AlibiDTO 정보 확인
+            log.info("🐻 AlibiDTO Information: {}", alibiDTO);
 
             GameAlibi gameAlibi = alibiDTO.toEntity(savedGameScenario, gameNpc);
             gameAlibiRepository.save(gameAlibi);
@@ -219,4 +223,15 @@ public class ScenarioService {
 
         return result.getAnswer();
     }
+
+    @Transactional
+    public IntroAndScenarioResponse makeIntroAndScenario (IntroRequest introRequest, MakeScenarioRequest makeScenarioRequest,  Member loginMember) throws JsonProcessingException {
+
+        IntroAnswerDTO introAnswerDTO = intro(introRequest, loginMember);
+        MakeScenarioResponse makeScenarioResponse = makeScenario(makeScenarioRequest, loginMember);
+
+        return new IntroAndScenarioResponse(introAnswerDTO, makeScenarioResponse);
+
+    }
+
 }

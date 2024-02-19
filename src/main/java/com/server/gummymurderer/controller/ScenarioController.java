@@ -48,4 +48,13 @@ public class ScenarioController {
         FinalWordAnswerDTO finalWordAnswerDTO = scenarioService.finalWords(request, loginMember);
         return Response.success(finalWordAnswerDTO);
     }
+
+    @PostMapping("/intro-scenario")
+    public Response<IntroAndScenarioResponse> makeIntroAndScenario(@RequestBody IntroAndScenarioRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails) throws JsonProcessingException {
+
+        Member loginMember = customUserDetails.getMember();
+
+        IntroAndScenarioResponse response = scenarioService.makeIntroAndScenario(request.getIntroRequest(), request.getMakeScenarioRequest(), loginMember);
+        return Response.success(response);
+    }
 }
