@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class EnrollNpcResponse {
 
-    private long npcNo;
+    private Long npcNo;
     private String npcName;
     private String npcPersonality;
     private String npcPersonalityDescription;

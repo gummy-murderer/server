@@ -26,7 +26,7 @@ public class MemberService {
         return memberRepository.findAll(pageable).map(ReadAllMemberResponse::of);
     }
 
-    public ReadMemberResponse readByNo(long memberNo) {
+    public ReadMemberResponse readByNo(Long memberNo) {
 
         Member foundMember = memberRepository.findByMemberNo(memberNo)
                 .orElseThrow(() -> new AppException(ErrorCode.MEMBER_NOT_FOUND));

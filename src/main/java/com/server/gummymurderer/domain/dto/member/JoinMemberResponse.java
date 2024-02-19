@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class JoinMemberResponse {
 
-    private long memberNo;
+    private Long memberNo;
     private String account;
     private String name;
 }

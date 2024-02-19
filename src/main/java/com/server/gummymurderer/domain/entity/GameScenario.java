@@ -15,7 +15,7 @@ public class GameScenario extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "scenario_no")
-    private long scenarioNo;
+    private Long scenarioNo;
 
     @Column(name = "victim")
     private String victim;

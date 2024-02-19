@@ -12,7 +12,7 @@ import lombok.ToString;
 @NoArgsConstructor
 public class GameNpcDTO {
 
-    private long gameNpcNo;
+    private Long gameNpcNo;
     private String npcName;
     private String npcJob;
     private String npcPersonality;

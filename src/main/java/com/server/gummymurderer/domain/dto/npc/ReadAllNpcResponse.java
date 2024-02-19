@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class ReadAllNpcResponse {
-    private long npcNo;
+    private Long npcNo;
     private String npcName;
     private String npcPersonality;
     private String npcFeature;
