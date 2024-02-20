@@ -9,10 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/game")
@@ -34,6 +31,15 @@ public class GameController {
         Member loginMember = customUserDetails.getMember();
         SaveGameResponse response = gameService.gameSave(loginMember, request);
         return ResponseEntity.ok(Response.success(response));
+    }
+
+    @GetMapping("/load")
+    public Response<LoadGameResponse> loadGame(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestParam Long gameSetNo) {
+
+        Member loginMember = customUserDetails.getMember();
+        LoadGameResponse loadGameResponse = gameService.gameLoad(loginMember, gameSetNo);
+
+        return Response.success(loadGameResponse);
     }
 
     @PostMapping("/end")

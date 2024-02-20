@@ -23,4 +23,12 @@ public class AlibiDTO {
                 .gameNpc(gameNpc)
                 .build();
     }
+
+    public static AlibiDTO of(GameAlibi gameAlibi) {
+        AlibiDTO alibiDTO = new AlibiDTO();
+        alibiDTO.name = gameAlibi.getGameNpc().getNpcName();
+        alibiDTO.alibi = gameAlibi.getAlibi();
+        alibiDTO.gameNpcNo = gameAlibi.getGameNpc().getGameNpcNo();
+        return alibiDTO;
+    }
 }
