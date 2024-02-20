@@ -33,14 +33,8 @@ public class GameNpc extends BaseEntity {
     @Column(name = "npc_status")
     private NpcStatus npcStatus;
 
-    @Column(name = "npc_death_location_x")
-    private float npcDeathLocationX;
-
-    @Column(name = "npc_death_location_y")
-    private float npcDeathLocationY;
-
-    @Column(name = "npc_death_location_z")
-    private float npcDeathLocationZ;
+    @Column(name = "death_location")
+    private String deathLocation;
 
     @Column(name = "npc_death_night_number")
     private long npcDeathNightNumber;
@@ -62,9 +56,6 @@ public class GameNpc extends BaseEntity {
         this.npcPersonality = npc.getNpcPersonality();
         this.npcFeature = npc.getNpcFeature();
         this.npcStatus = NpcStatus.ALIVE;
-        this.npcDeathLocationX = 0;
-        this.npcDeathLocationY = 0;
-        this.npcDeathLocationZ = 0;
         this.npcDeathNightNumber = 0;
         this.gameSet = gameSet;
     }
@@ -73,8 +64,9 @@ public class GameNpc extends BaseEntity {
         this.npcStatus = NpcStatus.DEAD;
     }
 
-    public void dead() {
+    public void markDeath(String deathLocation) {
         this.npcStatus = NpcStatus.DEAD;
+        this.deathLocation = deathLocation;
     }
 
     public void updateTokens(long promptTokens, long completionTokens) {

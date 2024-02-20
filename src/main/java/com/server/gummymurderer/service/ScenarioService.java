@@ -94,7 +94,8 @@ public class ScenarioService {
         GameNpc victimNpc = gameNpcRepository.findByNpcNameAndGameSet(victim, foundGameSet)
                 .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
         log.info("🐻 피해자 npc : {}", victimNpc);
-        victimNpc.dead();
+
+        victimNpc.markDeath(savedGameScenario.getCrimeScene());
         gameNpcRepository.save(victimNpc);
 
         // Alibi 정보를 GameAlibi에 저장
