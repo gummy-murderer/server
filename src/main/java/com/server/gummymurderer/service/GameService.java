@@ -111,7 +111,6 @@ public class GameService {
         return new SaveGameResponse(gameSet);
     }
 
-
     @Transactional
     public EndGameResponse gameEnd(Member loginMember, EndGameRequest request) {
         GameSet gameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameSetNo(), loginMember)
