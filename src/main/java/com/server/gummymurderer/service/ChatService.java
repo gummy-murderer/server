@@ -207,6 +207,7 @@ public class ChatService {
 
                     // tokens 업데이트
                     gameNpc.updateTokens(aiResponse.getTokens().getPromptTokens(), aiResponse.getTokens().getCompletionTokens());
+                    gameNpcRepository.save(gameNpc);
 
                     Optional<GameSet> optionalGameSet = gameSetRepository.findByGameSetNo(request.getGameSetNo());
 
@@ -328,6 +329,7 @@ public class ChatService {
                             .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
 
                     senderNpc.updateTokens(npcChatResponse.getTokens().getPromptTokens(), npcChatResponse.getTokens().getCompletionTokens());
+                    gameNpcRepository.save(senderNpc);
 
                     Optional<GameSet> optionalGameSet = gameSetRepository.findByGameSetNo(npcChatRequest.getGameSetNo());
 

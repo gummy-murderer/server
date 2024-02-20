@@ -18,9 +18,7 @@ public class GameNpcDTO {
     private String npcPersonality;
     private String npcFeature;
     private NpcStatus npcStatus;
-    private Float npcDeathLocationX;
-    private Float npcDeathLocationY;
-    private Float npcDeathLocationZ;
+    private String deathLocation;
     private long npcDeathNightNumber;
 
 
@@ -31,9 +29,7 @@ public class GameNpcDTO {
         this.npcPersonality = gameNpc.getNpcPersonality();
         this.npcFeature = gameNpc.getNpcFeature();
         this.npcStatus = gameNpc.getNpcStatus();
-        this.npcDeathLocationX = gameNpc.getNpcDeathLocationX();
-        this.npcDeathLocationY = gameNpc.getNpcDeathLocationY();
-        this.npcDeathLocationZ = gameNpc.getNpcDeathLocationZ();
+        this.deathLocation = gameNpc.getDeathLocation();
         this.npcDeathNightNumber = gameNpc.getNpcDeathNightNumber();
     }
 
