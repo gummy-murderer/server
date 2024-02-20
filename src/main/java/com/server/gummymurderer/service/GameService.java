@@ -2,6 +2,8 @@ package com.server.gummymurderer.service;
 
 import com.server.gummymurderer.domain.dto.game.*;
 import com.server.gummymurderer.domain.dto.gameNpc.GameNpcDTO;
+import com.server.gummymurderer.domain.dto.gameUserCheckList.CheckListRequest;
+import com.server.gummymurderer.domain.dto.gameUserCheckList.CheckListSaveRequest;
 import com.server.gummymurderer.domain.entity.*;
 import com.server.gummymurderer.domain.enum_class.GameResult;
 import com.server.gummymurderer.domain.enum_class.GameStatus;
@@ -27,6 +29,7 @@ public class GameService {
     private final GameNpcRepository gameNpcRepository;
     private final GameVoteEventRepository gameVoteEventRepository;
     private final GameScenarioRepository gameScenarioRepository;
+    private final GameUserCheckListService gameUserCheckListService;
 
     @Transactional
     public StartGameResponse startGame(Member loginMember) {
@@ -79,20 +82,34 @@ public class GameService {
 
         GameSet gameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameSetNo(), loginMember)
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
-        Long gameDate = gameVoteEventRepository.countAllByGameSet(gameSet);
 
-        GameVoteEvent gameVoteEvent = new GameVoteEvent(request, gameSet);
-        String voteNpcName = gameVoteEvent.getVoteNpcName();
-        GameNpc voteGameNpc = gameNpcRepository.findByNpcName(voteNpcName)
-                .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
+        // 투표된 NPC 찾기
+        GameNpc voteGameNpc = gameNpcRepository.findByNpcNameAndGameSet(request.getVoteNpcName(), gameSet)
+                .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
-        // npc 상태 dead 로 변경
+        // NPC 상태 dead로 변경
         voteGameNpc.voteEvent();
+
+        // 투표 이벤트 생성 및 저장
+        GameVoteEvent gameVoteEvent = new GameVoteEvent(request, gameSet);
         gameVoteEventRepository.save(gameVoteEvent);
 
-        return new SaveGameResponse(gameSet, voteGameNpc, gameVoteEvent);
-    }
+        // 체크 리스트 저장
+        CheckListSaveRequest checkListSaveRequest = new CheckListSaveRequest();
+        checkListSaveRequest.setGameSetNo(request.getGameSetNo());
+        checkListSaveRequest.setCheckList(request.getCheckList());
+        gameUserCheckListService.saveAndReturnCheckList(checkListSaveRequest);
 
+        // 게임 상태가 GAME_START 이면 GAME_PROGRESS로 변경
+        if (gameSet.getGameStatus() == GameStatus.GAME_START) {
+            gameSet.gameStatusChange();
+        }
+
+        gameSet.updateGameDay();
+        gameSetRepository.save(gameSet);
+
+        return new SaveGameResponse(gameSet);
+    }
 
     @Transactional
     public EndGameResponse gameEnd(Member loginMember, EndGameRequest request) {

@@ -48,4 +48,13 @@ public class GameSet extends BaseEntity {
     public void endGameStatus() {
         this.gameStatus = GameStatus.GAME_END;
     }
+
+    public void gameStatusChange() {
+        this.gameStatus = GameStatus.GAME_PROGRESS;
+    }
+
+    public void updateGameDay() {
+        this.gameDay += 1;
+    }
+
 }

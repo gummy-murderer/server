@@ -1,18 +1,24 @@
 package com.server.gummymurderer.domain.dto.game;
 
+import com.server.gummymurderer.domain.dto.gameUserCheckList.CheckListRequest;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.List;
 
 @Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class SaveGameRequest {
 
     private Long gameSetNo;
+    private int gameDay;
     private String voteNpcName;
     private String voteResult;
     private Long voteNightNumber;
-
-    private String victim;
-    private float npcDeathLocationX;
-    private float npcDeathLocationY;
-    private float npcDeathLocationZ;
+    private List<CheckListRequest> checkList;
 
 }
