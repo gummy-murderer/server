@@ -25,4 +25,8 @@ public class GameUserCheckList {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_npc_no")
     private GameNpc gameNpc;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "game_set_no")
+    private GameSet gameSet;
 }

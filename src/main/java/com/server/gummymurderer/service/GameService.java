@@ -1,9 +1,12 @@
 package com.server.gummymurderer.service;
 
+import com.server.gummymurderer.domain.dto.alibi.AlibiDTO;
 import com.server.gummymurderer.domain.dto.game.*;
 import com.server.gummymurderer.domain.dto.gameNpc.GameNpcDTO;
 import com.server.gummymurderer.domain.dto.gameUserCheckList.CheckListRequest;
 import com.server.gummymurderer.domain.dto.gameUserCheckList.CheckListSaveRequest;
+import com.server.gummymurderer.domain.dto.gameUserCheckList.CheckListSaveResponse;
+import com.server.gummymurderer.domain.dto.scenario.MakeScenarioResponse;
 import com.server.gummymurderer.domain.entity.*;
 import com.server.gummymurderer.domain.enum_class.GameResult;
 import com.server.gummymurderer.domain.enum_class.GameStatus;
@@ -17,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +33,8 @@ public class GameService {
     private final GameNpcRepository gameNpcRepository;
     private final GameVoteEventRepository gameVoteEventRepository;
     private final GameScenarioRepository gameScenarioRepository;
+    private final GameUserCheckListRepository gameUserCheckListRepository;
+    private final GameAlibiRepository gameAlibiRepository;
     private final GameUserCheckListService gameUserCheckListService;
 
     @Transactional
@@ -109,6 +115,51 @@ public class GameService {
         gameSetRepository.save(gameSet);
 
         return new SaveGameResponse(gameSet);
+    }
+
+    public LoadGameResponse gameLoad(Member loginMember, Long gameSetNo) {
+
+        GameSet gameSet = gameSetRepository.findByGameSetNoAndMember(gameSetNo, loginMember)
+                .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
+
+        // GameSet을 LoginGameSetDTO로 변환
+        LoginGameSetDTO gameSetDTO = new LoginGameSetDTO(gameSet);
+
+        // GameScenario를 MakeScenarioResponse로 변환
+        GameScenario gameScenario = gameScenarioRepository.findTopByGameSetOrderByScenarioNoDesc(gameSet)
+                .orElseThrow(() -> new AppException(ErrorCode.SCENARIO_NOT_FOUND));
+
+        // 해당 게임의 npc list
+        List<GameNpc> gameNpcs = gameNpcRepository.findAllByGameSet(gameSet);
+
+        List<GameNpcDTO> npcList = new ArrayList<>();
+        for (GameNpc gameNpc : gameNpcs) {
+            GameNpcDTO dto = new GameNpcDTO(gameNpc);
+            npcList.add(dto);
+        }
+
+        MakeScenarioResponse scenarioResponse = MakeScenarioResponse.of(gameScenario, npcList);
+
+        // 로그인 한 user의 GameSet에 해당하는 checkList
+        List<GameUserCheckList> gameUserCheckLists = gameUserCheckListRepository.findByGameNpc_GameSet(gameSet);
+        List<CheckListSaveResponse> checkList = gameUserCheckLists.stream()
+                .map(CheckListSaveResponse::of)
+                .toList();
+
+        // GameSet에 해당하는 Alibi
+        List<GameAlibi> alibis = new ArrayList<>();
+        for (GameNpc gameNpc : gameNpcs) {
+            alibis.addAll(gameAlibiRepository.findByGameNpc(gameNpc));
+        }
+        List<AlibiDTO> alibiDTOList = alibis.stream()
+                .map(AlibiDTO::of)
+                .toList();
+
+        // 죽은 npc와 죽은 장소
+        String deadNpc = scenarioResponse.getVictim();
+        String deadPlace = scenarioResponse.getCrimeScene();
+
+        return LoadGameResponse.of(gameSetDTO, deadNpc, deadPlace, checkList, alibiDTOList, scenarioResponse);
     }
 
     @Transactional
