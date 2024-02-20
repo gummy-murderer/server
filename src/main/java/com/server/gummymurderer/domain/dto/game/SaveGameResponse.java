@@ -1,21 +1,23 @@
 package com.server.gummymurderer.domain.dto.game;
 
-import com.server.gummymurderer.domain.entity.GameNpc;
 import com.server.gummymurderer.domain.entity.GameSet;
-import com.server.gummymurderer.domain.entity.GameVoteEvent;
-import lombok.Builder;
+import lombok.*;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
-@Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class SaveGameResponse {
-    private GameSet gameSet;
-    private GameNpc gameNpc;
-    private GameVoteEvent gameVoteEvent;
 
-    public SaveGameResponse(GameSet gameSet, GameNpc gameNpc, GameVoteEvent gameVoteEvent) {
-        this.gameSet = gameSet;
-        this.gameNpc = gameNpc;
-        this.gameVoteEvent = gameVoteEvent;
+    private boolean isSaved; // 저장 완료 여부
+    private LocalDateTime saveTime; // 저장 시간
+    private int saveDay; // 저장 날짜
+
+    public SaveGameResponse(GameSet gameSet) {
+        this.isSaved = true;
+        this.saveTime = gameSet.getLastModifiedAt();
+        this.saveDay = gameSet.getGameDay();
     }
 }
