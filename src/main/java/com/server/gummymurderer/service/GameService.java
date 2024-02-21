@@ -36,6 +36,7 @@ public class GameService {
     private final GameUserCheckListRepository gameUserCheckListRepository;
     private final GameAlibiRepository gameAlibiRepository;
     private final GameUserCheckListService gameUserCheckListService;
+    private final ScenarioService scenarioService;
 
     @Transactional
     public StartGameResponse startGame(Member loginMember) {
@@ -168,6 +169,12 @@ public class GameService {
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
         gameSet.endGameStatus();
+
+        if ("SUCCESS".equals(request.getResultMessage())) {
+            gameSet.gameSuccess();
+        } else if ("FAILURE".equals(request.getResultMessage())) {
+            gameSet.gameFailed();
+        }
 
         return new EndGameResponse(request.getResultMessage());
     }

@@ -57,4 +57,12 @@ public class GameSet extends BaseEntity {
         this.gameDay += 1;
     }
 
+    public void gameSuccess() {
+        this.gameResult = GameResult.SUCCESS;
+    }
+
+    public void gameFailed() {
+        this.gameResult = GameResult.FAILURE;
+    }
+
 }

@@ -172,7 +172,7 @@ public class ScenarioService {
         log.info("🐻finalWords 요청 시작");
 
         // 일치하는 게임이 없을 경우 에러 발생
-        GameSet foundGameSet = gameSetRepository.findByGameSetNo(request.getGameSetNo())
+        GameSet foundGameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameSetNo(), loginMember)
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
         // gameResult 정보 가져오기
