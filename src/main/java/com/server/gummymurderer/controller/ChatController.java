@@ -58,12 +58,12 @@ public class ChatController {
 
     // npc-npc 채팅
     @PostMapping("/npc")
-    public Mono<Response<ChatContent>> npcChat(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody NpcChatRequest npcChatRequest) {
+    public Response<ChatContent> npcChat(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody NpcChatRequest npcChatRequest) {
 
         Member loginMember = userDetails.getMember();
 
-        return chatService.getNpcChat(loginMember, npcChatRequest)
-                .map(Response::success);
+        ChatContent chatContent = chatService.getNpcChat(loginMember, npcChatRequest);
+        return Response.success(chatContent);
     }
 
     // aiNpc 별 채팅 조회
