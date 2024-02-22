@@ -89,6 +89,8 @@ public class GameService {
     @Transactional
     public SaveGameResponse gameSave(Member loginMember, SaveGameRequest request) {
 
+        log.info("🐻Game Save 시작");
+
         GameSet gameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameSetNo(), loginMember)
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
@@ -98,12 +100,18 @@ public class GameService {
             GameNpc voteGameNpc = gameNpcRepository.findByNpcNameAndGameSet(request.getVoteNpcName(), gameSet)
                     .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
+            log.info("🐻투표된 npc : {}", voteGameNpc);
+
             // NPC 상태 dead로 변경
             voteGameNpc.voteEvent();
 
             // 투표 이벤트 생성 및 저장
             GameVoteEvent gameVoteEvent = new GameVoteEvent(request, gameSet);
             gameVoteEventRepository.save(gameVoteEvent);
+
+            log.info("🐻투표 이벤트 저장 No : {}", gameVoteEvent.getGameVoteEventNo());
+            log.info("🐻투표 이벤트 저장 지목 npc : {}", gameVoteEvent.getVoteNpcName());
+            log.info("🐻투표 이벤트 저장 투표 결과 : {}", gameVoteEvent.getVoteResult());
 
             // 투표 결과가 FOUND인 경우 게임 종료 및 성공
             if (VoteResult.valueOf(request.getVoteResult()) == VoteResult.FOUND) {
@@ -125,6 +133,8 @@ public class GameService {
 
         gameSet.updateGameDay();
         gameSetRepository.save(gameSet);
+
+        log.info("🐻 Game Save 완료");
 
         return new SaveGameResponse(gameSet);
     }
