@@ -22,6 +22,7 @@ public class GameVoteEvent extends BaseEntity{
     private String voteNpcName;
 
     @Column(name = "vote_result")
+    @Enumerated(EnumType.STRING)
     private VoteResult voteResult;
 
     @Column(name = "vote_night_number")
