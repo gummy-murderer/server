@@ -134,11 +134,14 @@ public class ChatService {
         String aiServerUrl = "http://ec2-52-79-128-189.ap-northeast-2.compute.amazonaws.com:8000/api/user/conversation_with_user";
         WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build(); // WebClient 인스턴스 생성
 
+        GameSet gameSet = gameSetRepository.findByGameSetNo(request.getGameSetNo())
+                .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
+
         // 이전 대화 내용들 가져오기
         List<Chat> previousChatContents = chatRepository.findAllByMemberAndAINpcAndGameSetNo(request.getSender(), request.getReceiver(), request.getGameSetNo());
 
         // 이전 스토리 내용 가져오기
-        Optional<GameScenario> gameScenarioOptional = gameScenarioRepository.findByGameSet_GameSetNo(request.getGameSetNo());
+        Optional<GameScenario> gameScenarioOptional = gameScenarioRepository.findTopByGameSetOrderByScenarioNoDesc(gameSet);
         String previousStory = gameScenarioOptional.map(GameScenario::getDailySummary).orElse("");
 
         // AI 서버에 보낼 요청 객체 생성
@@ -149,7 +152,7 @@ public class ChatService {
         GameNpc gameNpc = gameNpcRepository.findByNpcNameAndGameSet_GameSetNo(request.getReceiver(), request.getGameSetNo())
                 .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
 
-        GameScenario gameScenario = gameScenarioRepository.findByGameSet_GameSetNo(request.getGameSetNo())
+        GameScenario gameScenario = gameScenarioRepository.findTopByGameSetOrderByScenarioNoDesc(gameSet)
                 .orElseThrow(() -> new AppException(ErrorCode.SCENARIO_NOT_FOUND));
 
         GameAlibi gameAlibi = gameAlibiRepository.findByGameScenarioAndGameNpc(gameScenario, gameNpc)
@@ -215,8 +218,6 @@ public class ChatService {
                         throw new AppException(ErrorCode.GAME_NOT_FOUND);
                     }
 
-                    GameSet gameSet = optionalGameSet.get();
-
                     Chat aiChatEntity = ChatSaveRequest.toEntity(aiChat, LocalDateTime.now(), ChatRoleType.AI, ChatRoleType.USER, gameSet);
                     chatRepository.save(aiChatEntity);
 
@@ -262,11 +263,14 @@ public class ChatService {
         String aiServerUrl = "http://ec2-52-79-128-189.ap-northeast-2.compute.amazonaws.com:8000/api/user/conversation_between_npcs_each";
         WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build();
 
+        GameSet gameSet = gameSetRepository.findByGameSetNo(npcChatRequest.getGameSetNo())
+                .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
+
         // 이전 대화 내용들 가져오기
         List<Chat> previousChatContents = chatRepository.findAllByNpcAndGameSetNo(npcChatRequest.getNpcName1(), npcChatRequest.getNpcName2(), npcChatRequest.getGameSetNo());
 
         // 이전 스토리 내용 가져오기
-        Optional<GameScenario> gameScenarioOptional = gameScenarioRepository.findByGameSet_GameSetNo(npcChatRequest.getGameSetNo());
+        Optional<GameScenario> gameScenarioOptional = gameScenarioRepository.findTopByGameSetOrderByScenarioNoDesc(gameSet);
         String previousStory = gameScenarioOptional.map(GameScenario::getDailySummary).orElse("");
 
         // AI 서버에 보낼 요청 객체 생성
@@ -279,7 +283,7 @@ public class ChatService {
         GameNpc gameNpc2 = gameNpcRepository.findByNpcNameAndGameSet_GameSetNo(npcChatRequest.getNpcName2(), npcChatRequest.getGameSetNo())
                 .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
 
-        GameScenario gameScenario = gameScenarioRepository.findByGameSet_GameSetNo(npcChatRequest.getGameSetNo())
+        GameScenario gameScenario = gameScenarioRepository.findTopByGameSetOrderByScenarioNoDesc(gameSet)
                 .orElseThrow(() -> new AppException(ErrorCode.SCENARIO_NOT_FOUND));
 
         GameAlibi gameAlibi1 = gameAlibiRepository.findByGameScenarioAndGameNpc(gameScenario, gameNpc1)
@@ -334,10 +338,6 @@ public class ChatService {
 
                     senderNpc.updateTokens(npcChatResponse.getTokens().getPromptTokens(), npcChatResponse.getTokens().getCompletionTokens());
                     gameNpcRepository.save(senderNpc);
-
-                    Optional<GameSet> optionalGameSet = gameSetRepository.findByGameSetNo(npcChatRequest.getGameSetNo());
-
-                    GameSet gameSet = optionalGameSet.get();
 
                     ChatContent chatContent = npcChatResponse.getAnswer().getChatContent().get(0);
                     Chat chat = ChatContent.toEntity(chatContent, npcChatRequest.getChatDay(), LocalDateTime.now(), ChatRoleType.AI, ChatRoleType.AI, gameSet);
