@@ -131,7 +131,7 @@ public class ChatService {
 
     // AI로 채팅 내용 전송하고 AI에서 온 답장을 반환
     private ChatSaveResponse sendChatToAIServer(ChatSaveRequest request) {
-        String aiServerUrl = "http://ec2-52-79-128-189.ap-northeast-2.compute.amazonaws.com:8000/api/user/conversation_with_user";
+        String aiServerUrl = "http://ec2-3-39-251-140.ap-northeast-2.compute.amazonaws.com:80/api/user/conversation_with_user";
         WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build(); // WebClient 인스턴스 생성
 
         GameSet gameSet = gameSetRepository.findByGameSetNo(request.getGameSetNo())
@@ -260,7 +260,7 @@ public class ChatService {
     }
 
     private NpcChatResponse sendNpcChatToAIServer(NpcChatRequest npcChatRequest) {
-        String aiServerUrl = "http://ec2-52-79-128-189.ap-northeast-2.compute.amazonaws.com:8000/api/user/conversation_between_npcs_each";
+        String aiServerUrl = "http://ec2-3-39-251-140.ap-northeast-2.compute.amazonaws.com:80/api/user/conversation_between_npcs_each";
         WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build();
 
         GameSet gameSet = gameSetRepository.findByGameSetNo(npcChatRequest.getGameSetNo())
