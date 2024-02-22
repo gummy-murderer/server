@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -150,7 +151,8 @@ public class GameService {
         // GameSet에 해당하는 Alibi
         List<GameAlibi> alibis = new ArrayList<>();
         for (GameNpc gameNpc : gameNpcs) {
-            alibis.addAll(gameAlibiRepository.findByGameNpc(gameNpc));
+            Optional<GameAlibi> optionalGameAlibi = gameAlibiRepository.findByGameScenarioAndGameNpc(gameScenario, gameNpc);
+            optionalGameAlibi.ifPresent(alibis::add);
         }
         List<AlibiDTO> alibiDTOList = alibis.stream()
                 .map(AlibiDTO::of)
