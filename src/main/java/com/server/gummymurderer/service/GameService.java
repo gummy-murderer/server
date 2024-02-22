@@ -10,6 +10,7 @@ import com.server.gummymurderer.domain.dto.scenario.MakeScenarioResponse;
 import com.server.gummymurderer.domain.entity.*;
 import com.server.gummymurderer.domain.enum_class.GameResult;
 import com.server.gummymurderer.domain.enum_class.GameStatus;
+import com.server.gummymurderer.domain.enum_class.VoteResult;
 import com.server.gummymurderer.exception.AppException;
 import com.server.gummymurderer.exception.ErrorCode;
 import com.server.gummymurderer.repository.*;
@@ -91,16 +92,25 @@ public class GameService {
         GameSet gameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameSetNo(), loginMember)
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
-        // 투표된 NPC 찾기
-        GameNpc voteGameNpc = gameNpcRepository.findByNpcNameAndGameSet(request.getVoteNpcName(), gameSet)
-                .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
+        // 투표가 이루어진 경우에만 투표 이벤트 처리
+        if (request.getVoteNpcName() != null && request.getVoteResult() != null && request.getVoteNightNumber() != 0) {
+            // 투표된 NPC 찾기
+            GameNpc voteGameNpc = gameNpcRepository.findByNpcNameAndGameSet(request.getVoteNpcName(), gameSet)
+                    .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
-        // NPC 상태 dead로 변경
-        voteGameNpc.voteEvent();
+            // NPC 상태 dead로 변경
+            voteGameNpc.voteEvent();
 
-        // 투표 이벤트 생성 및 저장
-        GameVoteEvent gameVoteEvent = new GameVoteEvent(request, gameSet);
-        gameVoteEventRepository.save(gameVoteEvent);
+            // 투표 이벤트 생성 및 저장
+            GameVoteEvent gameVoteEvent = new GameVoteEvent(request, gameSet);
+            gameVoteEventRepository.save(gameVoteEvent);
+
+            // 투표 결과가 FOUND인 경우 게임 종료 및 성공
+            if (VoteResult.valueOf(request.getVoteResult()) == VoteResult.FOUND) {
+                gameSet.endGameStatus();
+                gameSet.gameSuccess();
+            }
+        }
 
         // 체크 리스트 저장
         CheckListSaveRequest checkListSaveRequest = new CheckListSaveRequest();
