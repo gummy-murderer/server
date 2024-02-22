@@ -9,7 +9,7 @@ import lombok.*;
 @Builder
 @Getter
 @Table(name = "game_alibi_tb")
-public class GameAlibi {
+public class GameAlibi extends BaseEntity{
 
     @Id
     @GeneratedValue
