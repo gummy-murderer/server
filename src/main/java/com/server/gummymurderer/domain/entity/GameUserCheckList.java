@@ -9,7 +9,7 @@ import lombok.*;
 @Builder
 @Getter
 @Table(name = "game_user_checklist_tb")
-public class GameUserCheckList {
+public class GameUserCheckList extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,10 +17,10 @@ public class GameUserCheckList {
     private Long userChecklistNo;
 
     @Column(name = "mark")
-    private String mark;  // 수정(○, △, X) ->
+    private String mark;
 
     @Column(name = "check_job")
-    private String checkJob; // 수정(사용자가 끌어다 놓은 직업)
+    private String checkJob;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_npc_no")
