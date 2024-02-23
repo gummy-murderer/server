@@ -146,12 +146,16 @@ public class GameService {
         GameSet gameSet = gameSetRepository.findByGameSetNoAndMember(gameSetNo, loginMember)
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
+        log.info("🐻Load GameSetNo : {}", gameSet.getGameSetNo());
+
         // GameSet을 LoginGameSetDTO로 변환
         LoginGameSetDTO gameSetDTO = new LoginGameSetDTO(gameSet);
 
         // GameScenario를 MakeScenarioResponse로 변환
         GameScenario gameScenario = gameScenarioRepository.findTopByGameSetOrderByScenarioNoDesc(gameSet)
                 .orElseThrow(() -> new AppException(ErrorCode.SCENARIO_NOT_FOUND));
+
+        log.info("🐻Load Game Scenario DailySummary : {}", gameScenario.getDailySummary());
 
         // 해당 게임의 npc list
         List<GameNpc> gameNpcs = gameNpcRepository.findAllByGameSet(gameSet);
@@ -183,6 +187,9 @@ public class GameService {
         // 죽은 npc와 죽은 장소
         String deadNpc = scenarioResponse.getVictim();
         String deadPlace = scenarioResponse.getCrimeScene();
+
+        log.info("🐻Game Load deadNpc : {}", deadNpc);
+        log.info("🐻Game Load deadPlace : {}", deadPlace);
 
         log.info("🐻Game Load 완료");
 
