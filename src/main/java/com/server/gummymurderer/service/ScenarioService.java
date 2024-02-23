@@ -182,6 +182,8 @@ public class ScenarioService {
             default -> "in_progress";
         };
 
+        log.info("🐻 gameResult : {}", foundGameSet.getGameResult());
+
         // murderer 정보 가져오기
         String murderer = gameNpcRepository.findMurderByGameSetNo(foundGameSet.getGameSetNo());
 

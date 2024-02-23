@@ -141,6 +141,8 @@ public class GameService {
 
     public LoadGameResponse gameLoad(Member loginMember, Long gameSetNo) {
 
+        log.info("🐻Game Load 시작");
+
         GameSet gameSet = gameSetRepository.findByGameSetNoAndMember(gameSetNo, loginMember)
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
@@ -181,6 +183,8 @@ public class GameService {
         // 죽은 npc와 죽은 장소
         String deadNpc = scenarioResponse.getVictim();
         String deadPlace = scenarioResponse.getCrimeScene();
+
+        log.info("🐻Game Load 완료");
 
         return LoadGameResponse.of(gameSetDTO, deadNpc, deadPlace, checkList, alibiDTOList, scenarioResponse);
     }
