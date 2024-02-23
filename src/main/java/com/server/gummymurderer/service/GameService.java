@@ -202,12 +202,11 @@ public class GameService {
 
         gameSet.endGameStatus();
 
-        if ("SUCCESS".equals(request.getResultMessage())) {
-            gameSet.gameSuccess();
-        } else if ("FAILURE".equals(request.getResultMessage())) {
+        if ("FAILURE".equals(request.getResultMessage())) {
             gameSet.gameFailed();
+        } else {
+            throw new AppException(ErrorCode.INVALID_RESULT_MESSAGE);
         }
-
         return new EndGameResponse(request.getResultMessage());
     }
 }

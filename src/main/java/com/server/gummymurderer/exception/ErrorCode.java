@@ -26,7 +26,7 @@ public enum ErrorCode {
     ALIBI_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 npc의 alibi를 찾을 수 없습니다."),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증되지 않은 사용자입니다."),
     GAME_NOT_WON(HttpStatus.BAD_REQUEST, "GameResult가 SUCCESS가 아닙니다."),
-
+    INVALID_RESULT_MESSAGE(HttpStatus.BAD_REQUEST, "잘못된 ResultMessage 입니다."),
     ;
 
     private HttpStatus status;
