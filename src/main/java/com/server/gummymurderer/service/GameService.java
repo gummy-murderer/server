@@ -3,7 +3,6 @@ package com.server.gummymurderer.service;
 import com.server.gummymurderer.domain.dto.alibi.AlibiDTO;
 import com.server.gummymurderer.domain.dto.game.*;
 import com.server.gummymurderer.domain.dto.gameNpc.GameNpcDTO;
-import com.server.gummymurderer.domain.dto.gameUserCheckList.CheckListRequest;
 import com.server.gummymurderer.domain.dto.gameUserCheckList.CheckListSaveRequest;
 import com.server.gummymurderer.domain.dto.gameUserCheckList.CheckListSaveResponse;
 import com.server.gummymurderer.domain.dto.scenario.MakeScenarioResponse;
@@ -22,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -46,7 +44,8 @@ public class GameService {
         int saveGameCount = gameSetRepository.findGameSetsByMember(loginMember).size();
         log.info("🤖 저장된 게임 갯수 : {}", saveGameCount);
 
-//        if (saveGameCount > 2) {
+        // 게임 슬롯 최대 3개 저장
+//        if (saveGameCount >= 3) {
 //            throw new AppException(ErrorCode.SAVED_GAME_FULL);
 //        }
 
