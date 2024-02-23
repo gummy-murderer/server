@@ -25,6 +25,7 @@ public enum ErrorCode {
     SCENARIO_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 시나리오를 찾을 수 없습니다."),
     ALIBI_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 npc의 alibi를 찾을 수 없습니다."),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증되지 않은 사용자입니다."),
+    GAME_NOT_WON(HttpStatus.BAD_REQUEST, "GameResult가 SUCCESS가 아닙니다."),
 
     ;
 

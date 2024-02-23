@@ -6,6 +6,7 @@ import com.server.gummymurderer.domain.dto.alibi.AlibiDTO;
 import com.server.gummymurderer.domain.dto.gameNpc.GameNpcDTO;
 import com.server.gummymurderer.domain.dto.scenario.*;
 import com.server.gummymurderer.domain.entity.*;
+import com.server.gummymurderer.domain.enum_class.GameResult;
 import com.server.gummymurderer.exception.AppException;
 import com.server.gummymurderer.exception.ErrorCode;
 import com.server.gummymurderer.repository.GameAlibiRepository;
@@ -176,11 +177,13 @@ public class ScenarioService {
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
         // gameResult 정보 가져오기
-        String gameResult = switch (foundGameSet.getGameResult()) {
-            case SUCCESS -> "victory";
-            case FAILURE -> "defeat";
-            default -> "in_progress";
-        };
+        String gameResult = null;
+
+        if (foundGameSet.getGameResult() == GameResult.SUCCESS) {
+            gameResult = "victory";
+        } else {
+            throw new AppException(ErrorCode.GAME_NOT_WON);
+        }
 
         log.info("🐻 gameResult : {}", foundGameSet.getGameResult());
 
