@@ -197,16 +197,26 @@ public class GameService {
 
     @Transactional
     public EndGameResponse gameEnd(Member loginMember, EndGameRequest request) {
+
+        log.info("🐻Game End 시작");
+
         GameSet gameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameSetNo(), loginMember)
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
+        log.info("🐻종료될 GameSetNo : {}", request.getGameSetNo());
+
         gameSet.endGameStatus();
+
+        log.info("🐻종료 요청 게임 상태 : {}", gameSet.getGameStatus());
 
         if ("FAILURE".equals(request.getResultMessage())) {
             gameSet.gameFailed();
         } else {
             throw new AppException(ErrorCode.INVALID_RESULT_MESSAGE);
         }
+
+        log.info("🐻Game End 완료");
+
         return new EndGameResponse(request.getResultMessage());
     }
 }
