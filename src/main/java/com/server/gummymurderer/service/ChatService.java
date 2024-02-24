@@ -365,6 +365,10 @@ public class ChatService {
 
         chatListRequest.setNickName(loginMember.getNickname());
 
+        // aiNpcName에서 쌍따옴표 제거
+        String aiNpcName = chatListRequest.getAiNpcName().replace("\"", "");
+        chatListRequest.setAiNpcName(aiNpcName);
+
         log.info("🐻 유저 nickname : {}", chatListRequest.getNickName());
         log.info("🐻 npc name : {}", chatListRequest.getAiNpcName());
         log.info("🐻 gameSetNo : {}", chatListRequest.getGameSetNo());
