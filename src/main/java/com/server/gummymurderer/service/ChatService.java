@@ -365,6 +365,10 @@ public class ChatService {
 
         chatListRequest.setNickName(loginMember.getNickname());
 
+        log.info("🐻 유저 nickname : {}", chatListRequest.getNickName());
+        log.info("🐻 npc name : {}", chatListRequest.getAiNpcName());
+        log.info("🐻 gameSetNo : {}", chatListRequest.getGameSetNo());
+
         List<Chat> chats = chatRepository.findAllByMemberAndAINpcAndGameSetNo(chatListRequest.getNickName(), chatListRequest.getAiNpcName(), chatListRequest.getGameSetNo());
 
         if (chats.isEmpty()) {
