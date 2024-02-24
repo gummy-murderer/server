@@ -68,7 +68,13 @@ public class ChatController {
 
     // aiNpc 별 채팅 조회
     @GetMapping("/list")
-    public Response<List<ChatListResponse>> getAllChatByUserAndAINpc(@AuthenticationPrincipal CustomUserDetails userDetails, @ModelAttribute ChatListRequest chatListRequest) {
+    public Response<List<ChatListResponse>> getAllChatByUserAndAINpc(@AuthenticationPrincipal CustomUserDetails userDetails, @ModelAttribute ChatListRequest chatListRequest, HttpServletRequest httpServletRequest) {
+
+        String requestURL = httpServletRequest.getRequestURI();
+        String queryString = httpServletRequest.getQueryString();
+
+        log.info("🐻Request URL: {}", requestURL);
+        log.info("🐻Query String: {}", queryString);
 
         Member loginMember = userDetails.getMember();
 

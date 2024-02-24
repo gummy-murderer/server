@@ -69,6 +69,8 @@ public class ChatService {
     // 채팅 보내기
     public ChatSaveResponse saveChat(Member loginMember, ChatSaveRequest request, HttpServletRequest httpServletRequest) {
 
+        log.info("🐻user-npc chat 시작");
+
         String authHeader = httpServletRequest.getHeader("Authorization");
 
         // 요청에서 받은 Authorization 헤더 출력
@@ -240,6 +242,8 @@ public class ChatService {
     // npc 채팅 요청 및 반환
     public ChatContent getNpcChat(Member loginMember, NpcChatRequest npcChatRequest) {
 
+        log.info("🐻npc-npc chat 시작");
+
         Optional<GameSet> optionalGameSet = gameSetRepository.findByGameSetNo(npcChatRequest.getGameSetNo());
 
         if (optionalGameSet.isEmpty()) {
@@ -252,6 +256,7 @@ public class ChatService {
 
         try {
             NpcChatResponse npcChatResponse = sendNpcChatToAIServer(npcChatRequest);
+            log.info("🐻user-npc chat 완료");
             return npcChatResponse.getAnswer().getChatContent().get(npcChatResponse.getAnswer().getChatContent().size() - 1);
         } catch (Exception e) {
             log.error("🐻채팅을 AI 로 보내는 중 오류 발생: {}", e.getMessage(), e);
@@ -350,6 +355,8 @@ public class ChatService {
 
     public List<ChatListResponse> getAllChatByUserNameAndAINpc(Member loginMember, ChatListRequest chatListRequest) {
 
+        log.info("🐻user-npc chat list 시작");
+
         Optional<GameSet> optionalGameSet = gameSetRepository.findByGameSetNo(chatListRequest.getGameSetNo());
 
         if (optionalGameSet.isEmpty()) {
@@ -368,6 +375,9 @@ public class ChatService {
         for (Chat chat : chats) {
             chatListResponses.add(ChatListResponse.of(chat));
         }
+
+        log.info("🐻user-npc chat list 완료");
+
         return chatListResponses;
     }
 
