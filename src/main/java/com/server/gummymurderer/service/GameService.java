@@ -57,6 +57,8 @@ public class GameService {
         Map<String, String> requestData = new HashMap<>();
         requestData.put("secretKey", request.getSecretKey());
 
+        log.info("🐻requestData : {}", requestData);
+
         ClientResponse response = webClient
                 .post()
                 .uri(url)
