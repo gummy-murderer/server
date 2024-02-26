@@ -7,6 +7,7 @@ import com.server.gummymurderer.service.CustomUserDetails;
 import com.server.gummymurderer.service.GameService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,10 @@ public class GameController {
 
         Member loginMember = customUserDetails.getMember();
         SecretKeyValidationResponse response = gameService.validationSecretKey(loginMember, request);
+
+        HttpStatus statusCode = response.isValid() ? HttpStatus.OK : HttpStatus.NOT_FOUND;
+        log.info("🐻 Response status code: {}", statusCode);
+
         return Response.success(response);
     }
 

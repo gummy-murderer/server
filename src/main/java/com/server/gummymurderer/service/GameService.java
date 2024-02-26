@@ -72,12 +72,15 @@ public class GameService {
         if (response.statusCode() == HttpStatus.OK) {
 
             SuccessResponse successResponse = response.bodyToMono(SuccessResponse.class).block();
+            log.info("🐻SuccessResponse message : {}", successResponse.getMessage());
             log.info("🐻secretKey 검증 Valid");
             return new SecretKeyValidationResponse(successResponse.getMessage(), null, successResponse.getValid());
 
         } else if (response.statusCode() == HttpStatus.NOT_FOUND) {
-            log.info("🐻secretKey 검증 Invalid");
+
             ErrorResponse errorResponse = response.bodyToMono(ErrorResponse.class).block();
+            log.info("🐻ErrorResponse message : {}", errorResponse.getDetail());
+            log.info("🐻secretKey 검증 Invalid");
             return new SecretKeyValidationResponse(null, errorResponse.getDetail(), false);
         }
         return null;
