@@ -19,6 +19,14 @@ public class GameController {
 
     private final GameService gameService;
 
+    @PostMapping("/key")
+    public Response<SecretKeyValidationResponse> validateSecretKey(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody SecretKeyValidationRequest request) {
+
+        Member loginMember = customUserDetails.getMember();
+        SecretKeyValidationResponse response = gameService.validationSecretKey(loginMember, request);
+        return Response.success(response);
+    }
+
     @PostMapping("/start")
     public ResponseEntity<Response<StartGameResponse>> startGame(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         Member loginMember = customUserDetails.getMember();
