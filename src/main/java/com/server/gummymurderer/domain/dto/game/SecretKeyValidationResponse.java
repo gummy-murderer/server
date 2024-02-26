@@ -14,7 +14,7 @@ import lombok.Setter;
 public class SecretKeyValidationResponse {
 
     private String message;
-    private boolean valid;
     private String detail;
+    private boolean valid;
 
 }

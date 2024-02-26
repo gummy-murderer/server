@@ -69,12 +69,12 @@ public class GameService {
 
             SuccessResponse successResponse = response.bodyToMono(SuccessResponse.class).block();
             log.info("🐻secretKey 검증 Valid");
-            return new SecretKeyValidationResponse(successResponse.getMessage(), successResponse.getValid(), null);
+            return new SecretKeyValidationResponse(successResponse.getMessage(), null, successResponse.getValid());
 
         } else if (response.statusCode() == HttpStatus.NOT_FOUND) {
             log.info("🐻secretKey 검증 Invalid");
             ErrorResponse errorResponse = response.bodyToMono(ErrorResponse.class).block();
-            return new SecretKeyValidationResponse(null, false, errorResponse.getDetail());
+            return new SecretKeyValidationResponse(null, errorResponse.getDetail(), false);
         } else {
             throw new AppException(ErrorCode.SECRET_KEY_UNEXPECTED_ERROR);
         }
