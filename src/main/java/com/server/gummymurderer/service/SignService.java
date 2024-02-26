@@ -71,6 +71,11 @@ public class SignService {
             throw new AppException(ErrorCode.DUPLICATED_EMAIL);
         }
 
+        // nickName이 중복 될 때 발생하는 에러
+        if (memberRepository.findByNickname(request.getNickname()).isPresent()) {
+            throw new AppException(ErrorCode.DUPLICATED_NICKNAME);
+        }
+
             Member member = Member.builder()
                     .account(request.getAccount())
                     .password(passwordEncoder.encode(request.getPassword()))
@@ -82,7 +87,6 @@ public class SignService {
             member.setRoles(Collections.singletonList(Authority.builder().name("ROLE_USER").build()));
 
             Member savedMember = memberRepository.save(member);
-
 
         return SignResponse.builder()
                 .memberNo(savedMember.getMemberNo())
