@@ -52,6 +52,8 @@ public class GameService {
 
         WebClient webClient = WebClient.create();
 
+        log.info("🐻secretKey : {}", request.getSecretKey());
+
         Map<String, String> requestData = new HashMap<>();
         requestData.put("secretKey", request.getSecretKey());
 
