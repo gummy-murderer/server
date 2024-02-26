@@ -24,6 +24,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.core.publisher.Mono;
 
 import java.util.*;
 
@@ -130,6 +133,20 @@ public class GameService {
                 .body(BodyInserters.fromValue(jsonRequest))
                 .retrieve()
                 .bodyToMono(SecretKeyValidationResponse.class)
+                .onErrorResume(WebClientResponseException.class, ex -> {
+                    if (400 <= ex.getRawStatusCode() && ex.getRawStatusCode() < 500) {
+                        String errorBody = ex.getResponseBodyAsString();
+                        try {
+                            String detail = objectMapper.readTree(errorBody).get("detail").asText();
+                            return Mono.just(new SecretKeyValidationResponse(null, detail, false));
+                        } catch (JsonProcessingException e) {
+                            e.printStackTrace();
+                            return Mono.just(new SecretKeyValidationResponse(null, "Error while processing response", false));
+                        }
+                    } else {
+                        return Mono.error(ex);
+                    }
+                })
                 .block();
 
         log.info("🐻result : {}", result);
