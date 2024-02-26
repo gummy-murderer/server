@@ -1,5 +1,7 @@
 package com.server.gummymurderer.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.server.gummymurderer.domain.dto.alibi.AlibiDTO;
 import com.server.gummymurderer.domain.dto.game.*;
 import com.server.gummymurderer.domain.dto.gameNpc.GameNpcDTO;
@@ -41,7 +43,7 @@ public class GameService {
     private final GameUserCheckListService gameUserCheckListService;
     private final MemberRepository memberRepository;
 
-    public SecretKeyValidationResponse validationSecretKey(Member loginMember, SecretKeyValidationRequest request) {
+    public SecretKeyValidationResponse validationSecretKey(Member loginMember, SecretKeyValidationRequest request) throws JsonProcessingException {
 
         log.info("🐻secretKey 검증 시작");
 
@@ -50,20 +52,23 @@ public class GameService {
 
         String url = "http://ec2-3-39-251-140.ap-northeast-2.compute.amazonaws.com:80/api/etc/secret_key_validation";
 
-        WebClient webClient = WebClient.create();
-
         log.info("🐻secretKey : {}", request.getSecretKey());
 
         Map<String, String> requestData = new HashMap<>();
         requestData.put("secretKey", request.getSecretKey());
 
-        log.info("🐻requestData : {}", requestData);
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        String jsonRequest = objectMapper.writeValueAsString(requestData);
+        log.info("🐻jsonRequest : {}", jsonRequest);
+
+        WebClient webClient = WebClient.create();
 
         ClientResponse response = webClient
                 .post()
                 .uri(url)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(requestData))
+                .body(BodyInserters.fromValue(jsonRequest))
                 .exchange()
                 .block();
 

@@ -1,5 +1,6 @@
 package com.server.gummymurderer.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.server.gummymurderer.domain.dto.game.*;
 import com.server.gummymurderer.domain.entity.Member;
 import com.server.gummymurderer.exception.Response;
@@ -21,7 +22,7 @@ public class GameController {
     private final GameService gameService;
 
     @PostMapping("/key")
-    public Response<SecretKeyValidationResponse> validateSecretKey(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody SecretKeyValidationRequest request) {
+    public Response<SecretKeyValidationResponse> validateSecretKey(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody SecretKeyValidationRequest request) throws JsonProcessingException {
 
         Member loginMember = customUserDetails.getMember();
         SecretKeyValidationResponse response = gameService.validationSecretKey(loginMember, request);
