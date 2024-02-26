@@ -15,12 +15,15 @@ import com.server.gummymurderer.exception.ErrorCode;
 import com.server.gummymurderer.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.ClientResponse;
+import org.springframework.web.reactive.function.client.WebClient;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +39,46 @@ public class GameService {
     private final GameUserCheckListRepository gameUserCheckListRepository;
     private final GameAlibiRepository gameAlibiRepository;
     private final GameUserCheckListService gameUserCheckListService;
-    private final ScenarioService scenarioService;
+    private final MemberRepository memberRepository;
+
+    public SecretKeyValidationResponse validationSecretKey(Member loginMember, SecretKeyValidationRequest request) {
+
+        log.info("🐻secretKey 검증 시작");
+
+        Member member = memberRepository.findByNickname(loginMember.getNickname())
+                .orElseThrow(() -> new AppException(ErrorCode.INVALID_ACCOUNT));
+
+        String url = "http://ec2-3-39-251-140.ap-northeast-2.compute.amazonaws.com:80/api/etc/secret_key_validation";
+
+        WebClient webClient = WebClient.create();
+
+        Map<String, String> requestData = new HashMap<>();
+        requestData.put("secretKey", request.getSecretKey());
+
+        ClientResponse response = webClient
+                .post()
+                .uri(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(requestData))
+                .exchange()
+                .block();
+
+        log.info("🐻response.statusCode : {}", response.statusCode());
+
+        if (response.statusCode() == HttpStatus.OK) {
+
+            SuccessResponse successResponse = response.bodyToMono(SuccessResponse.class).block();
+            log.info("🐻secretKey 검증 Valid");
+            return new SecretKeyValidationResponse(successResponse.getMessage(), successResponse.getValid(), null);
+
+        } else if (response.statusCode() == HttpStatus.NOT_FOUND) {
+            log.info("🐻secretKey 검증 Invalid");
+            ErrorResponse errorResponse = response.bodyToMono(ErrorResponse.class).block();
+            return new SecretKeyValidationResponse(null, false, errorResponse.getDetail());
+        } else {
+            throw new AppException(ErrorCode.SECRET_KEY_UNEXPECTED_ERROR);
+        }
+    }
 
     @Transactional
     public StartGameResponse startGame(Member loginMember) {
