@@ -75,9 +75,8 @@ public class GameService {
             log.info("🐻secretKey 검증 Invalid");
             ErrorResponse errorResponse = response.bodyToMono(ErrorResponse.class).block();
             return new SecretKeyValidationResponse(null, errorResponse.getDetail(), false);
-        } else {
-            throw new AppException(ErrorCode.SECRET_KEY_UNEXPECTED_ERROR);
         }
+        return null;
     }
 
     @Transactional
