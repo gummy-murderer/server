@@ -46,64 +46,6 @@ public class GameService {
     private final GameUserCheckListService gameUserCheckListService;
     private final MemberRepository memberRepository;
 
-//    public SecretKeyValidationResponse validationSecretKey(Member loginMember, SecretKeyValidationRequest request) throws JsonProcessingException {
-//
-//        log.info("🐻secretKey 검증 시작");
-//
-//        Member member = memberRepository.findByNickname(loginMember.getNickname())
-//                .orElseThrow(() -> new AppException(ErrorCode.INVALID_ACCOUNT));
-//
-//        String url = "http://ec2-3-39-251-140.ap-northeast-2.compute.amazonaws.com:80/api/etc/secret_key_validation";
-//
-//        log.info("🐻secretKey : {}", request.getSecretKey());
-//
-//        Map<String, String> requestData = new HashMap<>();
-//        requestData.put("secretKey", request.getSecretKey());
-//
-//        ObjectMapper objectMapper = new ObjectMapper();
-//
-//        String jsonRequest = objectMapper.writeValueAsString(requestData);
-//        log.info("🐻jsonRequest : {}", jsonRequest);
-//
-//        WebClient webClient = WebClient.create();
-//
-//        ClientResponse response = webClient
-//                .post()
-//                .uri(url)
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .body(BodyInserters.fromValue(jsonRequest))
-//                .exchange()
-//                .block();
-//
-//        log.info("🐻response.statusCode : {}", response.statusCode());
-//
-//        if (response.statusCode() == HttpStatus.OK) {
-//
-//            SuccessResponse successResponse = webClient
-//                    .post()
-//                    .uri(url)
-//                    .contentType(MediaType.APPLICATION_JSON)
-//                    .body(BodyInserters.fromValue(jsonRequest))
-//                    .retrieve()
-//                    .bodyToMono(SuccessResponse.class)
-//                    .block();
-//            log.info("🐻secretKey 검증 Valid");
-//            return new SecretKeyValidationResponse(successResponse.getMessage(), null, successResponse.getValid());
-//
-//        } else {
-//
-//            ErrorResponse errorResponse = webClient
-//                    .post()
-//                    .uri(url)
-//                    .contentType(MediaType.APPLICATION_JSON)
-//                    .body(BodyInserters.fromValue(jsonRequest))
-//                    .retrieve()
-//                    .bodyToMono(ErrorResponse.class)
-//                    .block();
-//            log.info("🐻secretKey 검증 Invalid");
-//            return new SecretKeyValidationResponse(null, errorResponse.getDetail(), false);
-//        }
-//    }
 
     public SecretKeyValidationResponse validationSecretKey(Member loginMember, SecretKeyValidationRequest request) throws JsonProcessingException {
 
@@ -112,7 +54,7 @@ public class GameService {
         Member member = memberRepository.findByNickname(loginMember.getNickname())
                 .orElseThrow(() -> new AppException(ErrorCode.INVALID_ACCOUNT));
 
-        String url = "http://221.163.19.218:9090/api/etc/secret_key_validation";
+        String url = "http://ec2-3-39-251-140.ap-northeast-2.compute.amazonaws.com:80/api/etc/secret_key_validation";
 
         log.info("🐻secretKey : {}", request.getSecretKey());
 
