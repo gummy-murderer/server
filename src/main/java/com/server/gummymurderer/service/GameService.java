@@ -126,34 +126,32 @@ public class GameService {
 
         WebClient webClient = WebClient.create();
 
-        SecretKeyValidationResponse result = webClient
-                .post()
-                .uri(url)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(jsonRequest))
-                .retrieve()
-                .bodyToMono(SecretKeyValidationResponse.class)
-                .onErrorResume(WebClientResponseException.class, ex -> {
-                    if (400 <= ex.getRawStatusCode() && ex.getRawStatusCode() < 500) {
-                        String errorBody = ex.getResponseBodyAsString();
-                        try {
-                            String detail = objectMapper.readTree(errorBody).get("detail").asText();
-                            return Mono.just(new SecretKeyValidationResponse(null, detail, false));
-                        } catch (JsonProcessingException e) {
-                            e.printStackTrace();
-                            return Mono.just(new SecretKeyValidationResponse(null, "Error while processing response", false));
-                        }
-                    } else {
-                        return Mono.error(ex);
-                    }
-                })
-                .block();
+        SecretKeyValidationResponse result;
+        try {
+            result = webClient
+                    .post()
+                    .uri(url)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(BodyInserters.fromValue(jsonRequest))
+                    .retrieve()
+                    .bodyToMono(SecretKeyValidationResponse.class)
+                    .doOnNext(response -> log.info("🐻AI server response: {}", response)) // AI 서버 응답 로그
+                    .block();
+        } catch (WebClientResponseException ex) {
+            log.error("🐻Error from AI server: {}", ex.getResponseBodyAsString()); // AI 서버 에러 로그
+            if (400 <= ex.getRawStatusCode() && ex.getRawStatusCode() < 500) {
+                String errorBody = ex.getResponseBodyAsString();
+                String detail = objectMapper.readTree(errorBody).get("detail").asText();
+                result = new SecretKeyValidationResponse(null, detail, false);
+            } else {
+                throw ex;
+            }
+        }
 
         log.info("🐻result : {}", result);
 
         return result;
     }
-
 
 
     @Transactional
