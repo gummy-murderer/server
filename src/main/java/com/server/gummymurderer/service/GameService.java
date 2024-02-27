@@ -112,7 +112,7 @@ public class GameService {
         Member member = memberRepository.findByNickname(loginMember.getNickname())
                 .orElseThrow(() -> new AppException(ErrorCode.INVALID_ACCOUNT));
 
-        String url = "http://ec2-3-39-251-140.ap-northeast-2.compute.amazonaws.com:80/api/etc/secret_key_validation";
+        String url = "http://221.163.19.218:9090/api/etc/secret_key_validation";
 
         log.info("🐻secretKey : {}", request.getSecretKey());
 
