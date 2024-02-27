@@ -21,26 +21,6 @@ public class ChatController {
 
     private final ChatService chatService;
 
-    // 채팅 보내기 unity 테스트 용
-//    @PostMapping("/send")
-//    public Mono<Response<ChatSaveResponse>> sendChat(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody ChatSaveRequest request, HttpServletRequest httpServletRequest) {
-//        String contentType = httpServletRequest.getHeader("Content-Type");
-//        System.out.println("Content-Type: " + contentType);
-//
-//        String authorizationHeader = httpServletRequest.getHeader("Authorization");
-//        log.info("🐻Authorization header: {}", authorizationHeader); // 토큰 출력
-//
-//        Member loginMember = userDetails.getMember();
-//
-//        // 요청 정보 로그
-//        log.info("🐻Request URL: {}", httpServletRequest.getRequestURL());
-//        log.info("🐻Request Method: {}", httpServletRequest.getMethod());
-//        log.info("🐻Request Body: {}", request.toString());
-//
-//        return chatService.saveChatTest(loginMember, request)
-//                .map(Response::success);
-//    }
-
     // user-npc 채팅
     @PostMapping("/send")
     public Response<ChatSaveResponse> sendChat(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody ChatSaveRequest request, HttpServletRequest httpServletRequest) {
