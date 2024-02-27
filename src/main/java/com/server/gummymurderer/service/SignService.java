@@ -2,7 +2,6 @@ package com.server.gummymurderer.service;
 
 import com.server.gummymurderer.configuration.jwt.JwtProvider;
 import com.server.gummymurderer.domain.dto.game.LoginGameSetDTO;
-import com.server.gummymurderer.domain.dto.member.JoinMemberResponse;
 import com.server.gummymurderer.domain.dto.member.LoginRequest;
 import com.server.gummymurderer.domain.dto.member.SignRequest;
 import com.server.gummymurderer.domain.dto.member.SignResponse;
@@ -20,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional

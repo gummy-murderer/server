@@ -7,7 +7,6 @@ import com.server.gummymurderer.domain.enum_class.ChatRoleType;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.stream.Collectors;
 
 @Getter
 @Setter

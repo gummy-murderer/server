@@ -3,7 +3,6 @@ package com.server.gummymurderer.domain.dto.npc;
 import com.server.gummymurderer.domain.entity.Npc;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 

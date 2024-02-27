@@ -1,7 +1,5 @@
 package com.server.gummymurderer.domain.dto.gameUserCheckList;
 
-import com.server.gummymurderer.domain.entity.GameNpc;
-import com.server.gummymurderer.domain.entity.GameUserCheckList;
 import lombok.*;
 
 import java.util.List;
