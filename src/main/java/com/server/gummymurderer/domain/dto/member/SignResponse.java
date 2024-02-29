@@ -42,4 +42,28 @@ public class SignResponse {
         this.roles = member.getRoles();
         this.loginGameSetDTO = loginGameSetDTO;
     }
+
+    public static SignResponse of(Member member, List<LoginGameSetDTO> loginGameSetDTOList, String token) {
+        return SignResponse.builder()
+                .memberNo(member.getMemberNo())
+                .account(member.getAccount())
+                .name(member.getName())
+                .nickname(member.getNickname())
+                .email(member.getEmail())
+                .roles(member.getRoles())
+                .token(token)
+                .loginGameSetDTO(loginGameSetDTOList)
+                .build();
+    }
+
+    public static SignResponse of(Member member) {
+        return SignResponse.builder()
+                .memberNo(member.getMemberNo())
+                .account(member.getAccount())
+                .name(member.getName())
+                .nickname(member.getNickname())
+                .email(member.getEmail())
+                .roles(member.getRoles())
+                .build();
+    }
 }

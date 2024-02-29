@@ -45,16 +45,9 @@ public class SignService {
                 .map(LoginGameSetDTO::new) // Assuming LoginGameSetDTO has a constructor that accepts a GameSet
                 .toList();
 
-        return SignResponse.builder()
-                .memberNo(member.getMemberNo())
-                .account(member.getAccount())
-                .name(member.getName())
-                .nickname(member.getNickname())
-                .email(member.getEmail())
-                .roles(member.getRoles())
-                .token(jwtProvider.createToken(member.getAccount(), member.getRoles()))
-                .loginGameSetDTO(loginGameSetDTOList)
-                .build();
+        String token = jwtProvider.createToken(member.getAccount(), member.getRoles());
+
+        return SignResponse.of(member, loginGameSetDTOList, token);
     }
 
     public SignResponse register(SignRequest request) {
@@ -74,25 +67,10 @@ public class SignService {
             throw new AppException(ErrorCode.DUPLICATED_NICKNAME);
         }
 
-            Member member = Member.builder()
-                    .account(request.getAccount())
-                    .password(passwordEncoder.encode(request.getPassword()))
-                    .name(request.getName())
-                    .nickname(request.getNickname())
-                    .email(request.getEmail())
-                    .build();
+        Member member = request.toEntity(passwordEncoder);
 
-            member.setRoles(Collections.singletonList(Authority.builder().name("ROLE_USER").build()));
+        Member savedMember = memberRepository.save(member);
 
-            Member savedMember = memberRepository.save(member);
-
-        return SignResponse.builder()
-                .memberNo(savedMember.getMemberNo())
-                .account(savedMember.getAccount())
-                .name(savedMember.getName())
-                .nickname(savedMember.getNickname())
-                .email(savedMember.getEmail())
-                .roles(savedMember.getRoles())
-                .build();
+        return SignResponse.of(savedMember);
     }
 }
