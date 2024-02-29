@@ -52,8 +52,6 @@ public class GameService {
 
         String url = "http://ec2-3-39-251-140.ap-northeast-2.compute.amazonaws.com:80/api/etc/secret_key_validation";
 
-        log.info("🐻secretKey : {}", request.getSecretKey());
-
         Map<String, String> requestData = new HashMap<>();
         requestData.put("secretKey", request.getSecretKey());
 
