@@ -1,20 +1,35 @@
 package com.server.gummymurderer.domain.dto.member;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class SignRequest {
 
+    @NotBlank(message = "아이디를 입력해주세요.")
     private String account;
 
+    @NotBlank(message = "비밀번호를 입력해주세요.")
+    @Pattern(regexp="^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[!@#$%^&*()_+=-]).{6,12}$", message = "비밀번호는 영어, 숫자, 특수문자 각각 최소 한 번 이상 포함해서 6~12자리 이내로 입력해주세요.")
     private String password;
 
+    @NotBlank(message = "닉네임을 입력해주세요.")
+    @Pattern(regexp = "^[a-zA-Z0-9가-힣]{2,10}$", message = "닉네임은 숫자, 한글, 영어만 가능하며, 2자 이상 10자 이하여야합니다.")
     private String nickname;
 
+    @NotBlank(message = "이름을 입력해주세요.")
     private String name;
 
+    @NotBlank(message = "email을 입력해주세요.")
+    @Email(message = "email 형식에 맞게 작성해주세요.")
     private String email;
 
 }
