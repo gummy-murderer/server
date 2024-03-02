@@ -59,7 +59,7 @@ public class SignService {
         log.info("🐻nickName : {}", request.getNickname());
         log.info("🐻email : {}", request.getEmail());
 
-        String nickName = request.getNickname().replaceAll("\\p{Z}", "");
+        String nickName = request.getNickname().replaceAll(" ", "");
 
         request.setNickname(nickName);
 
