@@ -63,7 +63,18 @@ public class SignService {
 
         // 닉네임의 각 문자와 그 문자의 유니코드 값을 출력하는 로그 추가
         for (char ch : nickName.toCharArray()) {
-            log.info("🐻Character: {}, Unicode: {}", ch, (int) ch);
+
+            int unicode = (int) ch;
+
+            log.info("🐻Character: {}, Unicode: {}", ch, unicode);
+
+            // 영어, 숫자, 한글 범위에 속하지 않는 경우 로그 출력
+            if(!(('a' <= unicode && unicode <= 'z') ||
+                 ('A' <= unicode && unicode <= 'Z') ||
+                 ('0' <= unicode && unicode <= '9') ||
+                 ('가' <= unicode && unicode <= '힣'))) {
+                log.warn("🐻Invalid character: {}, Unicode: {}", ch, unicode);
+            }
         }
 
         request.setNickname(nickName);
