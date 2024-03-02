@@ -54,6 +54,11 @@ public class SignService {
 
     public SignResponse register(SignRequest request) {
 
+        log.info("🐻account : {}", request.getAccount());
+        log.info("🐻name : {}", request.getName());
+        log.info("🐻nickName : {}", request.getNickname());
+        log.info("🐻email : {}", request.getEmail());
+
         // 계정이 중복될때 발생하는 에러
         if (memberRepository.findByAccount(request.getAccount()).isPresent()) {
             throw new AppException(ErrorCode.DUPLICATED_ACCOUNT);
@@ -68,11 +73,6 @@ public class SignService {
         if (memberRepository.findByNickname(request.getNickname()).isPresent()) {
             throw new AppException(ErrorCode.DUPLICATED_NICKNAME);
         }
-
-        log.info("🐻account : {}", request.getAccount());
-        log.info("🐻name : {}", request.getName());
-        log.info("🐻nickName : {}", request.getNickname());
-        log.info("🐻email : {}", request.getEmail());
 
         Member member = request.toEntity(passwordEncoder);
 
