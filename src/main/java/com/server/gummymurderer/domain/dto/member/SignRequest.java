@@ -5,6 +5,7 @@ import com.server.gummymurderer.domain.entity.Member;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,7 +28,8 @@ public class SignRequest {
     private String password;
 
     @NotBlank(message = "닉네임을 입력해주세요.")
-    @Pattern(regexp = "^[a-zA-Z0-9가-힣]{2,10}$", message = "닉네임은 숫자, 한글, 영어만 가능하며, 2자 이상 10자 이하여야합니다.")
+    @Pattern(regexp = "^[a-zA-Z0-9가-힣]+$", message = "닉네임은 숫자, 한글, 영어만 가능합니다.")
+    @Size(min = 2, max = 10, message = "닉네임은 2자 이상 10자 이하여야합니다.")
     private String nickname;
 
     @NotBlank(message = "이름을 입력해주세요.")
