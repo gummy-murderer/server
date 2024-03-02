@@ -59,7 +59,7 @@ public class SignService {
         log.info("🐻nickName : {}", request.getNickname());
         log.info("🐻email : {}", request.getEmail());
 
-        String nickName = request.getNickname().replaceAll(" ", "");
+        String nickName = request.getNickname().replace("\u200B", "");
 
         // 닉네임의 각 문자와 그 문자의 유니코드 값을 출력하는 로그 추가
         for (char ch : nickName.toCharArray()) {
