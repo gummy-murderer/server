@@ -61,6 +61,11 @@ public class SignService {
 
         String nickName = request.getNickname().replaceAll(" ", "");
 
+        // 닉네임의 각 문자와 그 문자의 유니코드 값을 출력하는 로그 추가
+        for (char ch : nickName.toCharArray()) {
+            log.info("🐻Character: {}, Unicode: {}", ch, (int) ch);
+        }
+
         request.setNickname(nickName);
 
         log.info("🐻nickName : {}", request.getNickname());
