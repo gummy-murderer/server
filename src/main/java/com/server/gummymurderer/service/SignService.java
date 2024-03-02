@@ -63,6 +63,9 @@ public class SignService {
 
         request.setNickname(nickName);
 
+        log.info("🐻nickName : {}", request.getNickname());
+
+
         // 계정이 중복될때 발생하는 에러
         if (memberRepository.findByAccount(request.getAccount()).isPresent()) {
             throw new AppException(ErrorCode.DUPLICATED_ACCOUNT);

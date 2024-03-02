@@ -30,9 +30,6 @@ public class SignController {
 
     @PostMapping(value = "/register")
     public Response<SignResponse> register(@RequestBody @Valid SignRequest request) throws Exception {
-
-        log.info("🐻nickName : {}", request.getNickname());
-
         SignResponse signResponse = memberService.register(request);
         return Response.success(signResponse);
     }
