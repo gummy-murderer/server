@@ -13,6 +13,7 @@ import com.server.gummymurderer.exception.ErrorCode;
 import com.server.gummymurderer.repository.GameSetRepository;
 import com.server.gummymurderer.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Service
+@Slf4j
 @Transactional
 @RequiredArgsConstructor
 public class SignService {
@@ -66,6 +68,11 @@ public class SignService {
         if (memberRepository.findByNickname(request.getNickname()).isPresent()) {
             throw new AppException(ErrorCode.DUPLICATED_NICKNAME);
         }
+
+        log.info("🐻account : {}", request.getAccount());
+        log.info("🐻name : {}", request.getName());
+        log.info("🐻nickName : {}", request.getNickname());
+        log.info("🐻email : {}", request.getEmail());
 
         Member member = request.toEntity(passwordEncoder);
 
