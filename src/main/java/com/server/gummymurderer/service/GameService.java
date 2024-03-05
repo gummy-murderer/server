@@ -41,6 +41,7 @@ public class GameService {
     private final GameAlibiRepository gameAlibiRepository;
     private final GameUserCheckListService gameUserCheckListService;
     private final MemberRepository memberRepository;
+    private final GameUserCustomRepository gameUserCustomRepository;
 
 
     public SecretKeyValidationResponse validationSecretKey(Member loginMember, SecretKeyValidationRequest request) throws JsonProcessingException {
@@ -199,8 +200,10 @@ public class GameService {
 
         log.info("🐻Load GameSetNo : {}", gameSet.getGameSetNo());
 
+        GameUserCustom gameUserCustom = gameUserCustomRepository.findByGameSet(gameSet).orElse(null);
+
         // GameSet을 LoginGameSetDTO로 변환
-        LoginGameSetDTO gameSetDTO = new LoginGameSetDTO(gameSet);
+        LoginGameSetDTO gameSetDTO = new LoginGameSetDTO(gameSet, gameUserCustom);
 
         // GameScenario를 MakeScenarioResponse로 변환
         GameScenario gameScenario = gameScenarioRepository.findTopByGameSetOrderByScenarioNoDesc(gameSet)

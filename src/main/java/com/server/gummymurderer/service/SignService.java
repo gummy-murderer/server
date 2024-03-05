@@ -7,10 +7,12 @@ import com.server.gummymurderer.domain.dto.member.SignRequest;
 import com.server.gummymurderer.domain.dto.member.SignResponse;
 import com.server.gummymurderer.domain.entity.Authority;
 import com.server.gummymurderer.domain.entity.GameSet;
+import com.server.gummymurderer.domain.entity.GameUserCustom;
 import com.server.gummymurderer.domain.entity.Member;
 import com.server.gummymurderer.exception.AppException;
 import com.server.gummymurderer.exception.ErrorCode;
 import com.server.gummymurderer.repository.GameSetRepository;
+import com.server.gummymurderer.repository.GameUserCustomRepository;
 import com.server.gummymurderer.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +33,7 @@ public class SignService {
     private final GameSetRepository gameSetRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
+    private final GameUserCustomRepository gameUserCustomRepository;
 
     public SignResponse login(LoginRequest request) throws Exception {
         Member member = memberRepository.findByAccount(request.getAccount()).orElseThrow(
@@ -44,7 +47,10 @@ public class SignService {
         List<GameSet> memberGameSet = gameSetRepository.findGameSetsByMember(member);
 
         List<LoginGameSetDTO> loginGameSetDTOList = memberGameSet.stream()
-                .map(LoginGameSetDTO::new) // Assuming LoginGameSetDTO has a constructor that accepts a GameSet
+                .map(gameSet -> {
+                    GameUserCustom custom = gameUserCustomRepository.findByGameSet(gameSet).orElse(null);
+                    return new LoginGameSetDTO(gameSet, custom);
+                })
                 .toList();
 
         String token = jwtProvider.createToken(member.getAccount(), member.getRoles());
