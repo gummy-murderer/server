@@ -7,6 +7,8 @@ import com.server.gummymurderer.domain.enum_class.ChatRoleType;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -15,12 +17,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class NpcChatResponse {
 
-    private NpcAnswerDTO answer;
+    private ChatContent answer;
     private TokensDTO tokens;
 
-    public static Chat toEntity(ChatContent chatContent, int chatDay, LocalDateTime time, ChatRoleType senderType, ChatRoleType receiverType, GameSet gameSet) {
-        // chatContent를 추출하고 Chat 객체로 변환
-        return ChatContent.toEntity(chatContent, chatDay, time, senderType, receiverType, gameSet);
+    public Chat toEntity(int chatDay, LocalDateTime time, ChatRoleType senderType, ChatRoleType receiverType, GameSet gameSet) {
+        return ChatContent.toEntity(answer, chatDay, time, senderType, receiverType, gameSet);
     }
-
 }
