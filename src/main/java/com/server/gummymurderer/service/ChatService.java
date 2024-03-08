@@ -223,7 +223,14 @@ public class ChatService {
         try {
             NpcChatResponse npcChatResponse = sendNpcChatToAIServer(npcChatRequest);
             log.info("🐻user-npc chat 완료");
-            return npcChatResponse.getAnswer().getChatContent().get(npcChatResponse.getAnswer().getChatContent().size() - 1);
+
+            ChatContent chatContent = new ChatContent();
+            chatContent.setSender(npcChatResponse.getAnswer().getSender());
+            chatContent.setReceiver(npcChatResponse.getAnswer().getReceiver());
+            chatContent.setChatContent(npcChatResponse.getAnswer().getChatContent());
+
+            return chatContent;
+
         } catch (Exception e) {
             log.error("🐻채팅을 AI 로 보내는 중 오류 발생: {}", e.getMessage(), e);
             throw new AppException(ErrorCode.AI_INTERNAL_SERVER_ERROR);
@@ -277,6 +284,7 @@ public class ChatService {
         aiNpcChatRequest.setPreviousStory(previousStory);
         aiNpcChatRequest.setSecretKey(npcChatRequest.getSecretKey());
         aiNpcChatRequest.setGameNo(npcChatRequest.getGameSetNo());
+        aiNpcChatRequest.setState(npcChatRequest.getTalkingState());
 
         // 이전 채팅 내용에서 필요한 정보만 추출
         List<Map<String, Object>> simplifiedPreviousChats = previousChatContents.stream()
@@ -303,20 +311,21 @@ public class ChatService {
                 })
                 .map(npcChatResponse -> {
                     // tokens 업데이트
-                    String senderName = npcChatResponse.getAnswer().getChatContent().get(0).getSender();
+                    String senderName = npcChatResponse.getAnswer().getSender();
                     GameNpc senderNpc = gameNpcRepository.findByNpcNameAndGameSet_GameSetNo(senderName, npcChatRequest.getGameSetNo())
                             .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
 
                     senderNpc.updateTokens(npcChatResponse.getTokens().getPromptTokens(), npcChatResponse.getTokens().getCompletionTokens());
                     gameNpcRepository.save(senderNpc);
 
-                    ChatContent chatContent = npcChatResponse.getAnswer().getChatContent().get(0);
+                    ChatContent chatContent = npcChatResponse.getAnswer();
                     Chat chat = ChatContent.toEntity(chatContent, npcChatRequest.getChatDay(), LocalDateTime.now(), ChatRoleType.AI, ChatRoleType.AI, gameSet);
                     chatRepository.save(chat);
 
                     return npcChatResponse;
                 })
                 .block(); // block() 메소드를 사용하여 비동기 작업을 동기 작업으로 변경
+
     }
 
     public List<ChatListResponse> getAllChatByUserNameAndAINpc(Member loginMember, ChatListRequest chatListRequest) {

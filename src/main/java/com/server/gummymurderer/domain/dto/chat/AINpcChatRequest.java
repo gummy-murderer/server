@@ -23,5 +23,6 @@ public class AINpcChatRequest {
     private int chatDay;
     private List<Map<String, Object>> previousChatContents;
     private String previousStory;
+    private String state;
 
 }
