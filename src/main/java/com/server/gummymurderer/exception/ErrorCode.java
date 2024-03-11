@@ -28,6 +28,8 @@ public enum ErrorCode {
     GAME_NOT_WON(HttpStatus.BAD_REQUEST, "GameResult가 SUCCESS가 아닙니다."),
     INVALID_RESULT_MESSAGE(HttpStatus.BAD_REQUEST, "잘못된 ResultMessage 입니다."),
     SECRET_KEY_UNEXPECTED_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Secret Key를 검증하는 동안 예기치 못한 오류가 발생했습니다."),
+    INVALID_NICKNAME_LENGTH(HttpStatus.BAD_REQUEST, "닉네임은 2자 이상 10자 이하여야합니다."),
+    INVALID_NICKNAME_PATTERN(HttpStatus.BAD_REQUEST, "닉네임은 숫자, 한글, 영어만 가능합니다."),
     ;
 
     private HttpStatus status;

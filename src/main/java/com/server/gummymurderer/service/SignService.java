@@ -67,6 +67,16 @@ public class SignService {
 
         String nickName = request.getNickname().replace("\u200B", "");
 
+        // 닉네임 길이 체크
+        if (nickName.length() < 2 || nickName.length() > 10) {
+            throw new AppException(ErrorCode.INVALID_NICKNAME_LENGTH);
+        }
+
+        // 닉네임 패턴 체크
+        if (!nickName.matches("^[a-zA-Z0-9가-힣]+$")) {
+            throw new AppException(ErrorCode.INVALID_NICKNAME_PATTERN);
+        }
+
         // 닉네임의 각 문자와 그 문자의 유니코드 값을 출력하는 로그 추가
         for (char ch : nickName.toCharArray()) {
 
