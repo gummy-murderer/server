@@ -2,10 +2,7 @@ package com.server.gummymurderer.service;
 
 import com.server.gummymurderer.configuration.jwt.JwtProvider;
 import com.server.gummymurderer.domain.dto.game.LoginGameSetDTO;
-import com.server.gummymurderer.domain.dto.member.LoginRequest;
-import com.server.gummymurderer.domain.dto.member.SignRequest;
-import com.server.gummymurderer.domain.dto.member.SignResponse;
-import com.server.gummymurderer.domain.entity.Authority;
+import com.server.gummymurderer.domain.dto.member.*;
 import com.server.gummymurderer.domain.entity.GameSet;
 import com.server.gummymurderer.domain.entity.GameUserCustom;
 import com.server.gummymurderer.domain.entity.Member;
@@ -20,7 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -97,7 +93,6 @@ public class SignService {
 
         log.info("🐻nickName : {}", request.getNickname());
 
-
         // 계정이 중복될때 발생하는 에러
         if (memberRepository.findByAccount(request.getAccount()).isPresent()) {
             throw new AppException(ErrorCode.DUPLICATED_ACCOUNT);
@@ -119,4 +114,32 @@ public class SignService {
 
         return SignResponse.of(savedMember);
     }
+
+    public String duplicateCheckAccount(DuplicatedAccountRequest request) {
+        log.info("Checking for duplicate account: {}", request);
+
+        if (memberRepository.findByAccount(request.getAccount()).isPresent()) {
+            throw new AppException(ErrorCode.DUPLICATED_ACCOUNT);
+        } else {
+            return "사용 가능한 Account 입니다.";
+        }
+    }
+
+
+    public String duplicateCheckEmail(DuplicatedEmailRequest request) {
+        if (memberRepository.findByAccount(request.getEmail()).isPresent()) {
+            throw new AppException(ErrorCode.DUPLICATED_EMAIL);
+        } else {
+            return "사용 가능한 Email 입니다.";
+        }
+    }
+
+    public String duplicateCheckNickname(DuplicatedNicknameRequest request) {
+        if (memberRepository.findByAccount(request.getNickname()).isPresent()) {
+            throw new AppException(ErrorCode.DUPLICATED_NICKNAME);
+        } else {
+            return "사용 가능한 NickName 입니다.";
+        }
+    }
+
 }
