@@ -116,7 +116,6 @@ public class SignService {
     }
 
     public String duplicateCheckAccount(DuplicatedAccountRequest request) {
-        log.info("Checking for duplicate account: {}", request);
 
         if (memberRepository.findByAccount(request.getAccount()).isPresent()) {
             throw new AppException(ErrorCode.DUPLICATED_ACCOUNT);
@@ -127,7 +126,8 @@ public class SignService {
 
 
     public String duplicateCheckEmail(DuplicatedEmailRequest request) {
-        if (memberRepository.findByAccount(request.getEmail()).isPresent()) {
+
+        if (memberRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new AppException(ErrorCode.DUPLICATED_EMAIL);
         } else {
             return "사용 가능한 Email 입니다.";
@@ -135,7 +135,8 @@ public class SignService {
     }
 
     public String duplicateCheckNickname(DuplicatedNicknameRequest request) {
-        if (memberRepository.findByAccount(request.getNickname()).isPresent()) {
+
+        if (memberRepository.findByNickname(request.getNickname()).isPresent()) {
             throw new AppException(ErrorCode.DUPLICATED_NICKNAME);
         } else {
             return "사용 가능한 NickName 입니다.";
