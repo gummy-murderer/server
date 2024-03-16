@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -115,31 +116,31 @@ public class SignService {
         return SignResponse.of(savedMember);
     }
 
-    public String duplicateCheckAccount(DuplicatedAccountRequest request) {
+    public DuplicatedResponse duplicateCheckAccount(DuplicatedAccountRequest request) {
 
         if (memberRepository.findByAccount(request.getAccount()).isPresent()) {
             throw new AppException(ErrorCode.DUPLICATED_ACCOUNT);
         } else {
-            return "사용 가능한 Account 입니다.";
+            return new DuplicatedResponse("사용 가능한 Account 입니다.");
         }
     }
 
 
-    public String duplicateCheckEmail(DuplicatedEmailRequest request) {
+    public DuplicatedResponse duplicateCheckEmail(DuplicatedEmailRequest request) {
 
         if (memberRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new AppException(ErrorCode.DUPLICATED_EMAIL);
         } else {
-            return "사용 가능한 Email 입니다.";
+            return new DuplicatedResponse("사용 가능한 Email 입니다.");
         }
     }
 
-    public String duplicateCheckNickname(DuplicatedNicknameRequest request) {
+    public DuplicatedResponse duplicateCheckNickname(DuplicatedNicknameRequest request) {
 
         if (memberRepository.findByNickname(request.getNickname()).isPresent()) {
             throw new AppException(ErrorCode.DUPLICATED_NICKNAME);
         } else {
-            return "사용 가능한 NickName 입니다.";
+            return new DuplicatedResponse("사용 가능한 NickName 입니다.");
         }
     }
 
