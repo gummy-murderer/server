@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @Slf4j
 @RequestMapping("/api/v1/members")
@@ -32,21 +34,21 @@ public class SignController {
     }
 
     @PostMapping(value = "/check-account")
-    public Response<String> checkAccount(@RequestBody DuplicatedAccountRequest request) {
-        String message = memberService.duplicateCheckAccount(request);
-        log.info(message);
-        return Response.success(message);
+    public Response<DuplicatedResponse> checkAccount(@RequestBody DuplicatedAccountRequest request) {
+        DuplicatedResponse response = memberService.duplicateCheckAccount(request);
+        log.info("🐻response : {}", response);
+        return Response.success(response);
     }
 
     @PostMapping(value = "/check-email")
-    public Response<String> checkEmail(@RequestBody DuplicatedEmailRequest request) {
-        String message = memberService.duplicateCheckEmail(request);
-        return Response.success(message);
+    public Response<DuplicatedResponse> checkEmail(@RequestBody DuplicatedEmailRequest request) {
+        DuplicatedResponse response = memberService.duplicateCheckEmail(request);
+        return Response.success(response);
     }
 
     @PostMapping(value = "/check-nickname")
-    public Response<String> checkNickname(@RequestBody DuplicatedNicknameRequest request) {
-        String message = memberService.duplicateCheckNickname(request);
-        return Response.success(message);
+    public Response<DuplicatedResponse> checkNickname(@RequestBody DuplicatedNicknameRequest request) {
+        DuplicatedResponse response = memberService.duplicateCheckNickname(request);
+        return Response.success(response);
     }
 }
