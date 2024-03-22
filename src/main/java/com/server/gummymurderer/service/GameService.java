@@ -7,6 +7,7 @@ import com.server.gummymurderer.domain.dto.game.*;
 import com.server.gummymurderer.domain.dto.gameNpc.GameNpcDTO;
 import com.server.gummymurderer.domain.dto.gameUserCheckList.CheckListSaveRequest;
 import com.server.gummymurderer.domain.dto.gameUserCheckList.CheckListSaveResponse;
+import com.server.gummymurderer.domain.dto.gameUserCustom.GameUserCustomSaveRequest;
 import com.server.gummymurderer.domain.dto.scenario.MakeScenarioResponse;
 import com.server.gummymurderer.domain.entity.*;
 import com.server.gummymurderer.domain.enum_class.GameResult;
@@ -39,10 +40,11 @@ public class GameService {
     private final GameScenarioRepository gameScenarioRepository;
     private final GameUserCheckListRepository gameUserCheckListRepository;
     private final GameAlibiRepository gameAlibiRepository;
-    private final GameUserCheckListService gameUserCheckListService;
     private final MemberRepository memberRepository;
     private final GameUserCustomRepository gameUserCustomRepository;
 
+    private final GameUserCheckListService gameUserCheckListService;
+    private final GameUserCustomService gameUserCustomService;
 
     public SecretKeyValidationResponse validationSecretKey(Member loginMember, SecretKeyValidationRequest request) throws JsonProcessingException {
 
@@ -177,6 +179,12 @@ public class GameService {
         checkListSaveRequest.setGameSetNo(request.getGameSetNo());
         checkListSaveRequest.setCheckList(request.getCheckList());
         gameUserCheckListService.saveAndReturnCheckList(checkListSaveRequest);
+
+        // custom 저장
+        if (request.getCustom() != null) {
+            request.getCustom().setGameSetNo(request.getGameSetNo());
+            gameUserCustomService.saveCustom(loginMember, request.getCustom());
+        }
 
         // 게임 상태가 GAME_START 이면 GAME_PROGRESS로 변경
         if (gameSet.getGameStatus() == GameStatus.GAME_START) {
