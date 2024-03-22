@@ -118,7 +118,7 @@ public class GameService {
 
         GameSet savedGameSet = gameSetRepository.saveAndFlush(gameSet);
 
-        List<Npc> npcList = npcRepository.findRandom5Npc();
+        List<Npc> npcList = npcRepository.findRandom9Npc();
 
         List<GameNpc> gameNpcList = new ArrayList<>();
 
