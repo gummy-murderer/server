@@ -96,6 +96,8 @@ public class GameService {
     @Transactional
     public StartGameResponse startGame(Member loginMember) {
 
+        log.info("🐻Game Start 시작");
+
         int saveGameCount = gameSetRepository.findGameSetsByMember(loginMember).size();
         log.info("🤖 저장된 게임 갯수 : {}", saveGameCount);
 
