@@ -61,6 +61,7 @@ jobs:
             --region ap-northeast-2 \
             build s3://gummy-murderer \
             --delete
+        working-directory: ./my-agora-states-client
 
       - name: Docker build & push to docker repo
         run: |
