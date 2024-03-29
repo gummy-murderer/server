@@ -50,6 +50,18 @@ jobs:
       #     mysql user: ${{ secrets.MYSQL_USERNAME }}
       #     mysql password: ${{ secrets.MYSQL_PASSWORD }}
 
+      # AWS S3 연결
+      - name: Sync Bucket
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESSKEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRETKEY }}
+          AWS_EC2_METADATA_DISABLED: true
+        run: |
+          aws s3 sync \
+            --region ap-northeast-2 \
+            build s3://gummy-murderer \
+            --delete
+
       - name: Docker build & push to docker repo
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
