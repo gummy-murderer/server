@@ -5,10 +5,12 @@ import com.server.gummymurderer.domain.entity.GameSet;
 import com.server.gummymurderer.domain.entity.GameUserCustom;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
 @Getter
+@ToString
 @AllArgsConstructor
 public class LoginGameSetDTO {
 

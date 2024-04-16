@@ -50,6 +50,8 @@ public class SignService {
                 })
                 .toList();
 
+        log.info("🐻loginGameSetDTO : {}", loginGameSetDTOList);
+
         String token = jwtProvider.createToken(member.getAccount(), member.getRoles());
 
         return SignResponse.of(member, loginGameSetDTOList, token);
