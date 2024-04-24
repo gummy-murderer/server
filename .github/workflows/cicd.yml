@@ -65,6 +65,7 @@ jobs:
           key: ${{ secrets.EC2_PEMKEY }}
           envs: GITHUB_SHA
           script: |
+            export GOOGLE_APPLICATION_CREDENTIALS="/home/ubuntu/gummy-murderer-29125ab16a02.json"
             sudo docker stop spring-server-container
             sudo docker rm spring-server-container
             sudo docker pull ${{ secrets.DOCKER_REPO }}/directors-dev
