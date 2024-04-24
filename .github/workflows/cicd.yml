@@ -68,5 +68,5 @@ jobs:
             sudo docker stop spring-server-container
             sudo docker rm spring-server-container
             sudo docker pull ${{ secrets.EC2_DOCKER_REPO }}/directors-dev
-            sudo docker run --name spring-server-container -d -p 8081:8081 -e GOOGLE_APPLICATION_CREDENTIALS="/home/ubuntu/gummy-murderer-29125ab16a02.json" gummymurderer/directors-dev
+            sudo docker run --name spring-server-container -d -p 8081:8081 -e GOOGLE_APPLICATION_CREDENTIALS="/home/ubuntu/gummy-murderer-29125ab16a02.json" -v /home/ubuntu/gummy-murderer-29125ab16a02.json:/home/ubuntu/gummy-murderer-29125ab16a02.json gummymurderer/directors-dev
             sudo docker image prune -f
