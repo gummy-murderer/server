@@ -56,7 +56,7 @@ public class ScenarioService {
         String previousStory = foundGameSet.getGameSummary();
         log.info("🤖 previousStory : {} ", previousStory);
 
-        String url = "http://ec2-3-39-251-140.ap-northeast-2.compute.amazonaws.com:80/api/scenario/generate_victim";
+        String url = "http://ec2-43-201-55-213.ap-northeast-2.compute.amazonaws.com:80/api/scenario/generate_victim";
 
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("gameNo", foundGameSet.getGameSetNo());
@@ -135,7 +135,7 @@ public class ScenarioService {
         GameSet foundGameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameSetNo(), loginMember)
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
-        String url = "http://ec2-3-39-251-140.ap-northeast-2.compute.amazonaws.com:80/api/scenario/generate_intro";
+        String url = "http://ec2-43-201-55-213.ap-northeast-2.compute.amazonaws.com:80/api/scenario/generate_intro";
 
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("gameNo", foundGameSet.getGameSetNo());
@@ -197,7 +197,7 @@ public class ScenarioService {
         // livingCharacters 정보 가져오기
         List<NpcInfo> livingCharacters = gameNpcRepository.findAllAliveResidentNpcInfoByGameSetNo(foundGameSet.getGameSetNo());
 
-        String url = "http://ec2-3-39-251-140.ap-northeast-2.compute.amazonaws.com:80/api/scenario/generate_final_words";
+        String url = "http://ec2-43-201-55-213.ap-northeast-2.compute.amazonaws.com:80/api/scenario/generate_final_words";
 
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("gameNo", foundGameSet.getGameSetNo());

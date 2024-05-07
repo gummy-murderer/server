@@ -53,7 +53,7 @@ public class GameService {
         Member member = memberRepository.findByNickname(loginMember.getNickname())
                 .orElseThrow(() -> new AppException(ErrorCode.INVALID_ACCOUNT));
 
-        String url = "http://ec2-3-39-251-140.ap-northeast-2.compute.amazonaws.com:80/api/etc/secret_key_validation";
+        String url = "http://ec2-43-201-55-213.ap-northeast-2.compute.amazonaws.com:80/api/etc/secret_key_validation";
 
         Map<String, String> requestData = new HashMap<>();
         requestData.put("secretKey", request.getSecretKey());
