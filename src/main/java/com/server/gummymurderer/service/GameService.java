@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.server.gummymurderer.domain.dto.alibi.AlibiDTO;
 import com.server.gummymurderer.domain.dto.game.*;
 import com.server.gummymurderer.domain.dto.gameNpc.GameNpcDTO;
+import com.server.gummymurderer.domain.dto.gameNpc.GameNpcInfoRequest;
+import com.server.gummymurderer.domain.dto.gameNpc.GameNpcInfoResponse;
 import com.server.gummymurderer.domain.dto.gameUserCheckList.CheckListSaveRequest;
 import com.server.gummymurderer.domain.dto.gameUserCheckList.CheckListSaveResponse;
 import com.server.gummymurderer.domain.dto.gameUserCustom.GameUserCustomSaveRequest;
@@ -284,4 +286,20 @@ public class GameService {
 
         return new EndGameResponse(request.getResultMessage());
     }
+
+    public GameNpcInfoResponse gameNpcInfo(Member loginMember, GameNpcInfoRequest gameNpcInfoRequest) {
+
+        GameSet gameSet = gameSetRepository.findByGameSetNoAndMember(gameNpcInfoRequest.getGameNpcNo(), loginMember)
+                .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
+
+        GameNpc gameNpc = gameNpcRepository.findByGameNpcNo(gameNpcInfoRequest.getGameNpcNo())
+                .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
+
+        Npc npc = npcRepository.findByNpcName(gameNpc.getNpcName())
+                .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
+
+        GameNpcInfoResponse gameNpcInfoResponse = GameNpcInfoResponse.of(gameNpc.getGameNpcNo(), npc);
+        return gameNpcInfoResponse;
+    }
+
 }
