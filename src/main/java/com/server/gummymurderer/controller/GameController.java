@@ -2,6 +2,8 @@ package com.server.gummymurderer.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.server.gummymurderer.domain.dto.game.*;
+import com.server.gummymurderer.domain.dto.gameNpc.GameNpcInfoRequest;
+import com.server.gummymurderer.domain.dto.gameNpc.GameNpcInfoResponse;
 import com.server.gummymurderer.domain.entity.Member;
 import com.server.gummymurderer.exception.Response;
 import com.server.gummymurderer.service.CustomUserDetails;
@@ -61,5 +63,15 @@ public class GameController {
         Member loginMember = customUserDetails.getMember();
         EndGameResponse endGameResponse = gameService.gameEnd(loginMember, request);
         return ResponseEntity.ok(Response.success(endGameResponse));
+    }
+
+    @GetMapping("/npc/info")
+    public Response<GameNpcInfoResponse> getNpcInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails, @ModelAttribute GameNpcInfoRequest request){
+
+        Member loginMember = customUserDetails.getMember();
+        GameNpcInfoResponse gameNpcInfoResponse = gameService.gameNpcInfo(loginMember, request);
+
+        return  Response.success(gameNpcInfoResponse);
+
     }
 }
