@@ -18,15 +18,20 @@ import com.server.gummymurderer.domain.enum_class.VoteResult;
 import com.server.gummymurderer.exception.AppException;
 import com.server.gummymurderer.exception.ErrorCode;
 import com.server.gummymurderer.repository.*;
+import io.netty.channel.ChannelOption;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.netty.http.client.HttpClient;
 
+import java.time.Duration;
 import java.util.*;
 
 @Service
@@ -57,7 +62,6 @@ public class GameService {
 
         String url = "http://ec2-43-201-52-200.ap-northeast-2.compute.amazonaws.com:80/api/etc/secret_key_validation";
 
-
         log.info("🐻Using URL: {}", url);
 
         Map<String, String> requestData = new HashMap<>();
@@ -68,21 +72,31 @@ public class GameService {
         String jsonRequest = objectMapper.writeValueAsString(requestData);
         log.info("🐻jsonRequest : {}", jsonRequest);
 
-        WebClient webClient = WebClient.create();
+        // WebClient 설정 확인
+        WebClient webClient = WebClient.builder()
+                .baseUrl("http://ec2-43-201-52-200.ap-northeast-2.compute.amazonaws.com:80")
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .clientConnector(new ReactorClientHttpConnector(HttpClient.create()
+                        .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
+                        .responseTimeout(Duration.ofMillis(5000))))
+                .build();
+
+        log.info("🐻WebClient initialized");
 
         SecretKeyValidationResponse result;
         try {
+            log.info("🐻WebClient post 요청 시작");
             result = webClient
                     .post()
-                    .uri(url)
-                    .contentType(MediaType.APPLICATION_JSON)
+                    .uri("/api/etc/secret_key_validation")
                     .body(BodyInserters.fromValue(jsonRequest))
                     .retrieve()
                     .bodyToMono(SecretKeyValidationResponse.class)
-                    .doOnNext(response -> log.info("🐻AI server response: {}", response)) // AI 서버 응답 로그
+                    .doOnNext(response -> log.info("🐻AI server response: {}", response))
                     .block();
+            log.info("🐻WebClient post 요청 완료");
         } catch (WebClientResponseException ex) {
-            log.error("🐻Error from AI server: {}", ex.getResponseBodyAsString()); // AI 서버 에러 로그
+            log.error("🐻Error from AI server: {}", ex.getResponseBodyAsString());
             if (400 <= ex.getRawStatusCode() && ex.getRawStatusCode() < 500) {
                 String errorBody = ex.getResponseBodyAsString();
                 String detail = objectMapper.readTree(errorBody).get("detail").asText();
@@ -91,7 +105,6 @@ public class GameService {
                 throw ex;
             }
         }
-
         log.info("🐻result : {}", result);
 
         return result;
