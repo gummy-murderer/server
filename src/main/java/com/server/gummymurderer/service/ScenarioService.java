@@ -15,6 +15,7 @@ import com.server.gummymurderer.repository.GameScenarioRepository;
 import com.server.gummymurderer.repository.GameSetRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +38,9 @@ public class ScenarioService {
     private final GameScenarioRepository gameScenarioRepository;
     private final GameAlibiRepository gameAlibiRepository;
 
+    @Value("${ai.url}")
+    private String aiUrl;
+
     @Transactional
     public MakeScenarioResponse makeScenario(MakeScenarioRequest request, Member loginMember) throws JsonProcessingException {
 
@@ -56,7 +60,7 @@ public class ScenarioService {
         String previousStory = foundGameSet.getGameSummary();
         log.info("🤖 previousStory : {} ", previousStory);
 
-        String url = "http://ec2-43-201-52-200.ap-northeast-2.compute.amazonaws.com:80/api/scenario/generate_victim";
+        String url =  aiUrl + "/api/scenario/generate_victim";
 
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("gameNo", foundGameSet.getGameSetNo());
