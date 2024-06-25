@@ -20,6 +20,7 @@ import com.server.gummymurderer.repository.*;
 import io.netty.channel.ChannelOption;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
@@ -54,6 +55,9 @@ public class GameService {
     private final GameUserCheckListService gameUserCheckListService;
     private final GameUserCustomService gameUserCustomService;
 
+    @Value("${ai.url}")
+    private String aiUrl;
+
     public SecretKeyValidationResponse validationSecretKey(Member loginMember, SecretKeyValidationRequest request) throws JsonProcessingException {
 
         log.info("🐻secretKey 검증 시작");
@@ -61,7 +65,7 @@ public class GameService {
         Member member = memberRepository.findByNickname(loginMember.getNickname())
                 .orElseThrow(() -> new AppException(ErrorCode.INVALID_ACCOUNT));
 
-        String url = "http://ec2-43-201-52-200.ap-northeast-2.compute.amazonaws.com:80/api/etc/secret_key_validation";
+        String url = aiUrl + "/api/etc/secret_key_validation";
 
         // url 예외 처리
         try {
