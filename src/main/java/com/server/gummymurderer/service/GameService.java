@@ -92,31 +92,21 @@ public class GameService {
         // 담긴 secretkey 값
         log.info("🐻jsonRequest : {}", jsonRequest);
 
-        // WebClient 설정 확인
-        WebClient webClient = WebClient.builder()
-                .baseUrl("http://ec2-43-201-52-200.ap-northeast-2.compute.amazonaws.com:80")
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .clientConnector(new ReactorClientHttpConnector(HttpClient.create()
-                        .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
-                        .responseTimeout(Duration.ofMillis(5000))))
-                .build();
-
-        log.info("🐻WebClient initialized");
+        WebClient webClient = WebClient.create();
 
         SecretKeyValidationResponse result;
         try {
-            log.info("🐻WebClient post 요청 시작");
             result = webClient
                     .post()
-                    .uri("/api/etc/secret_key_validation")
+                    .uri(url)
+                    .contentType(MediaType.APPLICATION_JSON)
                     .body(BodyInserters.fromValue(jsonRequest))
                     .retrieve()
                     .bodyToMono(SecretKeyValidationResponse.class)
-                    .doOnNext(response -> log.info("🐻AI server response: {}", response))
+                    .doOnNext(response -> log.info("🐻AI server response: {}", response)) // AI 서버 응답 로그
                     .block();
-            log.info("🐻WebClient post 요청 완료");
         } catch (WebClientResponseException ex) {
-            log.error("🐻Error from AI server: {}", ex.getResponseBodyAsString());
+            log.error("🐻Error from AI server: {}", ex.getResponseBodyAsString()); // AI 서버 에러 로그
             if (400 <= ex.getRawStatusCode() && ex.getRawStatusCode() < 500) {
                 String errorBody = ex.getResponseBodyAsString();
                 String detail = objectMapper.readTree(errorBody).get("detail").asText();
@@ -125,6 +115,7 @@ public class GameService {
                 throw ex;
             }
         }
+
         log.info("🐻result : {}", result);
 
         return result;
