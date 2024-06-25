@@ -9,7 +9,6 @@ import com.server.gummymurderer.domain.dto.gameNpc.GameNpcInfoRequest;
 import com.server.gummymurderer.domain.dto.gameNpc.GameNpcInfoResponse;
 import com.server.gummymurderer.domain.dto.gameUserCheckList.CheckListSaveRequest;
 import com.server.gummymurderer.domain.dto.gameUserCheckList.CheckListSaveResponse;
-import com.server.gummymurderer.domain.dto.gameUserCustom.GameUserCustomSaveRequest;
 import com.server.gummymurderer.domain.dto.scenario.MakeScenarioResponse;
 import com.server.gummymurderer.domain.entity.*;
 import com.server.gummymurderer.domain.enum_class.GameResult;
@@ -31,6 +30,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.netty.http.client.HttpClient;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.time.Duration;
 import java.util.*;
 
@@ -62,6 +63,19 @@ public class GameService {
 
         String url = "http://ec2-43-201-52-200.ap-northeast-2.compute.amazonaws.com:80/api/etc/secret_key_validation";
 
+        // url 예외 처리
+        try {
+            URL urlObj = new URL(url);
+            HttpURLConnection connection = (HttpURLConnection) urlObj.openConnection();
+            connection.setConnectTimeout(5000); // 5초 타임아웃
+            connection.connect();
+            log.info("🐻Successfully connected to URL: {}", url);
+            connection.disconnect();
+        } catch (Exception e) {
+            log.error("🐻Failed to connect to URL: {}", url, e);
+            throw new RuntimeException("Failed to connect to URL: " + url, e);
+        }
+
         log.info("🐻Using URL: {}", url);
 
         Map<String, String> requestData = new HashMap<>();
@@ -70,6 +84,8 @@ public class GameService {
         ObjectMapper objectMapper = new ObjectMapper();
 
         String jsonRequest = objectMapper.writeValueAsString(requestData);
+
+        // 담긴 secretkey 값
         log.info("🐻jsonRequest : {}", jsonRequest);
 
         // WebClient 설정 확인
