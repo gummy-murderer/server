@@ -10,6 +10,7 @@ import com.server.gummymurderer.repository.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -31,6 +32,9 @@ public class ChatService {
     private final GameScenarioRepository gameScenarioRepository;
     private final GameAlibiRepository gameAlibiRepository;
     private final JwtProvider jwtProvider;
+
+    @Value("${ai.url}")
+    private String aiUrl;
 
     // 채팅 보내기
     public ChatSaveResponse saveChat(Member loginMember, ChatSaveRequest request, HttpServletRequest httpServletRequest) {
@@ -99,7 +103,7 @@ public class ChatService {
 
     // AI로 채팅 내용 전송하고 AI에서 온 답장을 반환
     private ChatSaveResponse sendChatToAIServer(ChatSaveRequest request) {
-        String aiServerUrl = "http://ec2-43-201-52-200.ap-northeast-2.compute.amazonaws.com:80/api/user/conversation_with_user";
+        String aiServerUrl = aiUrl + "/api/user/conversation_with_user";
         WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build(); // WebClient 인스턴스 생성
 
         GameSet gameSet = gameSetRepository.findByGameSetNo(request.getGameSetNo())
@@ -238,7 +242,7 @@ public class ChatService {
     }
 
     private NpcChatResponse sendNpcChatToAIServer(NpcChatRequest npcChatRequest) {
-        String aiServerUrl = "http://ec2-43-201-52-200.ap-northeast-2.compute.amazonaws.com:80/api/user/conversation_between_npcs_each";
+        String aiServerUrl = aiUrl + "/api/user/conversation_between_npcs_each";
         WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build();
 
         GameSet gameSet = gameSetRepository.findByGameSetNo(npcChatRequest.getGameSetNo())
