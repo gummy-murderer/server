@@ -14,10 +14,10 @@ public class GameNpcCustomSaveRequest {
 
     private Long gameSetNo;
     private String npcName;
-    private String mouth;
-    private String ear;
-    private String body;
-    private String tail;
+    private int mouth;
+    private int ear;
+    private int body;
+    private int tail;
 
     public GameNpcCustom toEntity(GameSet gameSet, GameNpc gameNpc) {
 
