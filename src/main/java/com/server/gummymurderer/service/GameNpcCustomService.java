@@ -2,6 +2,7 @@ package com.server.gummymurderer.service;
 
 import com.server.gummymurderer.domain.dto.gameNpcCustom.GameNpcCustomSaveRequest;
 import com.server.gummymurderer.domain.dto.gameNpcCustom.GameNpcCustomSaveResponse;
+import com.server.gummymurderer.domain.dto.gameNpcCustom.NpcCustomInfo;
 import com.server.gummymurderer.domain.entity.GameNpc;
 import com.server.gummymurderer.domain.entity.GameNpcCustom;
 import com.server.gummymurderer.domain.entity.GameSet;
@@ -15,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -27,22 +27,24 @@ public class GameNpcCustomService {
     private final GameNpcRepository gameNpcRepository;
     private final GameNpcCustomRepository gameNpcCustomRepository;
 
-    public GameNpcCustomSaveResponse npcCustomSave(Member loginMember, List<GameNpcCustomSaveRequest> requests) {
+    public GameNpcCustomSaveResponse npcCustomSave(Member loginMember, GameNpcCustomSaveRequest request) {
 
         log.info("🐻GameNpc custom 저장 시작");
 
+        GameSet gameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameSetNo(), loginMember)
+                .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
+
         GameNpcCustomSaveResponse response = null;
 
-        for (int i = 0; i < requests.size(); i++) {
-            GameNpcCustomSaveRequest request = requests.get(i);
+        List<NpcCustomInfo> npcCustomInfos = request.getNpcCustomInfos();
 
-            GameSet gameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameSetNo(), loginMember)
-                    .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
+        for (int i = 0; i < npcCustomInfos.size(); i++) {
+            NpcCustomInfo npcInfo = npcCustomInfos.get(i);
 
-            GameNpc gameNpc = gameNpcRepository.findByNpcNameAndGameSet_GameSetNo(request.getNpcName(), request.getGameSetNo())
+            GameNpc gameNpc = gameNpcRepository.findByNpcNameAndGameSet_GameSetNo(npcInfo.getNpcName(), request.getGameSetNo())
                     .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
 
-            GameNpcCustom gameNpcCustom = request.toEntity(gameSet, gameNpc);
+            GameNpcCustom gameNpcCustom = npcInfo.toEntity(gameSet, gameNpc);
 
             gameNpcCustomRepository.save(gameNpcCustom);
 
