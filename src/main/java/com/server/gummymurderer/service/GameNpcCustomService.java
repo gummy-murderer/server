@@ -39,7 +39,10 @@ public class GameNpcCustomService {
         List<NpcCustomInfo> npcCustomInfos = request.getNpcCustomInfos();
 
         for (int i = 0; i < npcCustomInfos.size(); i++) {
+
             NpcCustomInfo npcInfo = npcCustomInfos.get(i);
+
+            log.info("🐻 처리 중인 NPC - 순서: {}, NPC 이름: {}", i + 1, npcInfo.getNpcName());
 
             GameNpc gameNpc = gameNpcRepository.findByNpcNameAndGameSet_GameSetNo(npcInfo.getNpcName(), request.getGameSetNo())
                     .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
