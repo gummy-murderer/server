@@ -15,6 +15,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -24,22 +27,30 @@ public class GameNpcCustomService {
     private final GameNpcRepository gameNpcRepository;
     private final GameNpcCustomRepository gameNpcCustomRepository;
 
-    public GameNpcCustomSaveResponse npcCustomSave(Member loginMember, GameNpcCustomSaveRequest request) {
+    public GameNpcCustomSaveResponse npcCustomSave(Member loginMember, List<GameNpcCustomSaveRequest> requests) {
 
         log.info("🐻GameNpc custom 저장 시작");
 
-        GameSet gameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameSetNo(), loginMember)
-                .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
+        GameNpcCustomSaveResponse response = null;
 
-        GameNpc gameNpc = gameNpcRepository.findByNpcNameAndGameSet_GameSetNo(request.getNpcName(), request.getGameSetNo())
-                .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
+        for (int i = 0; i < requests.size(); i++) {
+            GameNpcCustomSaveRequest request = requests.get(i);
 
-        GameNpcCustom gameNpcCustom = request.toEntity(gameSet, gameNpc);
+            GameSet gameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameSetNo(), loginMember)
+                    .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
-        gameNpcCustomRepository.save(gameNpcCustom);
+            GameNpc gameNpc = gameNpcRepository.findByNpcNameAndGameSet_GameSetNo(request.getNpcName(), request.getGameSetNo())
+                    .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
+
+            GameNpcCustom gameNpcCustom = request.toEntity(gameSet, gameNpc);
+
+            gameNpcCustomRepository.save(gameNpcCustom);
+
+            response = new GameNpcCustomSaveResponse(gameNpcCustom);
+        }
 
         log.info("🐻GameNpc custom 저장 완료");
 
-        return new GameNpcCustomSaveResponse(gameNpcCustom);
+        return response;
     }
 }

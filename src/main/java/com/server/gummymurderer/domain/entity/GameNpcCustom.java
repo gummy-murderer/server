@@ -17,16 +17,16 @@ public class GameNpcCustom extends BaseEntity{
     private Long GameNpcCustomNo;
 
     @Column(name = "mouth")
-    private String mouth;
+    private int mouth;
 
     @Column(name = "ear")
-    private String ear;
+    private int ear;
 
     @Column(name = "body")
-    private String body;
+    private int body;
 
     @Column(name = "tail")
-    private String tail;
+    private int tail;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_set_no")
