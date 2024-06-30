@@ -6,7 +6,6 @@ import com.server.gummymurderer.domain.dto.gameNpcCustom.NpcCustomInfo;
 import com.server.gummymurderer.domain.entity.GameNpc;
 import com.server.gummymurderer.domain.entity.GameNpcCustom;
 import com.server.gummymurderer.domain.entity.GameSet;
-import com.server.gummymurderer.domain.entity.Member;
 import com.server.gummymurderer.exception.AppException;
 import com.server.gummymurderer.exception.ErrorCode;
 import com.server.gummymurderer.repository.GameNpcCustomRepository;
@@ -27,11 +26,11 @@ public class GameNpcCustomService {
     private final GameNpcRepository gameNpcRepository;
     private final GameNpcCustomRepository gameNpcCustomRepository;
 
-    public GameNpcCustomSaveResponse npcCustomSave(Member loginMember, GameNpcCustomSaveRequest request) {
+    public GameNpcCustomSaveResponse npcCustomSave(GameNpcCustomSaveRequest request) {
 
         log.info("🐻GameNpc custom 저장 시작");
 
-        GameSet gameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameSetNo(), loginMember)
+        GameSet gameSet = gameSetRepository.findByGameSetNo(request.getGameSetNo())
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
         GameNpcCustomSaveResponse response = null;
