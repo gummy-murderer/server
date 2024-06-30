@@ -7,6 +7,7 @@ import com.server.gummymurderer.domain.dto.game.*;
 import com.server.gummymurderer.domain.dto.gameNpc.GameNpcDTO;
 import com.server.gummymurderer.domain.dto.gameNpc.GameNpcInfoRequest;
 import com.server.gummymurderer.domain.dto.gameNpc.GameNpcInfoResponse;
+import com.server.gummymurderer.domain.dto.gameNpcCustom.GameNpcCustomSaveRequest;
 import com.server.gummymurderer.domain.dto.gameUserCheckList.CheckListSaveRequest;
 import com.server.gummymurderer.domain.dto.gameUserCheckList.CheckListSaveResponse;
 import com.server.gummymurderer.domain.dto.scenario.MakeScenarioResponse;
@@ -17,23 +18,18 @@ import com.server.gummymurderer.domain.enum_class.VoteResult;
 import com.server.gummymurderer.exception.AppException;
 import com.server.gummymurderer.exception.ErrorCode;
 import com.server.gummymurderer.repository.*;
-import io.netty.channel.ChannelOption;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
-import reactor.netty.http.client.HttpClient;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.time.Duration;
 import java.util.*;
 
 @Service
@@ -54,6 +50,7 @@ public class GameService {
 
     private final GameUserCheckListService gameUserCheckListService;
     private final GameUserCustomService gameUserCustomService;
+    private final GameNpcCustomService gameNpcCustomService;
 
     @Value("${ai.url}")
     private String aiUrl;
@@ -212,10 +209,16 @@ public class GameService {
         gameUserCheckListService.saveAndReturnCheckList(checkListSaveRequest);
 
         // custom 저장
-        if (request.getCustom() != null) {
-            request.getCustom().setGameSetNo(request.getGameSetNo());
-            gameUserCustomService.saveCustom(loginMember, request.getCustom());
+        if (request.getUserCustom() != null) {
+            request.getUserCustom().setGameSetNo(request.getGameSetNo());
+            gameUserCustomService.saveCustom(loginMember, request.getUserCustom());
         }
+
+        // npc custom 저장
+        GameNpcCustomSaveRequest gameNpcCustomSaveRequest = new GameNpcCustomSaveRequest();
+        gameNpcCustomSaveRequest.setGameSetNo(request.getGameSetNo());
+        gameNpcCustomSaveRequest.setNpcCustomInfos(request.getNpcCustomInfos());
+        gameNpcCustomService.npcCustomSave(gameNpcCustomSaveRequest);
 
         // 게임 상태가 GAME_START 이면 GAME_PROGRESS로 변경
         if (gameSet.getGameStatus() == GameStatus.GAME_START) {

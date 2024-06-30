@@ -1,5 +1,6 @@
 package com.server.gummymurderer.domain.dto.game;
 
+import com.server.gummymurderer.domain.dto.gameNpcCustom.NpcCustomInfo;
 import com.server.gummymurderer.domain.dto.gameUserCheckList.CheckListRequest;
 import com.server.gummymurderer.domain.dto.gameUserCustom.GameUserCustomSaveRequest;
 import lombok.AllArgsConstructor;
@@ -21,6 +22,7 @@ public class SaveGameRequest {
     private String voteResult;
     private Long voteNightNumber;
     private List<CheckListRequest> checkList;
-    private GameUserCustomSaveRequest custom;
+    private GameUserCustomSaveRequest userCustom;
+    private List<NpcCustomInfo> npcCustomInfos;
 
 }
