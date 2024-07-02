@@ -1,6 +1,7 @@
 package com.server.gummymurderer.domain.dto.game;
 
 import com.server.gummymurderer.domain.dto.alibi.AlibiDTO;
+import com.server.gummymurderer.domain.dto.gameNpcCustom.NpcCustomInfo;
 import com.server.gummymurderer.domain.dto.gameUserCheckList.CheckListSaveResponse;
 import com.server.gummymurderer.domain.dto.scenario.MakeScenarioResponse;
 import lombok.AllArgsConstructor;
@@ -22,9 +23,12 @@ public class LoadGameResponse {
     private List<CheckListSaveResponse> checkList;
     private List<AlibiDTO> alibi;
     private MakeScenarioResponse scenario; // scenario, npcList
+    private List<NpcCustomInfo> npcCustomInfos;
 
-    public static LoadGameResponse of(LoginGameSetDTO gameSet, String deadNpc, String deadPlace, List<CheckListSaveResponse> checkList, List<AlibiDTO> alibi, MakeScenarioResponse scenario) {
-        return new LoadGameResponse(gameSet, deadNpc, deadPlace, checkList, alibi, scenario);
+    public static LoadGameResponse of(LoginGameSetDTO gameSet, String deadNpc, String deadPlace,
+                                      List<CheckListSaveResponse> checkList, List<AlibiDTO> alibi,
+                                      MakeScenarioResponse scenario, List<NpcCustomInfo> npcCustomInfos) {
+        return new LoadGameResponse(gameSet, deadNpc, deadPlace, checkList, alibi, scenario, npcCustomInfos);
     }
 
 }
