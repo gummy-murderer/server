@@ -8,6 +8,7 @@ import com.server.gummymurderer.domain.dto.gameNpc.GameNpcDTO;
 import com.server.gummymurderer.domain.dto.gameNpc.GameNpcInfoRequest;
 import com.server.gummymurderer.domain.dto.gameNpc.GameNpcInfoResponse;
 import com.server.gummymurderer.domain.dto.gameNpcCustom.GameNpcCustomSaveRequest;
+import com.server.gummymurderer.domain.dto.gameNpcCustom.NpcCustomInfo;
 import com.server.gummymurderer.domain.dto.gameUserCheckList.CheckListSaveRequest;
 import com.server.gummymurderer.domain.dto.gameUserCheckList.CheckListSaveResponse;
 import com.server.gummymurderer.domain.dto.scenario.MakeScenarioResponse;
@@ -47,6 +48,7 @@ public class GameService {
     private final GameAlibiRepository gameAlibiRepository;
     private final MemberRepository memberRepository;
     private final GameUserCustomRepository gameUserCustomRepository;
+    private final GameNpcCustomRepository gameNpcCustomRepository;
 
     private final GameUserCheckListService gameUserCheckListService;
     private final GameUserCustomService gameUserCustomService;
@@ -262,6 +264,15 @@ public class GameService {
             npcList.add(dto);
         }
 
+        // GameNpc Custom 정보 list
+        List<NpcCustomInfo> npcCustomInfos = new ArrayList<>();
+        for (GameNpc gameNpc : gameNpcs) {
+            GameNpcCustom gameNpcCustom = gameNpcCustomRepository.findByGameNpc(gameNpc)
+                    .orElseThrow(() -> new AppException(ErrorCode.NPC_CUSTOM_NOT_FOUND));
+            NpcCustomInfo npcCustomInfo = new NpcCustomInfo(gameNpc.getNpcName(), gameNpcCustom.getMouth(), gameNpcCustom.getEar(), gameNpcCustom.getBody(), gameNpcCustom.getTail());
+            npcCustomInfos.add(npcCustomInfo);
+        }
+
         MakeScenarioResponse scenarioResponse = MakeScenarioResponse.of(gameScenario, npcList);
 
         // 로그인 한 user의 GameSet에 해당하는 checkList
@@ -289,7 +300,7 @@ public class GameService {
 
         log.info("🐻Game Load 완료");
 
-        return LoadGameResponse.of(gameSetDTO, deadNpc, deadPlace, checkList, alibiDTOList, scenarioResponse);
+        return LoadGameResponse.of(gameSetDTO, deadNpc, deadPlace, checkList, alibiDTOList, scenarioResponse, npcCustomInfos);
     }
 
     @Transactional
