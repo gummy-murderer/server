@@ -51,9 +51,6 @@ dependencies {
     // validation
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '2.5.6'
 
-    // google cloud storage
-    implementation group: 'com.google.cloud', name: 'spring-cloud-gcp-starter', version: '5.1.2'
-    implementation group: 'com.google.cloud', name: 'spring-cloud-gcp-storage', version: '5.1.2'
 }
 
 task copyPrivate(type: Copy) {
