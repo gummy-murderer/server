@@ -1,6 +1,6 @@
 # Gummy-murder - Server
 
-[📌 Swagger-ui](http://ec2-15-165-15-244.ap-northeast-2.compute.amazonaws.com:8081/swagger-ui/)<br>
+[📌 Swagger-ui](http://ec2-15-165-15-244.ap-northeast-2.compute.amazonaws.com:8081/swagger-ui/index.html)<br>
 
 ## 1. 🐻서비스 소개
 **탐정이 되어 마을의 평화를 지켜라!**
