@@ -37,8 +37,6 @@ public class MemberController {
     public ResponseEntity<Response<Page<ReadAllMemberResponse>>> readAll(@AuthenticationPrincipal CustomUserDetails userDetails) {
         PageRequest pageable = PageRequest.of(0, 10, Sort.by("memberNo").descending());
 
-        log.info("🤖User Name : {}",userDetails.getMember().getName());
-
         Page<ReadAllMemberResponse> readAllMemberResponsePage = memberService.readAllMember(pageable);
 
         return ResponseEntity.ok(Response.success(readAllMemberResponsePage));
