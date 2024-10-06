@@ -26,7 +26,7 @@ public class SignController {
     }
 
     @PostMapping(value = "/register")
-    public Response<SignResponse> register(@RequestBody @Valid SignRequest request) throws Exception {
+    public Response<SignResponse> register(@RequestBody SignRequest request) throws Exception {
         SignResponse signResponse = memberService.register(request);
         return Response.success(signResponse);
     }

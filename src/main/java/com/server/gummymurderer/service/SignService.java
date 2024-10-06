@@ -62,38 +62,6 @@ public class SignService {
         log.info("🐻account : {}", request.getAccount());
         log.info("🐻nickName : {}", request.getNickname());
 
-        String nickName = request.getNickname().replace("\u200B", "");
-
-        // 닉네임 길이 체크
-        if (nickName.length() < 2 || nickName.length() > 10) {
-            throw new AppException(ErrorCode.INVALID_NICKNAME_LENGTH);
-        }
-
-        // 닉네임 패턴 체크
-        if (!nickName.matches("^[a-zA-Z0-9가-힣]+$")) {
-            throw new AppException(ErrorCode.INVALID_NICKNAME_PATTERN);
-        }
-
-        // 닉네임의 각 문자와 그 문자의 유니코드 값을 출력하는 로그 추가
-        for (char ch : nickName.toCharArray()) {
-
-            int unicode = (int) ch;
-
-            log.info("🐻Character: {}, Unicode: {}", ch, unicode);
-
-            // 영어, 숫자, 한글 범위에 속하지 않는 경우 로그 출력
-            if(!(('a' <= unicode && unicode <= 'z') ||
-                 ('A' <= unicode && unicode <= 'Z') ||
-                 ('0' <= unicode && unicode <= '9') ||
-                 ('가' <= unicode && unicode <= '힣'))) {
-                log.warn("🐻Invalid character: {}, Unicode: {}", ch, unicode);
-            }
-        }
-
-        request.setNickname(nickName);
-
-        log.info("🐻nickName : {}", request.getNickname());
-
         // 계정이 중복될때 발생하는 에러
         if (memberRepository.findByAccount(request.getAccount()).isPresent()) {
             throw new AppException(ErrorCode.DUPLICATED_ACCOUNT);

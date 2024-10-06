@@ -31,9 +31,7 @@ public enum ErrorCode {
     INVALID_NICKNAME_LENGTH(HttpStatus.BAD_REQUEST, "닉네임은 2자 이상 10자 이하여야합니다."),
     INVALID_NICKNAME_PATTERN(HttpStatus.BAD_REQUEST, "닉네임은 숫자, 한글, 영어만 가능합니다."),
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 유효하지 않습니다."),
-    INVALID_EMAIL(HttpStatus.BAD_REQUEST, "이메일이 유효하지 않습니다."),
     INVALID_NICKNAME(HttpStatus.BAD_REQUEST, "닉네임이 유효하지 않습니다."),
-    INVALID_NAME(HttpStatus.BAD_REQUEST, "이름이 유효하지 않습니다."),
     VALIDATION_ERROR(HttpStatus.BAD_REQUEST, "입력한 값이 유효하지 않습니다."),
     NPC_CUSTOM_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 NPC의 Custom 데이터를 찾을 수 없습니다."),
 
