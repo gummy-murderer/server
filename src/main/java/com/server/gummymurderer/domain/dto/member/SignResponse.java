@@ -23,10 +23,6 @@ public class SignResponse {
 
     private String nickname;
 
-    private String name;
-
-    private String email;
-
     private List<Authority> roles = new ArrayList<>();
 
     private String token;
@@ -37,8 +33,6 @@ public class SignResponse {
         this.memberNo = member.getMemberNo();
         this.account = member.getAccount();
         this.nickname = member.getNickname();
-        this.name = member.getName();
-        this.email = member.getEmail();
         this.roles = member.getRoles();
         this.loginGameSetDTO = loginGameSetDTO;
     }
@@ -47,9 +41,7 @@ public class SignResponse {
         return SignResponse.builder()
                 .memberNo(member.getMemberNo())
                 .account(member.getAccount())
-                .name(member.getName())
                 .nickname(member.getNickname())
-                .email(member.getEmail())
                 .roles(member.getRoles())
                 .token(token)
                 .loginGameSetDTO(loginGameSetDTOList)
@@ -60,9 +52,7 @@ public class SignResponse {
         return SignResponse.builder()
                 .memberNo(member.getMemberNo())
                 .account(member.getAccount())
-                .name(member.getName())
                 .nickname(member.getNickname())
-                .email(member.getEmail())
                 .roles(member.getRoles())
                 .build();
     }

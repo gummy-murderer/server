@@ -32,22 +32,12 @@ public class SignRequest {
 //    @Size(min = 2, max = 10, message = "닉네임은 2자 이상 10자 이하여야합니다.")
     private String nickname;
 
-    @NotBlank(message = "이름을 입력해주세요.")
-    private String name;
-
-    @NotBlank(message = "email을 입력해주세요.")
-    @Email(message = "email 형식에 맞게 작성해주세요.")
-    private String email;
-
     public Member toEntity(PasswordEncoder passwordEncoder) {
         return Member.builder()
                 .account(getAccount())
                 .password(passwordEncoder.encode(getPassword()))
-                .name(getName())
                 .nickname(getNickname())
-                .email(getEmail())
                 .roles(Collections.singletonList(Authority.builder().name("ROLE_USER").build()))
                 .build();
     }
-
 }

@@ -25,11 +25,6 @@ public class Member extends BaseEntity {
 
     private String nickname;
 
-    private String name;
-
-    @Column(unique = true)
-    private String email;
-
     @OneToMany(mappedBy = "member", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @Builder.Default
     private List<Authority> roles = new ArrayList<>();

@@ -60,9 +60,7 @@ public class SignService {
     public SignResponse register(SignRequest request) {
 
         log.info("🐻account : {}", request.getAccount());
-        log.info("🐻name : {}", request.getName());
         log.info("🐻nickName : {}", request.getNickname());
-        log.info("🐻email : {}", request.getEmail());
 
         String nickName = request.getNickname().replace("\u200B", "");
 
@@ -101,11 +99,6 @@ public class SignService {
             throw new AppException(ErrorCode.DUPLICATED_ACCOUNT);
         }
 
-        // 이메일이 등록되어있을때 발생하는 에러
-        if (memberRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new AppException(ErrorCode.DUPLICATED_EMAIL);
-        }
-
         // nickName이 중복 될 때 발생하는 에러
         if (memberRepository.findByNickname(request.getNickname()).isPresent()) {
             throw new AppException(ErrorCode.DUPLICATED_NICKNAME);
@@ -124,16 +117,6 @@ public class SignService {
             throw new AppException(ErrorCode.DUPLICATED_ACCOUNT);
         } else {
             return new DuplicatedResponse("사용 가능한 Account 입니다.");
-        }
-    }
-
-
-    public DuplicatedResponse duplicateCheckEmail(DuplicatedEmailRequest request) {
-
-        if (memberRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new AppException(ErrorCode.DUPLICATED_EMAIL);
-        } else {
-            return new DuplicatedResponse("사용 가능한 Email 입니다.");
         }
     }
 
