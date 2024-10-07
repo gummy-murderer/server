@@ -33,6 +33,9 @@ public class SignService {
     private final GameUserCustomRepository gameUserCustomRepository;
 
     public SignResponse login(LoginRequest request) throws Exception {
+
+        log.info("🐻login 시작");
+
         Member member = memberRepository.findByAccount(request.getAccount()).orElseThrow(
                 () -> new AppException(ErrorCode.INVALID_ACCOUNT_OR_PASSWORD)
         );
