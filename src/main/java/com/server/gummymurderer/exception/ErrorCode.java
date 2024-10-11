@@ -34,6 +34,7 @@ public enum ErrorCode {
     INVALID_NICKNAME(HttpStatus.BAD_REQUEST, "닉네임이 유효하지 않습니다."),
     VALIDATION_ERROR(HttpStatus.BAD_REQUEST, "입력한 값이 유효하지 않습니다."),
     NPC_CUSTOM_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 NPC의 Custom 데이터를 찾을 수 없습니다."),
+    QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 질문을 찾을 수 없습니다."),
     INTERROGATION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 취조 정보를 찾을 수 없습니다."),
 
     ;
