@@ -74,4 +74,14 @@ public class GameController {
         return  Response.success(gameNpcInfoResponse);
 
     }
+
+    @PostMapping("/ending-letter")
+    public Response<GameEndingLetterResponse> endingLetter(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody GameEndingLetterRequest request) {
+
+        Member loginMember = customUserDetails.getMember();
+        GameEndingLetterResponse response = gameService.gameEndingLetter(loginMember, request);
+
+        return Response.success(response);
+
+    }
 }

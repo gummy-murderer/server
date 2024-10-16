@@ -1,6 +1,7 @@
 package com.server.gummymurderer.domain.entity;
 
 import com.server.gummymurderer.domain.dto.game.SaveGameRequest;
+import com.server.gummymurderer.domain.enum_class.MafiaArrest;
 import com.server.gummymurderer.domain.enum_class.VoteResult;
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,11 +23,14 @@ public class GameVoteEvent extends BaseEntity{
     private String voteNpcName;
 
     @Column(name = "vote_result")
-    @Enumerated(EnumType.STRING)
-    private VoteResult voteResult;
+    private boolean voteResult;
 
     @Column(name = "vote_night_number")
     private Long voteNightNumber;
+
+    @Column(name = "mafia_arrest")
+    @Enumerated(EnumType.STRING)
+    private MafiaArrest mafiaArrest;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_set_no")
@@ -34,8 +38,12 @@ public class GameVoteEvent extends BaseEntity{
 
     public GameVoteEvent(SaveGameRequest saveGameRequest, GameSet gameSet) {
         this.voteNpcName = saveGameRequest.getVoteNpcName();
-        this.voteResult = VoteResult.valueOf(saveGameRequest.getVoteResult());
+        this.voteResult = saveGameRequest.isVoteResult();
         this.voteNightNumber = saveGameRequest.getVoteNightNumber();
         this.gameSet = gameSet;
+    }
+
+    public void updateMafiaArrest(MafiaArrest mafiaArrest) {
+        this.mafiaArrest = mafiaArrest;
     }
 }
