@@ -12,18 +12,16 @@ import lombok.Setter;
 @AllArgsConstructor
 public class GameUserCustomDTO {
 
-    private String head;
-    private String eye;
-    private String mouth;
-    private String ear;
-    private String body;
-    private String tail;
+    private int eyes;
+    private int mouth;
+    private int ears;
+    private int body;
+    private int tail;
 
     public GameUserCustomDTO(GameUserCustom custom) {
-        this.head = custom.getHead();
-        this.eye = custom.getEye();
+        this.eyes = custom.getEyes();
         this.mouth = custom.getMouth();
-        this.ear = custom.getEar();
+        this.ears = custom.getEars();
         this.body = custom.getBody();
         this.tail = custom.getTail();
     }

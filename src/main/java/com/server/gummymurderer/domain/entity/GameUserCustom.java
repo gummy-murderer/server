@@ -16,23 +16,20 @@ public class GameUserCustom extends BaseEntity{
     @Column(name = "user_custom_no")
     private Long userCustomNo;
 
-    @Column(name = "head")
-    private String head;
-
-    @Column(name = "eye")
-    private String eye;
+    @Column(name = "eyes")
+    private int eyes;
 
     @Column(name = "mouth")
-    private String mouth;
+    private int mouth;
 
-    @Column(name = "ear")
-    private String ear;
+    @Column(name = "ears")
+    private int ears;
 
     @Column(name = "body")
-    private String body;
+    private int body;
 
     @Column(name = "tail")
-    private String tail;
+    private int tail;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_set_no")

@@ -13,20 +13,18 @@ import lombok.Setter;
 @AllArgsConstructor
 public class GameUserCustomSaveRequest {
 
-    private String head;
-    private String eye;
-    private String mouth;
-    private String ear;
-    private String body;
-    private String tail;
+    private int eyes;
+    private int mouth;
+    private int ears;
+    private int body;
+    private int tail;
     private Long gameSetNo;
 
     public GameUserCustom toEntity(GameUserCustomSaveRequest request, GameSet gameSet) {
         return GameUserCustom.builder()
-                .head(request.head)
-                .eye(request.eye)
+                .eyes(request.eyes)
                 .mouth(request.mouth)
-                .ear(request.ear)
+                .ears(request.ears)
                 .body(request.body)
                 .tail(request.tail)
                 .gameSet(gameSet)
