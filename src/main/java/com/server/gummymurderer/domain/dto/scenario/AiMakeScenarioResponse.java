@@ -12,6 +12,5 @@ import lombok.Setter;
 public class AiMakeScenarioResponse {
 
     private ScenarioAnswerDTO answer;
-    private TokensDTO tokens;
 
 }

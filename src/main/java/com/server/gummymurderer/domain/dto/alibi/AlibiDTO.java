@@ -3,6 +3,8 @@ package com.server.gummymurderer.domain.dto.alibi;
 import com.server.gummymurderer.domain.entity.GameAlibi;
 import com.server.gummymurderer.domain.entity.GameNpc;
 import com.server.gummymurderer.domain.entity.GameScenario;
+import com.server.gummymurderer.exception.AppException;
+import com.server.gummymurderer.exception.ErrorCode;
 import lombok.*;
 
 @Getter
@@ -17,6 +19,9 @@ public class AlibiDTO {
     private Long gameNpcNo;
 
     public GameAlibi toEntity(GameScenario gameScenario, GameNpc gameNpc) {
+        if (gameNpc == null) {
+            throw new AppException(ErrorCode.NPC_NOT_FOUND);  // Handle missing NPC
+        }
         return GameAlibi.builder()
                 .alibi(alibi)
                 .gameScenario(gameScenario)

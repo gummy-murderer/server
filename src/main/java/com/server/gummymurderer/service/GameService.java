@@ -200,7 +200,7 @@ public class GameService {
             // 투표 결과가 FOUND인 경우 게임 종료 및 성공
             if (VoteResult.valueOf(request.getVoteResult()) == VoteResult.FOUND) {
                 gameSet.endGameStatus();
-                gameSet.gameSuccess();
+                gameSet.gameWin();
             }
         }
 
@@ -318,7 +318,7 @@ public class GameService {
         log.info("🐻종료 요청 게임 상태 : {}", gameSet.getGameStatus());
 
         if ("FAILURE".equals(request.getResultMessage())) {
-            gameSet.gameFailed();
+            gameSet.gameLose();
         } else {
             throw new AppException(ErrorCode.INVALID_RESULT_MESSAGE);
         }

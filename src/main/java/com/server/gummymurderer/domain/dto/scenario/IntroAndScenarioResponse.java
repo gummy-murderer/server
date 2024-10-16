@@ -12,6 +12,6 @@ import lombok.Setter;
 public class IntroAndScenarioResponse {
 
     private IntroAnswerDTO introAnswer;
-    private MakeScenarioResponse scenarioResponse;
+    private FirstScenarioResponse firstScenarioResponse;
 
 }

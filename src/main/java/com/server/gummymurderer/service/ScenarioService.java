@@ -46,29 +46,22 @@ public class ScenarioService {
 
         System.out.println("🐻scenario 요청 시작");
 
+        log.info("🐻request gameSetNo : {}", request.getGameSetNo());
+
         // 일치하는 게임이 없을경우 에러 발생
         GameSet foundGameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameSetNo(), loginMember)
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
-        // AI에게 시나리오 생성 요청보내는 로직
-        List<NpcInfo> aliveGameNpcList = gameNpcRepository.findAllAliveResidentNpcInfoByGameSetNo(foundGameSet.getGameSetNo());
-        String murderName = gameNpcRepository.findMurderByGameSetNo(foundGameSet.getGameSetNo());
-        log.info("🤖 머더러 이름 : {}", murderName);
-        log.info("🤖 secret key : {}", request.getSecretKey());
-        int day = foundGameSet.getGameDay();
-        log.info("🤖 day : {} 일차", day);
-        String previousStory = foundGameSet.getGameSummary();
-        log.info("🤖 previousStory : {} ", previousStory);
+        log.info("🐻foundGameSet : {}", foundGameSet.getGameSetNo());
 
-        String url =  aiUrl + "/api/scenario/generate_victim";
+        // AI에게 시나리오 생성 요청보내는 로직
+        List<LivingCharacters> aliveGameNpcList = gameNpcRepository.findAllLivingCharactersByGameSetNo(foundGameSet.getGameSetNo());
+
+        String url =  aiUrl + "/api/v2/new-game/next_day";
 
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("gameNo", foundGameSet.getGameSetNo());
-        requestData.put("secretKey", request.getSecretKey());
-        requestData.put("day", day);
-        requestData.put("murderer", murderName);
         requestData.put("livingCharacters", aliveGameNpcList);
-        requestData.put("previousStory", previousStory);
 
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -87,7 +80,6 @@ public class ScenarioService {
                 .block();
 
         log.info("🐻 result victim : {}", result.getAnswer().getVictim());
-        log.info("🐻 result token : {}", result.getTokens().getTotalTokens());
         log.info("🐻 result dailySummary: {}", result.getAnswer().getDailySummary());
         log.info("🐻 result alibis: {}", result.getAnswer().getAlibis());
 
@@ -105,9 +97,15 @@ public class ScenarioService {
         // Alibi 정보를 GameAlibi에 저장
         for (AlibiDTO alibiDTO : result.getAnswer().getAlibis()) {
 
-            GameNpc gameNpc = gameNpcRepository.findByGameNpcNo(alibiDTO.getGameNpcNo())
-                    .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
+            GameNpc gameNpc;
 
+            if (alibiDTO.getGameNpcNo() != null) {
+                gameNpc = gameNpcRepository.findByGameNpcNo(alibiDTO.getGameNpcNo())
+                        .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
+            } else {
+                gameNpc = gameNpcRepository.findByNpcNameAndGameSet_GameSetNo(alibiDTO.getName(), foundGameSet.getGameSetNo())
+                        .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
+            }
             // AlibiDTO 정보 확인
             log.info("🐻 AlibiDTO Information: {}", alibiDTO);
 
@@ -139,12 +137,10 @@ public class ScenarioService {
         GameSet foundGameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameSetNo(), loginMember)
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
-        String url = aiUrl + "/api/scenario/generate_intro";
+        String url = aiUrl + "/api/v2/new-game/generate-chief-letter";
 
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("gameNo", foundGameSet.getGameSetNo());
-        requestData.put("secretKey", request.getSecretKey());
-        requestData.put("characters", request.getCharacters());
 
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -179,10 +175,13 @@ public class ScenarioService {
         GameSet foundGameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameSetNo(), loginMember)
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
+        String secretKey = "mafia";
+        request.setSecretKey(secretKey);
+
         // gameResult 정보 가져오기
         String gameResult = null;
 
-        if (foundGameSet.getGameResult() == GameResult.SUCCESS) {
+        if (foundGameSet.getGameResult() == GameResult.WIN) {
             gameResult = "victory";
         } else {
             throw new AppException(ErrorCode.GAME_NOT_WON);
@@ -201,7 +200,7 @@ public class ScenarioService {
         // livingCharacters 정보 가져오기
         List<NpcInfo> livingCharacters = gameNpcRepository.findAllAliveResidentNpcInfoByGameSetNo(foundGameSet.getGameSetNo());
 
-        String url = aiUrl + "/api/scenario/generate_final_words";
+        String url = aiUrl + "/api/v1/scenario/final-words";
 
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("gameNo", foundGameSet.getGameSetNo());
@@ -234,12 +233,30 @@ public class ScenarioService {
     }
 
     @Transactional
-    public IntroAndScenarioResponse makeIntroAndScenario (IntroRequest introRequest, MakeScenarioRequest makeScenarioRequest,  Member loginMember) throws JsonProcessingException {
+    public IntroAndScenarioResponse makeIntroAndScenario (IntroRequest introRequest, Member loginMember) throws JsonProcessingException {
 
         IntroAnswerDTO introAnswerDTO = intro(introRequest, loginMember);
-        MakeScenarioResponse makeScenarioResponse = makeScenario(makeScenarioRequest, loginMember);
 
-        return new IntroAndScenarioResponse(introAnswerDTO, makeScenarioResponse);
+        // 일치하는 게임이 없을경우 에러 발생
+        GameSet foundGameSet = gameSetRepository.findByGameSetNoAndMember(introRequest.getGameSetNo(), loginMember)
+                .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
+
+        GameScenario gameScenario = gameScenarioRepository.findByGameSet_GameSetNo(introRequest.getGameSetNo())
+                .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
+
+        // 해당 게임의 npc list
+        List<GameNpc> gameNpcs = gameNpcRepository.findAllByGameSet(foundGameSet);
+
+        List<GameNpcDTO> npcList = new ArrayList<>();
+        for (GameNpc gameNpc : gameNpcs) {
+            GameNpcDTO dto = new GameNpcDTO(gameNpc);
+            npcList.add(dto);
+        }
+
+        // FirstScenarioResponse 객체 생성
+        FirstScenarioResponse firstScenarioResponse = FirstScenarioResponse.of(gameScenario, npcList);
+
+        return new IntroAndScenarioResponse(introAnswerDTO, firstScenarioResponse);
 
     }
 
