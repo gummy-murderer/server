@@ -54,7 +54,7 @@ public class ScenarioController {
 
         Member loginMember = customUserDetails.getMember();
 
-        IntroAndScenarioResponse response = scenarioService.makeIntroAndScenario(request.getIntroRequest(), request.getMakeScenarioRequest(), loginMember);
+        IntroAndScenarioResponse response = scenarioService.makeIntroAndScenario(request.getIntroRequest(), loginMember);
         return Response.success(response);
     }
 }

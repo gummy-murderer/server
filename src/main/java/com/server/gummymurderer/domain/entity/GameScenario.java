@@ -51,8 +51,6 @@ public class GameScenario extends BaseEntity{
         this.witness = result.getAnswer().getWitness();
         this.eyewitnessInformation = result.getAnswer().getEyewitnessInformation();
         this.dailySummary = result.getAnswer().getDailySummary();
-        this.scenarioCompletionToken = result.getTokens().getCompletionTokens();
-        this.scenarioPromptToken = result.getTokens().getPromptTokens();
         this.gameSet = gameSet;
     }
 }

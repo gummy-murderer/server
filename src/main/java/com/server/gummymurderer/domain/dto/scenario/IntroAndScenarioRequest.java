@@ -12,6 +12,5 @@ import lombok.Setter;
 public class IntroAndScenarioRequest {
 
     private IntroRequest introRequest;
-    private MakeScenarioRequest makeScenarioRequest;
 
 }
