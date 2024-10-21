@@ -172,6 +172,9 @@ public class GameService {
     private void sendGameStartToAI(Long gameNo, List<GameNpc> gameNpcList) {
 
         String aiServerUrl = aiUrl + "/api/v2/new-game/start";
+
+        log.info("🐻 ai 요청 url : {}", aiServerUrl);
+
         WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build();
 
         // NPC 리스트 생성
