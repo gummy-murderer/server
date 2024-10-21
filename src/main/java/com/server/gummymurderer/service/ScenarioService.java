@@ -139,6 +139,8 @@ public class ScenarioService {
 
         String url = aiUrl + "/api/v2/new-game/generate-chief-letter";
 
+        log.info("🐻 ai 요청 url : {}", url);
+
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("gameNo", foundGameSet.getGameSetNo());
 
@@ -201,6 +203,8 @@ public class ScenarioService {
         List<NpcInfo> livingCharacters = gameNpcRepository.findAllAliveResidentNpcInfoByGameSetNo(foundGameSet.getGameSetNo());
 
         String url = aiUrl + "/api/v1/scenario/final-words";
+
+        log.info("🐻 ai 요청 url : {}", url);
 
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("gameNo", foundGameSet.getGameSetNo());
