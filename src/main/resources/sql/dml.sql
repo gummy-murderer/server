@@ -1,4 +1,4 @@
-INSERT INTO npc_tb (npc_no, npc_name, age, gender, wealth, npc_personality, npc_personality_description, npc_features, npc_features_description, created_at, last_modified_at)
+INSERT INTO gummymurderer.npc_tb (npc_no, npc_name, age, gender, wealth, npc_personality, npc_personality_description, npc_features, npc_features_description, created_at, last_modified_at)
 VALUES
     (1, '레오', 25, 'Male', 'Medium', '용감함', '용기 있게 행동함', '뮤지션', '노래를 부르듯이 대답함', '2024-01-01T16:35:35.789', '2024-01-12T16:35:35.789'),
     (2, '소피아', 32, 'Female', 'Moderate', '지혜로움', '깊은 통찰력과 현명한 판단을 가짐', '조용함', '대화보다는 관찰을 선호함', '2024-01-01T16:35:35.789', '2024-01-12T16:35:35.789'),

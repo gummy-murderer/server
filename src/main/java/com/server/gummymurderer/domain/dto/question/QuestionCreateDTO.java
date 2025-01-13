@@ -14,7 +14,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class QuestionCreateDTO {
 
-    private Integer number;
     private String question;
 
     public static Question toEntity(QuestionCreateDTO dto, GameSet gameSet, QuestionCreateRequest request) {
@@ -23,7 +22,6 @@ public class QuestionCreateDTO {
                 .keyWord(request.getKeyWord())
                 .keyWordType(KeyWordType.valueOf(request.getKeyWordType().toUpperCase()))
                 .gameSet(gameSet)
-                .questionIndex(dto.getNumber())
                 .questionText(dto.getQuestion())
                 .build();
     }

@@ -24,9 +24,6 @@ public class Question extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private KeyWordType keyWordType;
 
-    @Column(name = "question_index")
-    private Integer questionIndex;
-
     @Column(name = "question_text")
     private String questionText;
 

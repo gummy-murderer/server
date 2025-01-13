@@ -18,12 +18,13 @@ public class QuestionCreateRequest {
     private String keyWord;
     private String keyWordType;
 
-    public static Question toEntity(QuestionCreateRequest request, KeyWordType keyWordType, GameSet gameSet) {
+    public static Question toEntity(QuestionCreateRequest request, KeyWordType keyWordType, GameSet gameSet, String questionText) {
         return Question.builder()
                 .npcName(request.npcName)
                 .keyWord(request.keyWord)
                 .keyWordType(keyWordType)
                 .gameSet(gameSet)
+                .questionText(questionText)
                 .build();
     }
 }
