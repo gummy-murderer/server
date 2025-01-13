@@ -1,5 +1,8 @@
 package com.server.gummymurderer.domain.dto.question;
 
+import com.server.gummymurderer.domain.entity.GameSet;
+import com.server.gummymurderer.domain.entity.Question;
+import com.server.gummymurderer.domain.enum_class.KeyWordType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,10 +16,16 @@ import java.util.List;
 @AllArgsConstructor
 public class QuestionCreateResponse {
 
-    private List<QuestionCreateDTO> questions;
+    private String question;
 
-    public static QuestionCreateResponse from(QuestionCreateResponse response) {
-        return new QuestionCreateResponse(response.getQuestions());
+    public static Question toEntity(QuestionCreateDTO dto, GameSet gameSet, QuestionCreateRequest request) {
+        return Question.builder()
+                .npcName(request.getNpcName())
+                .keyWord(request.getKeyWord())
+                .keyWordType(KeyWordType.valueOf(request.getKeyWordType().toUpperCase()))
+                .gameSet(gameSet)
+                .questionText(dto.getQuestion())
+                .build();
     }
 
 }

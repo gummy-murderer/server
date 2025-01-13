@@ -6,6 +6,7 @@ import com.server.gummymurderer.domain.entity.GameSet;
 import com.server.gummymurderer.domain.entity.Member;
 import com.server.gummymurderer.domain.entity.Question;
 import com.server.gummymurderer.domain.entity.QuestionAnswer;
+import com.server.gummymurderer.domain.enum_class.KeyWordType;
 import com.server.gummymurderer.exception.AppException;
 import com.server.gummymurderer.exception.ErrorCode;
 import com.server.gummymurderer.repository.GameSetRepository;
@@ -18,7 +19,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -90,7 +90,7 @@ public class QuestionService {
         log.info("🐻Question Create AI 통신 시작");
 
         // AI 서버 URL의 base 부분만 설정
-        String aiServerUrl = aiUrl + "/api/v2/in-game/generate-questions";
+        String aiServerUrl = aiUrl + "/api/v2/in-game/generate-question";
         WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build();
 
         GameSet gameSet = gameSetRepository.findByGameSetNo(request.getGameSetNo())
@@ -101,7 +101,7 @@ public class QuestionService {
         aiQuestionSaveRequest.setGameNo(request.getGameSetNo());
         aiQuestionSaveRequest.setNpcName(request.getNpcName());
         aiQuestionSaveRequest.setKeyWord(request.getKeyWord() != null ? request.getKeyWord() : "");
-        aiQuestionSaveRequest.setKeyWordType(request.getKeyWordType() != null ? request.getKeyWordType() : "");
+        aiQuestionSaveRequest.setKeyWordType(request.getKeyWordType() != null ? request.getKeyWordType().toLowerCase() : "");
 
         // 요청 객체 로그 출력
         log.info("🐻Sending request to AI server: {}", aiQuestionSaveRequest);
@@ -118,11 +118,16 @@ public class QuestionService {
                 })
                 .block();
 
-        List<QuestionCreateDTO> questions = response.getQuestions();
-        for (QuestionCreateDTO saveDTO : questions) {
-            Question question = QuestionCreateDTO.toEntity(saveDTO, gameSet, request);
-            questionRepository.save(question);
+        // 단일 question 처리
+        String questionText = response.getQuestion();
+        if (questionText == null || questionText.isEmpty()) {
+            throw new AppException(ErrorCode.AI_INTERNAL_SERVER_ERROR);
         }
+
+        // DTO의 toEntity 사용 (toEntity에서 대문자로 변환하여 저장)
+        KeyWordType keyWordType = KeyWordType.valueOf(request.getKeyWordType().toUpperCase());
+        Question question = QuestionCreateRequest.toEntity(request, keyWordType, gameSet, questionText);
+        questionRepository.save(question);
 
         log.info("🐻Question Create AI 통신 완료");
 
@@ -196,7 +201,6 @@ public class QuestionService {
         AIQuestionAnswerRequest aiQuestionAnswerRequest = new AIQuestionAnswerRequest();
         aiQuestionAnswerRequest.setGameNo(request.getGameSetNo());
         aiQuestionAnswerRequest.setNpcName(request.getNpcName());
-        aiQuestionAnswerRequest.setQuestionIndex(request.getQuestionIndex());
         aiQuestionAnswerRequest.setKeyWord(request.getKeyWord() != null ? request.getKeyWord() : "");
         aiQuestionAnswerRequest.setKeyWordType(request.getKeyWord() != null ? request.getKeyWordType() : "");
 
@@ -215,9 +219,9 @@ public class QuestionService {
                 })
                 .block();
 
-        // 질문 조회(가장 최근의 질문을 찾도록)
-        Question question = questionRepository.findTopByGameSet_GameSetNoAndNpcNameAndQuestionIndexOrderByCreatedAtDesc(
-                        request.getGameSetNo(), request.getNpcName(), request.getQuestionIndex())
+        // 질문 조회(gameSetNo와 npcName으로 조회)
+        Question question = questionRepository.findTopByGameSet_GameSetNoAndNpcNameOrderByCreatedAtDesc(
+                        request.getGameSetNo(), request.getNpcName())
                 .orElseThrow(() -> new AppException(ErrorCode.QUESTION_NOT_FOUND));
 
         // 답변 저장

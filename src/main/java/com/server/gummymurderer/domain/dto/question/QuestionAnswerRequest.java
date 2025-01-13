@@ -15,7 +15,6 @@ public class QuestionAnswerRequest {
 
     private Long gameSetNo;
     private String npcName;
-    private Integer questionIndex;
     private String keyWord = "";
     private String keyWordType = "";
 
