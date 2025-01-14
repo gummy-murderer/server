@@ -9,7 +9,5 @@ import java.util.Optional;
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Long> {
 
-    Optional<Question> findByGameSet_GameSetNoAndNpcNameAndQuestionIndex(Long gameSetNo, String npcName, Integer questionIndex);
-
     Optional<Question> findTopByGameSet_GameSetNoAndNpcNameOrderByCreatedAtDesc(Long gameSetNo, String npcName);
 }
