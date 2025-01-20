@@ -21,7 +21,9 @@ public class Interrogation {
 
     private String npcName;
 
-    private String weapon;
+    private String murdererWeapon;
+    private String murdererLocation;
+    private String murderTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_set_no")

@@ -13,12 +13,16 @@ public class InterrogationStartRequest {
 
     private Long gameSetNo;
     private String npcName;
-    private String weapon;
+    private String murderWeapon;
+    private String murderLocation;
+    private String murderTime;
 
     public Interrogation toEntity(GameSet gameSet) {
         return Interrogation.builder()
                 .npcName(this.npcName)
-                .weapon(this.weapon)
+                .murdererWeapon(this.murderWeapon)
+                .murdererLocation(this.murderLocation)
+                .murderTime(this.murderTime)
                 .gameSet(gameSet)
                 .build();
     }

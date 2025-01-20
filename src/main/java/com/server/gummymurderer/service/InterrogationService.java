@@ -55,7 +55,9 @@ public class InterrogationService {
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("gameNo", request.getGameSetNo());
         requestData.put("npcName", request.getNpcName());
-        requestData.put("weapon", request.getWeapon());
+        requestData.put("murdererWeapon", request.getMurderWeapon());
+        requestData.put("murdererLocation", request.getMurderLocation());
+        requestData.put("murderTime", request.getMurderTime());
 
         ObjectMapper objectMapper = new ObjectMapper();
 
