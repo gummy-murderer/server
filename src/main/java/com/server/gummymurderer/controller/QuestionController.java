@@ -2,8 +2,6 @@ package com.server.gummymurderer.controller;
 
 import com.server.gummymurderer.domain.dto.question.QuestionAnswerRequest;
 import com.server.gummymurderer.domain.dto.question.QuestionAnswerResponse;
-import com.server.gummymurderer.domain.dto.question.QuestionCreateRequest;
-import com.server.gummymurderer.domain.dto.question.QuestionCreateResponse;
 import com.server.gummymurderer.domain.entity.Member;
 import com.server.gummymurderer.exception.Response;
 import com.server.gummymurderer.service.CustomUserDetails;
@@ -24,16 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class QuestionController {
 
     private final QuestionService questionService;
-
-    @PostMapping("/create")
-    public Response<QuestionCreateResponse> createQuestion(@RequestBody QuestionCreateRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails, HttpServletRequest httpServletRequest) {
-
-        Member loginMember = customUserDetails.getMember();
-
-        QuestionCreateResponse response = questionService.createQuestion(loginMember, request, httpServletRequest);
-        return Response.success(response);
-
-    }
 
     @PostMapping("/answer")
     public Response<QuestionAnswerResponse> answerQuestion(@RequestBody QuestionAnswerRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails, HttpServletRequest httpServletRequest) {
