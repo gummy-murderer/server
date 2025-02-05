@@ -11,7 +11,6 @@ public class AIQuestionAnswerRequest {
 
     private Long gameNo;
     private String npcName;
-    private Integer questionIndex;
     private String keyWord;
     private String keyWordType;
 
