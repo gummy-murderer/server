@@ -1,5 +1,6 @@
 package com.server.gummymurderer.domain.entity;
 
+import com.server.gummymurderer.domain.enum_class.InterrogationStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,13 +23,19 @@ public class InterrogationDialogue {
     private String userQuestion;
     private String answer;
     private Integer heartRate;
+    private boolean isMurderer;
 
-    public static InterrogationDialogue fromRequest(String userQuestion, String answer, int heartRate, Interrogation interrogation) {
+    @Enumerated(EnumType.STRING)
+    private InterrogationStatus interrogationStatus;
+
+    public static InterrogationDialogue fromRequest(String userQuestion, String answer, int heartRate, Interrogation interrogation, boolean isMurderer, InterrogationStatus interrogationStatus) {
         InterrogationDialogue dialogue = new InterrogationDialogue();
         dialogue.userQuestion = userQuestion;
         dialogue.answer = answer;
         dialogue.heartRate = heartRate;
         dialogue.interrogation = interrogation;
+        dialogue.isMurderer = isMurderer;
+        dialogue.interrogationStatus = interrogationStatus;
         return dialogue;
     }
 }

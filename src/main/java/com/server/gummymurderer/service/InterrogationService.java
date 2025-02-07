@@ -7,11 +7,11 @@ import com.server.gummymurderer.configuration.jwt.JwtProvider;
 import com.server.gummymurderer.domain.dto.interrogation.InterrogationProceedRequest;
 import com.server.gummymurderer.domain.dto.interrogation.InterrogationProceedResponse;
 import com.server.gummymurderer.domain.dto.interrogation.InterrogationStartRequest;
-import com.server.gummymurderer.domain.dto.interrogation.InterrogationStartResponse;
 import com.server.gummymurderer.domain.entity.GameSet;
 import com.server.gummymurderer.domain.entity.Interrogation;
 import com.server.gummymurderer.domain.entity.InterrogationDialogue;
 import com.server.gummymurderer.domain.entity.Member;
+import com.server.gummymurderer.domain.enum_class.InterrogationStatus;
 import com.server.gummymurderer.exception.AppException;
 import com.server.gummymurderer.exception.ErrorCode;
 import com.server.gummymurderer.repository.GameSetRepository;
@@ -40,7 +40,7 @@ public class InterrogationService {
     @Value("${ai.url}")
     private String aiUrl;
 
-    public InterrogationStartResponse interrogationStart(InterrogationStartRequest request, Member loginMember, HttpServletRequest httpServletRequest) throws JsonProcessingException {
+    public InterrogationProceedResponse interrogationStart(InterrogationStartRequest request, Member loginMember, HttpServletRequest httpServletRequest) throws JsonProcessingException {
 
         log.info("🐻Interrogation Start 시작");
 
@@ -64,13 +64,13 @@ public class InterrogationService {
         String jsonRequest = objectMapper.writeValueAsString(requestData);
         log.info("🐻jsonRequest : {}", jsonRequest);
 
-        InterrogationStartResponse response = webClient
+        InterrogationProceedResponse response = webClient
                 .post()
                 .uri(aiServerUrl)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromValue(jsonRequest))
                 .retrieve()
-                .bodyToMono(InterrogationStartResponse.class)
+                .bodyToMono(InterrogationProceedResponse.class)
                 .block();
 
         Interrogation interrogation = request.toEntity(gameSet);
@@ -116,7 +116,14 @@ public class InterrogationService {
                 .bodyToMono(InterrogationProceedResponse.class)
                 .block();
 
-        InterrogationDialogue dialogue = InterrogationDialogue.fromRequest(request.getContent(), response.getResponse(), response.getHeartRate(), interrogation);
+        InterrogationDialogue dialogue = InterrogationDialogue.fromRequest(
+                request.getContent(),
+                response.getResponse(),
+                response.getHeartRate(),
+                interrogation,
+                response.isMurderer(),
+                InterrogationStatus.valueOf(response.getStatus())
+        );
         interrogation.addDialogue(dialogue);
         interrogationRepository.save(interrogation);
 
