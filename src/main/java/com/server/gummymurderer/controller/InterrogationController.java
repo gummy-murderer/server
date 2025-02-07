@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.server.gummymurderer.domain.dto.interrogation.InterrogationProceedRequest;
 import com.server.gummymurderer.domain.dto.interrogation.InterrogationProceedResponse;
 import com.server.gummymurderer.domain.dto.interrogation.InterrogationStartRequest;
-import com.server.gummymurderer.domain.dto.interrogation.InterrogationStartResponse;
 import com.server.gummymurderer.domain.entity.Member;
 import com.server.gummymurderer.exception.Response;
 import com.server.gummymurderer.service.CustomUserDetails;
@@ -27,11 +26,11 @@ public class InterrogationController {
     private final InterrogationService interrogationService;
 
     @PostMapping("/start")
-    public Response<InterrogationStartResponse> startInterrogation(@RequestBody InterrogationStartRequest request, @AuthenticationPrincipal CustomUserDetails userDetails, HttpServletRequest httpServletRequest) throws JsonProcessingException {
+    public Response<InterrogationProceedResponse> startInterrogation(@RequestBody InterrogationStartRequest request, @AuthenticationPrincipal CustomUserDetails userDetails, HttpServletRequest httpServletRequest) throws JsonProcessingException {
 
         Member loginMember = userDetails.getMember();
 
-        InterrogationStartResponse response = interrogationService.interrogationStart(request, loginMember, httpServletRequest);
+        InterrogationProceedResponse response = interrogationService.interrogationStart(request, loginMember, httpServletRequest);
         return Response.success(response);
     }
 
