@@ -120,7 +120,7 @@ public class QuestionService {
                 .gameSetNo(request.getGameSetNo())
                 .npcName(request.getNpcName())
                 .keyWord(request.getKeyWord())
-                .keyWordType(KeyWordType.valueOf(request.getKeyWordType()))
+                .keyWordType(KeyWordType.valueOf(request.getKeyWordType().toUpperCase()))
                 .answerText(aiResponse.getResponse())
                 .build();
 
