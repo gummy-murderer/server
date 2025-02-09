@@ -21,7 +21,11 @@ public class InterrogationDialogue {
     private Interrogation interrogation;
 
     private String userQuestion;
+
+    @Lob
+    @Column(columnDefinition = "TEXT")
     private String answer;
+
     private Integer heartRate;
     private boolean isMurderer;
 

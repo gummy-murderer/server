@@ -5,11 +5,11 @@ import com.server.gummymurderer.domain.entity.Interrogation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import java.util.List;
 
 @Repository
 public interface InterrogationRepository extends JpaRepository<Interrogation, Long> {
 
-    Optional<Interrogation> findByGameSetAndNpcName(GameSet gameSet, String npcName);
+    List<Interrogation> findByGameSetAndNpcNameOrderByInterrogationNoDesc(GameSet gameSet, String npcName);
 
 }

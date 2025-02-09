@@ -26,6 +26,7 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -55,8 +56,8 @@ public class InterrogationService {
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("gameNo", request.getGameSetNo());
         requestData.put("npcName", request.getNpcName());
-        requestData.put("murdererWeapon", request.getMurderWeapon());
-        requestData.put("murdererLocation", request.getMurderLocation());
+        requestData.put("murderWeapon", request.getMurderWeapon());
+        requestData.put("murderLocation", request.getMurderLocation());
         requestData.put("murderTime", request.getMurderTime());
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -90,10 +91,18 @@ public class InterrogationService {
 
         log.info("🐻 unity request GameSetNo : {}", request.getGameSetNo());
 
-        Interrogation interrogation = interrogationRepository.findByGameSetAndNpcName(gameSet, request.getNpcName())
-                .orElseThrow(() -> new AppException(ErrorCode.INTERROGATION_NOT_FOUND));
+        List<Interrogation> interrogations = interrogationRepository.findByGameSetAndNpcNameOrderByInterrogationNoDesc(gameSet, request.getNpcName());
+
+        if (interrogations.isEmpty()) {
+            throw new AppException(ErrorCode.INTERROGATION_NOT_FOUND);
+        }
 
         log.info("🐻 unity request NpcName : {}", request.getNpcName());
+
+        // 가장 최근의 Interrogation 사용
+        Interrogation interrogation = interrogations.get(0);
+
+        log.info("🐻 선택된 최신 Interrogation : {}", interrogation.getInterrogationNo());
 
         String aiServerUrl =  aiUrl + "/api/v2/interrogation/conversation";
         WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build();
