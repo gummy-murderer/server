@@ -9,14 +9,13 @@ import com.server.gummymurderer.domain.dto.gameNpc.GameNpcInfoRequest;
 import com.server.gummymurderer.domain.dto.gameNpc.GameNpcInfoResponse;
 import com.server.gummymurderer.domain.dto.gameNpcCustom.GameNpcCustomSaveRequest;
 import com.server.gummymurderer.domain.dto.gameNpcCustom.NpcCustomInfo;
-import com.server.gummymurderer.domain.dto.gameUserCheckList.CheckListSaveRequest;
-import com.server.gummymurderer.domain.dto.gameUserCheckList.CheckListSaveResponse;
+import com.server.gummymurderer.domain.dto.gameUserDetectiveNotebook.DetectiveNotebookSaveRequest;
+import com.server.gummymurderer.domain.dto.gameUserDetectiveNotebook.DetectiveNotebookSaveResponse;
 import com.server.gummymurderer.domain.dto.scenario.MakeScenarioResponse;
 import com.server.gummymurderer.domain.entity.*;
 import com.server.gummymurderer.domain.enum_class.GameResult;
 import com.server.gummymurderer.domain.enum_class.GameStatus;
 import com.server.gummymurderer.domain.enum_class.MafiaArrest;
-import com.server.gummymurderer.domain.enum_class.VoteResult;
 import com.server.gummymurderer.exception.AppException;
 import com.server.gummymurderer.exception.ErrorCode;
 import com.server.gummymurderer.repository.*;
@@ -45,13 +44,13 @@ public class GameService {
     private final GameNpcRepository gameNpcRepository;
     private final GameVoteEventRepository gameVoteEventRepository;
     private final GameScenarioRepository gameScenarioRepository;
-    private final GameUserCheckListRepository gameUserCheckListRepository;
+    private final GameUserDetectiveNotebookRepository gameUserDetectiveNotebookRepository;
     private final GameAlibiRepository gameAlibiRepository;
     private final MemberRepository memberRepository;
     private final GameUserCustomRepository gameUserCustomRepository;
     private final GameNpcCustomRepository gameNpcCustomRepository;
 
-    private final GameUserCheckListService gameUserCheckListService;
+    private final GameUserDetectiveNotebookService gameUserDetectiveNotebookService;
     private final GameUserCustomService gameUserCustomService;
     private final GameNpcCustomService gameNpcCustomService;
 
@@ -274,11 +273,12 @@ public class GameService {
             }
         }
 
-        // 체크 리스트 저장
-        CheckListSaveRequest checkListSaveRequest = new CheckListSaveRequest();
-        checkListSaveRequest.setGameSetNo(request.getGameSetNo());
-        checkListSaveRequest.setCheckList(request.getCheckList());
-        gameUserCheckListService.saveAndReturnCheckList(checkListSaveRequest);
+        // Notebook 저장
+        DetectiveNotebookSaveRequest detectiveNotebookSaveRequest = new DetectiveNotebookSaveRequest();
+        detectiveNotebookSaveRequest.setGameSetNo(request.getGameSetNo());
+        detectiveNotebookSaveRequest.setNotebookRequestList(request.getNotebookRequestList());
+        gameUserDetectiveNotebookService.saveOrUpdateNotebook(loginMember, detectiveNotebookSaveRequest);
+
 
         // custom 저장
         if (request.getUserCustom() != null) {
@@ -346,20 +346,37 @@ public class GameService {
         }
 
         // GameNpc Custom 정보 list
+//        List<NpcCustomInfo> npcCustomInfos = new ArrayList<>();
+//        for (GameNpc gameNpc : gameNpcs) {
+//            GameNpcCustom gameNpcCustom = gameNpcCustomRepository.findByGameNpc(gameNpc)
+//                    .orElseThrow(() -> new AppException(ErrorCode.NPC_CUSTOM_NOT_FOUND));
+//            NpcCustomInfo npcCustomInfo = new NpcCustomInfo(gameNpc.getNpcName(), gameNpcCustom.getMouth(), gameNpcCustom.getEar(), gameNpcCustom.getBody(), gameNpcCustom.getTail());
+//            npcCustomInfos.add(npcCustomInfo);
+//        }
+
+        //테스트용 npc 커스텀
+        // GameNpc Custom 정보 list
         List<NpcCustomInfo> npcCustomInfos = new ArrayList<>();
         for (GameNpc gameNpc : gameNpcs) {
-            GameNpcCustom gameNpcCustom = gameNpcCustomRepository.findByGameNpc(gameNpc)
-                    .orElseThrow(() -> new AppException(ErrorCode.NPC_CUSTOM_NOT_FOUND));
-            NpcCustomInfo npcCustomInfo = new NpcCustomInfo(gameNpc.getNpcName(), gameNpcCustom.getMouth(), gameNpcCustom.getEar(), gameNpcCustom.getBody(), gameNpcCustom.getTail());
-            npcCustomInfos.add(npcCustomInfo);
+            GameNpcCustom gameNpcCustom = gameNpcCustomRepository.findByGameNpc(gameNpc).orElse(null);
+
+            // gameNpcCustom이 없으면 기본값(0) 사용
+            if (gameNpcCustom == null) {
+                npcCustomInfos.add(new NpcCustomInfo(gameNpc.getNpcName(), 0, 0, 0, 0));
+            } else {
+                npcCustomInfos.add(new NpcCustomInfo(gameNpc.getNpcName(),
+                        gameNpcCustom.getMouth(), gameNpcCustom.getEar(),
+                        gameNpcCustom.getBody(), gameNpcCustom.getTail()));
+            }
         }
+
 
         MakeScenarioResponse scenarioResponse = MakeScenarioResponse.of(gameScenario, npcList);
 
-        // 로그인 한 user의 GameSet에 해당하는 checkList
-        List<GameUserCheckList> gameUserCheckLists = gameUserCheckListRepository.findByGameNpc_GameSet(gameSet);
-        List<CheckListSaveResponse> checkList = gameUserCheckLists.stream()
-                .map(CheckListSaveResponse::of)
+        // 로그인 한 유저의 Notebook
+        List<GameUserDetectiveNotebook> gameUserDetectiveNotebooks = gameUserDetectiveNotebookRepository.findByGameNpc_GameSet(gameSet);
+        List<DetectiveNotebookSaveResponse> notebookRequestList = gameUserDetectiveNotebooks.stream()
+                .map(DetectiveNotebookSaveResponse::of)
                 .toList();
 
         // GameSet에 해당하는 Alibi
@@ -381,7 +398,7 @@ public class GameService {
 
         log.info("🐻Game Load 완료");
 
-        return LoadGameResponse.of(gameSetDTO, deadNpc, deadPlace, checkList, alibiDTOList, scenarioResponse, npcCustomInfos);
+        return LoadGameResponse.of(gameSetDTO, deadNpc, deadPlace, notebookRequestList, alibiDTOList, scenarioResponse, npcCustomInfos);
     }
 
     @Transactional
