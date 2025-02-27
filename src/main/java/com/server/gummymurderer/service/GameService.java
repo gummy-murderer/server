@@ -479,4 +479,37 @@ public class GameService {
         return gameNpcInfoResponse;
     }
 
+    public GameAutopsyResponse gameAutopsy(Member loginMember, GameAutopsyRequest request) throws JsonProcessingException {
+
+        GameSet gameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameSetNo(), loginMember)
+                .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
+
+        log.info("gameNo : {}", gameSet);
+
+        String aiServerUrl = aiUrl + "/api/v2/in-game/investigate-corpse";
+        WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build();
+
+        Map<String, Object> requestData = new HashMap<>();
+        requestData.put("gameNo", request.getGameSetNo());
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        String jsonRequest = objectMapper.writeValueAsString(requestData);
+        log.info("🐻jsonRequest : {}", jsonRequest);
+
+        GameAutopsyResponse response = webClient.post()
+                .uri(aiServerUrl)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(jsonRequest)
+                .retrieve()
+                .bodyToMono(GameAutopsyResponse.class)
+                .onErrorResume(e -> {
+                    log.error("🐻 AI 통신 실패 : ", e);
+                    throw new AppException(ErrorCode.AI_INTERNAL_SERVER_ERROR);
+                })
+                .block();
+
+        return response;
+    }
+
 }
