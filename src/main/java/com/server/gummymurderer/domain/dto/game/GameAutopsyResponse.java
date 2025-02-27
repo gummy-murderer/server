@@ -13,7 +13,7 @@ import lombok.ToString;
 public class GameAutopsyResponse {
 
     @JsonProperty("answer")
-    private Answer answer; // 그대로 매핑
+    private Answer answer;
 
     @Data
     public static class Answer {
