@@ -84,4 +84,13 @@ public class GameController {
         return Response.success(response);
 
     }
+
+    @PostMapping("/autopsy")
+    public Response<GameAutopsyResponse> npcAutopsy(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody GameAutopsyRequest request) throws JsonProcessingException {
+
+        Member loginMember = customUserDetails.getMember();
+        GameAutopsyResponse response = gameService.gameAutopsy(loginMember, request);
+
+        return Response.success(response);
+    }
 }
