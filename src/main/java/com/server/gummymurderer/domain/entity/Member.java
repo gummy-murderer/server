@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -25,9 +26,15 @@ public class Member extends BaseEntity {
 
     private String nickname;
 
+    private String steamId;
+
     @OneToMany(mappedBy = "member", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @Builder.Default
     private List<Authority> roles = new ArrayList<>();
+
+    public Member(String steamId) {
+        this.steamId = steamId;
+    }
 
     public void setRoles(List<Authority> role) {
         this.roles = role;

@@ -2,10 +2,7 @@ package com.server.gummymurderer.configuration.jwt;
 
 import com.server.gummymurderer.domain.entity.Authority;
 import com.server.gummymurderer.service.JpaUserDetailsService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
@@ -75,19 +72,30 @@ public class JwtProvider {
     // 토큰 검증
     public boolean validateToken(String token) {
         try {
-            // Bearer 검증
-            if (!token.substring(0, "Bearer ".length()).equalsIgnoreCase("Bearer ")) {
+            if (token == null || !token.startsWith("Bearer ")) {
+                log.error("🐻 Token 검증 실패: 잘못된 토큰 형식");
                 return false;
-            } else {
-                token = token.split(" ")[1].trim();
             }
-            Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
-            // 만료되었을 시 false
+
+            // "Bearer " 이후의 토큰만 추출
+            String jwt = token.substring(7).trim();
+            if (jwt.isEmpty()) {
+                log.error("🐻 Token 검증 실패: 토큰이 비어 있음");
+                return false;
+            }
+
+            Jws<Claims> claims = Jwts.parserBuilder()
+                    .setSigningKey(secretKey)
+                    .build()
+                    .parseClaimsJws(jwt);
+
             return !claims.getBody().getExpiration().before(new Date());
-        } catch (Exception e) {
-            // 예외 발생 시 로그 출력
-            log.error("🐻Token 검증 실패 : {}", e.getMessage());
-            throw e;
+        } catch (ExpiredJwtException e) {
+            log.error("🐻 Token 검증 실패: 만료된 토큰");
+            return false;
+        } catch (JwtException e) {
+            log.error("🐻 Token 검증 실패: {}", e.getMessage());
+            return false;
         }
     }
 }
