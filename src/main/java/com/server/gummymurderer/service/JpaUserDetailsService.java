@@ -14,10 +14,20 @@ public class JpaUserDetailsService implements UserDetailsService {
 
     private final MemberRepository memberRepository;
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+//    @Override
+//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+//
+//        Member member = memberRepository.findByAccount(username).orElseThrow(
+//                () -> new UsernameNotFoundException("Invalid authentication!")
+//        );
+//
+//        return new CustomUserDetails(member);
+//    }
 
-        Member member = memberRepository.findByAccount(username).orElseThrow(
+    @Override
+    public UserDetails loadUserByUsername(String steamId) throws UsernameNotFoundException {
+
+        Member member = memberRepository.findBySteamId(steamId).orElseThrow(
                 () -> new UsernameNotFoundException("Invalid authentication!")
         );
 

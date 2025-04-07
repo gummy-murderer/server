@@ -346,29 +346,29 @@ public class GameService {
         }
 
         // GameNpc Custom 정보 list
-//        List<NpcCustomInfo> npcCustomInfos = new ArrayList<>();
-//        for (GameNpc gameNpc : gameNpcs) {
-//            GameNpcCustom gameNpcCustom = gameNpcCustomRepository.findByGameNpc(gameNpc)
-//                    .orElseThrow(() -> new AppException(ErrorCode.NPC_CUSTOM_NOT_FOUND));
-//            NpcCustomInfo npcCustomInfo = new NpcCustomInfo(gameNpc.getNpcName(), gameNpcCustom.getMouth(), gameNpcCustom.getEar(), gameNpcCustom.getBody(), gameNpcCustom.getTail());
-//            npcCustomInfos.add(npcCustomInfo);
-//        }
+        List<NpcCustomInfo> npcCustomInfos = new ArrayList<>();
+        for (GameNpc gameNpc : gameNpcs) {
+            GameNpcCustom gameNpcCustom = gameNpcCustomRepository.findByGameNpc(gameNpc)
+                    .orElseThrow(() -> new AppException(ErrorCode.NPC_CUSTOM_NOT_FOUND));
+            NpcCustomInfo npcCustomInfo = new NpcCustomInfo(gameNpc.getNpcName(), gameNpcCustom.getMouth(), gameNpcCustom.getEar(), gameNpcCustom.getBody(), gameNpcCustom.getTail());
+            npcCustomInfos.add(npcCustomInfo);
+        }
 
         //테스트용 npc 커스텀
         // GameNpc Custom 정보 list
-        List<NpcCustomInfo> npcCustomInfos = new ArrayList<>();
-        for (GameNpc gameNpc : gameNpcs) {
-            GameNpcCustom gameNpcCustom = gameNpcCustomRepository.findByGameNpc(gameNpc).orElse(null);
-
-            // gameNpcCustom이 없으면 기본값(0) 사용
-            if (gameNpcCustom == null) {
-                npcCustomInfos.add(new NpcCustomInfo(gameNpc.getNpcName(), 0, 0, 0, 0));
-            } else {
-                npcCustomInfos.add(new NpcCustomInfo(gameNpc.getNpcName(),
-                        gameNpcCustom.getMouth(), gameNpcCustom.getEar(),
-                        gameNpcCustom.getBody(), gameNpcCustom.getTail()));
-            }
-        }
+//        List<NpcCustomInfo> npcCustomInfos = new ArrayList<>();
+//        for (GameNpc gameNpc : gameNpcs) {
+//            GameNpcCustom gameNpcCustom = gameNpcCustomRepository.findByGameNpc(gameNpc).orElse(null);
+//
+//            // gameNpcCustom이 없으면 기본값(0) 사용
+//            if (gameNpcCustom == null) {
+//                npcCustomInfos.add(new NpcCustomInfo(gameNpc.getNpcName(), 0, 0, 0, 0));
+//            } else {
+//                npcCustomInfos.add(new NpcCustomInfo(gameNpc.getNpcName(),
+//                        gameNpcCustom.getMouth(), gameNpcCustom.getEar(),
+//                        gameNpcCustom.getBody(), gameNpcCustom.getTail()));
+//            }
+//        }
 
 
         MakeScenarioResponse scenarioResponse = MakeScenarioResponse.of(gameScenario, npcList);
