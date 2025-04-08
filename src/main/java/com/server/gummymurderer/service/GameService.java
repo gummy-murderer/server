@@ -134,7 +134,7 @@ public class GameService {
 //            throw new AppException(ErrorCode.SAVED_GAME_FULL);
 //        }
 
-        log.info("🤖 계정명 : " + loginMember.getAccount());
+        log.info("🤖 계정명 : " + loginMember.getNickname());
 
         // Game Set 구성
         GameSet gameSet = GameSet.builder()

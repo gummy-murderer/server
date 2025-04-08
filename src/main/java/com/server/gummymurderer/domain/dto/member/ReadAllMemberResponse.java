@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class ReadAllMemberResponse {
 
     private Long memberNo;
-    private String account;
+    private String steamId;
     private String nickname;
     private LocalDateTime createdAt;
     private LocalDateTime lastModifiedAt;
@@ -20,7 +20,7 @@ public class ReadAllMemberResponse {
     public static ReadAllMemberResponse of(Member member) {
         return ReadAllMemberResponse.builder()
                 .memberNo(member.getMemberNo())
-                .account(member.getAccount())
+                .steamId(member.getSteamId())
                 .nickname(member.getNickname())
                 .createdAt(member.getCreatedAt())
                 .lastModifiedAt(member.getLastModifiedAt())
