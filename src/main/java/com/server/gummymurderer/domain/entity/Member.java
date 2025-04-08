@@ -19,11 +19,6 @@ public class Member extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long memberNo;
 
-    @Column(unique = true)
-    private String account;
-
-    private String password;
-
     private String nickname;
 
     private String steamId;

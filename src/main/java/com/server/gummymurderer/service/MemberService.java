@@ -34,19 +34,4 @@ public class MemberService {
         return ReadMemberResponse.of(foundMember);
     }
 
-    //가입을 요청한 닉네임으로 유저 조회 -있으면 DUPLICATED_NICKNAME에러발생
-    private void validateMemberByNickName(String memberNickname) {
-        memberRepository.findByNickname(memberNickname)
-                .ifPresent(member -> {
-                    throw new AppException(ErrorCode.DUPLICATED_NICKNAME);
-                });
-    }
-
-    //가입을 요청한 아이디로 유저 조회 -있으면 DUPLICATED_ID에러발생
-    private void validateMemberById(String account) {
-        memberRepository.findByAccount(account)
-                .ifPresent(member -> {
-                    throw new AppException(ErrorCode.DUPLICATED_ACCOUNT);
-                });
-    }
 }
