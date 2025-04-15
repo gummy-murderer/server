@@ -9,6 +9,7 @@ import lombok.*;
 public class SteamLoginRequest {
 
     private String steamId;
+    private String nickname;
     private String authTicket;
 
 }

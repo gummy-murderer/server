@@ -48,6 +48,7 @@ public class SteamLoginService {
 
         log.info("🔑user authTicket : {}", request.getAuthTicket());
         log.info("🔑user steamId : {}", request.getSteamId());
+        log.info("🔑user nickname : {}", request.getNickname());
 
         String requestUrl = STEAM_AUTH_URL +
                 "?key=" + STEAM_WEB_API_KEY +
@@ -69,7 +70,7 @@ public class SteamLoginService {
         boolean isNewUser = optionalMember.isEmpty();
 
         Member member = optionalMember.orElseGet(() -> {
-            Member newMember = new Member(request.getSteamId());
+            Member newMember = new Member(request.getSteamId(), request.getNickname());
             return memberRepository.save(newMember);
         });
         String token = jwtProvider.createToken(member.getSteamId(), member.getRoles());
