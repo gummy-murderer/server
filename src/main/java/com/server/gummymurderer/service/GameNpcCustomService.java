@@ -14,6 +14,7 @@ import com.server.gummymurderer.repository.GameSetRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class GameNpcCustomService {
     private final GameNpcRepository gameNpcRepository;
     private final GameNpcCustomRepository gameNpcCustomRepository;
 
+    @Transactional
     public GameNpcCustomSaveResponse npcCustomSave(GameNpcCustomSaveRequest request) {
 
         log.info("🐻GameNpc custom 저장 시작");
@@ -36,6 +38,8 @@ public class GameNpcCustomService {
         GameNpcCustomSaveResponse response = null;
 
         List<NpcCustomInfo> npcCustomInfos = request.getNpcCustomInfos();
+
+        log.info("🐻 NPC 커스텀 요청 정보 개수: {}", npcCustomInfos == null ? "null" : npcCustomInfos.size());
 
         for (int i = 0; i < npcCustomInfos.size(); i++) {
 

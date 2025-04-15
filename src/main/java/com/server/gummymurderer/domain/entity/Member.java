@@ -27,8 +27,9 @@ public class Member extends BaseEntity {
     @Builder.Default
     private List<Authority> roles = new ArrayList<>();
 
-    public Member(String steamId) {
+    public Member(String steamId, String nickname) {
         this.steamId = steamId;
+        this.nickname = nickname;
     }
 
     public void setRoles(List<Authority> role) {

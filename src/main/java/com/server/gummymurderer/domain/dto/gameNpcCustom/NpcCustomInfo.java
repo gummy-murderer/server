@@ -5,9 +5,7 @@ import com.server.gummymurderer.domain.entity.GameNpcCustom;
 import com.server.gummymurderer.domain.entity.GameSet;
 import lombok.*;
 
-@Getter
-@Setter
-@Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class NpcCustomInfo {
