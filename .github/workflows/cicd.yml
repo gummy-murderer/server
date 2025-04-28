@@ -70,7 +70,7 @@ jobs:
             sudo docker rm spring-server-container
             sudo docker pull ${{ secrets.EC2_DOCKER_REPO }}/directors-dev
             sudo docker run --name spring-server-container -d -p 8081:8081 \
-              -e STEAM_API_KEY=${{ STEAM_API_KEY }} \
-              -e STEAM_APP_ID=${{ STEAM_APP_ID }} \
+              -e STEAM_API_KEY=${{ secrets.STEAM_API_KEY }} \
+              -e STEAM_APP_ID=${{ secrets.STEAM_APP_ID }} \
               ${{ secrets.EC2_DOCKER_REPO }}/directors-dev
             sudo docker image prune -f
