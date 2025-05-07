@@ -50,20 +50,10 @@ jobs:
           key: ${{ secrets.EC2_PEMKEY }}
           envs: GITHUB_SHA
           script: |
-            [[ -z "${{ secrets.RDS_URL }}" ]] && echo "❗ RDS_URL is EMPTY" || echo "✅ RDS_URL is set"
-            [[ -z "${{ secrets.RDS_USERNAME }}" ]] && echo "❗ RDS_USERNAME is EMPTY" || echo "✅ RDS_USERNAME is set"
-            [[ -z "${{ secrets.RDS_PASSWORD }}" ]] && echo "❗ RDS_PASSWORD is EMPTY" || echo "✅ RDS_PASSWORD is set"
-            [[ -z "${{ secrets.STEAM_API_KEY }}" ]] && echo "❗ STEAM_API_KEY is EMPTY" || echo "✅ STEAM_API_KEY is set"
-            [[ -z "${{ secrets.STEAM_APP_ID }}" ]] && echo "❗ STEAM_APP_ID is EMPTY" || echo "✅ STEAM_APP_ID is set"
-            [[ -z "${{ secrets.DOCKER_REPO }}" ]] && echo "❗ DOCKER_REPO is EMPTY" || echo "✅ DOCKER_REPO is set"
-
             sudo docker stop spring-server-container
             sudo docker rm spring-server-container
-            sudo docker pull ${{ secrets.DOCKER_REPO }}/directors-dev
+            sudo docker pull ${{ secrets.EC2_DOCKER_REPO }}/directors-dev
             sudo docker run --name spring-server-container -d -p 8081:8081 \
-              -e SPRING_DATASOURCE_URL=${{ secrets.RDS_URL }} \
-              -e SPRING_DATASOURCE_USERNAME=${{ secrets.RDS_USERNAME }} \
-              -e SPRING_DATASOURCE_PASSWORD=${{ secrets.RDS_PASSWORD }} \
               -e STEAM_API_KEY=${{ secrets.STEAM_API_KEY }} \
               -e STEAM_APP_ID=${{ secrets.STEAM_APP_ID }} \
               ${{ secrets.DOCKER_REPO }}/directors-dev
