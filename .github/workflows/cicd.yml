@@ -3,10 +3,10 @@ name: CI/CD
 
 on:
   workflow_dispatch: # 수동 실행 트리거
-  # push:
-  #   branches: ["develop"]
-  # pull_request:
-  #   branches: ["develop"]
+  push:
+    branches: ["develop"]
+  pull_request:
+    branches: ["develop"]
   
 permissions: write-all
 
