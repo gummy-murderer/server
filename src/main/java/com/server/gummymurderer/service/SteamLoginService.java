@@ -46,9 +46,9 @@ public class SteamLoginService {
 
     public SteamLoginResponse verifyAuthTicket(SteamLoginRequest request) throws JsonProcessingException {
 
-        log.info("🔑user authTicket : {}", request.getAuthTicket());
-        log.info("🔑user steamId : {}", request.getSteamId());
-        log.info("🔑user nickname : {}", request.getNickname());
+//        log.info("🔑user authTicket : {}", request.getAuthTicket());
+//        log.info("🔑user steamId : {}", request.getSteamId());
+//        log.info("🔑user nickname : {}", request.getNickname());
 
         String requestUrl = STEAM_AUTH_URL +
                 "?key=" + STEAM_WEB_API_KEY +
