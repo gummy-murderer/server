@@ -27,6 +27,9 @@ public class Member extends BaseEntity {
     @Builder.Default
     private List<Authority> roles = new ArrayList<>();
 
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private GameSetting gameSetting;
+
     public Member(String steamId, String nickname) {
         this.steamId = steamId;
         this.nickname = nickname;
