@@ -8,9 +8,11 @@ import com.server.gummymurderer.exception.ErrorCode;
 import com.server.gummymurderer.repository.GameSettingRepository;
 import com.server.gummymurderer.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class GameSettingService {
 
@@ -21,6 +23,8 @@ public class GameSettingService {
 
         Member member = memberRepository.findByNickname(loginMember.getNickname())
                 .orElseThrow(() -> new AppException(ErrorCode.INVALID_ACCOUNT));
+
+        log.info("language : {}", request.getLanguage());
 
         GameSetting gameSetting = request.toEntity();
         gameSetting.assignMember(member);

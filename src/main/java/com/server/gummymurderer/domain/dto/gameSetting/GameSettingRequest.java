@@ -19,7 +19,7 @@ public class GameSettingRequest {
         return GameSetting.builder()
                 .backgroundSoundVolume(this.backgroundSoundVolume)
                 .effectSoundVolume(this.effectSoundVolume)
-                .language(Language.valueOf(this.language))
+                .language(Language.valueOf(this.language.toUpperCase()))
                 .build();
     }
 
