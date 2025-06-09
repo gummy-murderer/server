@@ -8,6 +8,7 @@ import com.server.gummymurderer.service.GameSettingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,7 +20,7 @@ public class GameSettingController {
     private final GameSettingService gameSettingService;
 
     @PostMapping("/save")
-    public Response<String> saveGameSetting(@AuthenticationPrincipal CustomUserDetails customUserDetails, GameSettingRequest request) {
+    public Response<String> saveGameSetting(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody GameSettingRequest request) {
 
         Member loginMember = customUserDetails.getMember();
         String settingSave = gameSettingService.settingSave(loginMember, request);
