@@ -5,11 +5,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.server.gummymurderer.configuration.jwt.JwtProvider;
 import com.server.gummymurderer.domain.dto.game.LoginGameSetDTO;
+import com.server.gummymurderer.domain.dto.gameSetting.GameSettingDTO;
 import com.server.gummymurderer.domain.dto.member.SteamLoginRequest;
 import com.server.gummymurderer.domain.dto.member.SteamLoginResponse;
 import com.server.gummymurderer.domain.entity.GameUserCustom;
 import com.server.gummymurderer.domain.entity.Member;
+import com.server.gummymurderer.domain.enum_class.Language;
 import com.server.gummymurderer.repository.GameSetRepository;
+import com.server.gummymurderer.repository.GameSettingRepository;
 import com.server.gummymurderer.repository.GameUserCustomRepository;
 import com.server.gummymurderer.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +46,7 @@ public class SteamLoginService {
     private final MemberRepository memberRepository; // 유저 정보 확인
     private final GameSetRepository gameSetRepository;
     private final GameUserCustomRepository gameUserCustomRepository;
+    private final GameSettingRepository gameSettingRepository;
 
     public SteamLoginResponse verifyAuthTicket(SteamLoginRequest request) throws JsonProcessingException {
 
@@ -85,8 +89,18 @@ public class SteamLoginService {
                 })
                 .toList();
 
+        GameSettingDTO settingDTO = gameSettingRepository.findByMember(member)
+                .map(setting -> new GameSettingDTO(
+                        setting.getBackgroundSoundVolume(),
+                        setting.getEffectSoundVolume(),
+                        setting.getLanguage()
+                ))
+                .orElseGet(() -> new GameSettingDTO(
+                        5.0f, 5.0f, Language.KO
+                ));
+
         log.info("🐻 loginGameSetDTO: {}", gameSetList);
 
-        return new SteamLoginResponse(token, gameSetList);
+        return new SteamLoginResponse(token, gameSetList, settingDTO);
     }
 }
