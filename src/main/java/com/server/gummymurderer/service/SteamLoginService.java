@@ -25,6 +25,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -70,6 +71,15 @@ public class SteamLoginService {
             throw new RuntimeException("Steam ID 불일치");
         }
 
+        // 디버깅용 로그 추가
+        List<Member> debugList = memberRepository.findAll().stream()
+                .filter(m -> m.getSteamId() != null && m.getSteamId().trim().equals(request.getSteamId()))
+                .collect(Collectors.toList());
+
+        log.warn("🧪 DEBUG steamId lookup (manually filtered) = {}, count = {}", request.getSteamId(), debugList.size());
+        debugList.forEach(m -> log.warn("➡ MemberNo={}, steamId='{}', nickname='{}'", m.getMemberNo(), m.getSteamId(), m.getNickname()));
+
+        // 기존 로직
         Optional<Member> optionalMember = memberRepository.findBySteamId(request.getSteamId());
         boolean isNewUser = optionalMember.isEmpty();
 
