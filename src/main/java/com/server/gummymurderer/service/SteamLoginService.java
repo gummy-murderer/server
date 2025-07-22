@@ -87,7 +87,7 @@ public class SteamLoginService {
             Member newMember = new Member(request.getSteamId(), request.getNickname());
             return memberRepository.save(newMember);
         });
-        String token = jwtProvider.createToken(member.getSteamId(), member.getRoles());
+        String token = jwtProvider.createToken(member.getSteamId());
 
         List<LoginGameSetDTO> gameSetList = isNewUser
                 ? new ArrayList<>()
