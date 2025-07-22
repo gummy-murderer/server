@@ -1,6 +1,5 @@
 package com.server.gummymurderer.configuration.jwt;
 
-import com.server.gummymurderer.domain.entity.Authority;
 import com.server.gummymurderer.service.JpaUserDetailsService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -11,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
@@ -40,9 +38,8 @@ public class JwtProvider {
     }
 
     // 토큰 생성
-    public String createToken(String steamId, List<Authority> roles) {
+    public String createToken(String steamId) {
         Claims claims = Jwts.claims().setSubject(steamId);
-        claims.put("roles", roles);
         Date now = new Date();
         return Jwts.builder()
                 .setClaims(claims)
@@ -55,8 +52,8 @@ public class JwtProvider {
     // 권한정보 획득
     // Spring Security 인증과정에서 권한확인을 위한 기능
     public Authentication getAuthentication(String token) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(this.getSteamId(token));
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+        String steamId = this.getSteamId(token);
+        return new UsernamePasswordAuthenticationToken(steamId, null, List.of());
     }
 
     // 토큰에 담겨있는 유저 account 획득

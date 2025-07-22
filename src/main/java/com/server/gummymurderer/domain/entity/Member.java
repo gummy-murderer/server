@@ -23,21 +23,12 @@ public class Member extends BaseEntity {
 
     private String steamId;
 
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @Builder.Default
-    private List<Authority> roles = new ArrayList<>();
-
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private GameSetting gameSetting;
 
     public Member(String steamId, String nickname) {
         this.steamId = steamId;
         this.nickname = nickname;
-    }
-
-    public void setRoles(List<Authority> role) {
-        this.roles = role;
-        role.forEach(o -> o.setMember(this));
     }
 
 }
