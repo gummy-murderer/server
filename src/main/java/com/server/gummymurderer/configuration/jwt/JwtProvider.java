@@ -1,5 +1,6 @@
 package com.server.gummymurderer.configuration.jwt;
 
+import com.server.gummymurderer.service.CustomUserDetails;
 import com.server.gummymurderer.service.JpaUserDetailsService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -53,7 +54,13 @@ public class JwtProvider {
     // Spring Security 인증과정에서 권한확인을 위한 기능
     public Authentication getAuthentication(String token) {
         String steamId = this.getSteamId(token);
-        return new UsernamePasswordAuthenticationToken(steamId, null, List.of());
+        CustomUserDetails userDetails = (CustomUserDetails) userDetailsService.loadUserByUsername(steamId);
+
+        return new UsernamePasswordAuthenticationToken(
+                userDetails,
+                null,
+                userDetails.getAuthorities()
+        );
     }
 
     // 토큰에 담겨있는 유저 account 획득
