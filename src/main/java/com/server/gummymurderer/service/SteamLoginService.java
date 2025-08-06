@@ -71,13 +71,13 @@ public class SteamLoginService {
             throw new RuntimeException("Steam ID 불일치");
         }
 
-        // 디버깅용 로그 추가
-        List<Member> debugList = memberRepository.findAll().stream()
-                .filter(m -> m.getSteamId() != null && m.getSteamId().trim().equals(request.getSteamId()))
-                .collect(Collectors.toList());
-
-        log.warn("🧪 DEBUG steamId lookup (manually filtered) = {}, count = {}", request.getSteamId(), debugList.size());
-        debugList.forEach(m -> log.warn("➡ MemberNo={}, steamId='{}', nickname='{}'", m.getMemberNo(), m.getSteamId(), m.getNickname()));
+//        // 디버깅용 로그 추가
+//        List<Member> debugList = memberRepository.findAll().stream()
+//                .filter(m -> m.getSteamId() != null && m.getSteamId().trim().equals(request.getSteamId()))
+//                .collect(Collectors.toList());
+//
+//        log.warn("🧪 DEBUG steamId lookup (manually filtered) = {}, count = {}", request.getSteamId(), debugList.size());
+//        debugList.forEach(m -> log.warn("➡ MemberNo={}, steamId='{}', nickname='{}'", m.getMemberNo(), m.getSteamId(), m.getNickname()));
 
         // 기존 로직
         Optional<Member> optionalMember = memberRepository.findBySteamId(request.getSteamId());
@@ -99,7 +99,7 @@ public class SteamLoginService {
                 })
                 .toList();
 
-        GameSettingDTO settingDTO = gameSettingRepository.findByMember(member)
+        GameSettingDTO settingDTO = gameSettingRepository.findByMemberNo(member.getMemberNo())
                 .map(setting -> new GameSettingDTO(
                         setting.getBackgroundSoundVolume(),
                         setting.getEffectSoundVolume(),
