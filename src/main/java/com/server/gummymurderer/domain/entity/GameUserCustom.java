@@ -8,7 +8,12 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @Getter
-@Table(name = "game_user_custom_tb")
+@Table(
+        name = "game_user_custom_tb",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = "game_set_no")
+        }
+)
 public class GameUserCustom extends BaseEntity{
 
     @Id
@@ -32,7 +37,7 @@ public class GameUserCustom extends BaseEntity{
     private int tail;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "game_set_no")
+    @JoinColumn(name = "game_set_no", nullable = false)
     private GameSet gameSet;
 
 }

@@ -31,8 +31,13 @@ public class GameUserCustomService {
         GameSet gameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameSetNo(), loginMember)
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
-        GameUserCustom gameUserCustom = request.toEntity(request, gameSet);
+        // 1. 기존 데이터가 있는지 체크
+        gameUserCustomRepository.findByGameSet(gameSet).ifPresent(existing -> {
+            throw new AppException(ErrorCode.DUPLICATE_CUSTOM);
+        });
 
+        // 2. 신규 생성
+        GameUserCustom gameUserCustom = request.toEntity(request, gameSet);
         gameUserCustomRepository.save(gameUserCustom);
 
         log.info("🐻user character custom 저장 완료");

@@ -36,7 +36,8 @@ public enum ErrorCode {
     NPC_CUSTOM_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 NPC의 Custom 데이터를 찾을 수 없습니다."),
     QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 질문을 찾을 수 없습니다."),
     INTERROGATION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 취조 정보를 찾을 수 없습니다."),
-
+    INVALID_STEAM_ID(HttpStatus.UNAUTHORIZED, "Steam ID 불일치"),
+    DUPLICATE_CUSTOM(HttpStatus.BAD_REQUEST, "해당 게임의 UserCustom이 이미 존재합니다."),
     ;
 
     private HttpStatus status;
