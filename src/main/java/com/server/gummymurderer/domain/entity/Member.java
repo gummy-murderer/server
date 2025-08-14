@@ -21,10 +21,8 @@ public class Member extends BaseEntity {
 
     private String nickname;
 
+    @Column(unique = true)
     private String steamId;
-
-    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    private GameSetting gameSetting;
 
     public Member(String steamId, String nickname) {
         this.steamId = steamId;

@@ -30,4 +30,10 @@ public class GameSetting {
         this.member = member;
     }
 
+    public void update(float backgroundSoundVolume, float effectSoundVolume, Language language) {
+        this.backgroundSoundVolume = backgroundSoundVolume;
+        this.effectSoundVolume = effectSoundVolume;
+        this.language = language;
+    }
+
 }

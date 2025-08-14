@@ -3,6 +3,7 @@ package com.server.gummymurderer.service;
 import com.server.gummymurderer.domain.dto.gameSetting.GameSettingRequest;
 import com.server.gummymurderer.domain.entity.GameSetting;
 import com.server.gummymurderer.domain.entity.Member;
+import com.server.gummymurderer.domain.enum_class.Language;
 import com.server.gummymurderer.exception.AppException;
 import com.server.gummymurderer.exception.ErrorCode;
 import com.server.gummymurderer.repository.GameSettingRepository;
@@ -26,8 +27,22 @@ public class GameSettingService {
 
         log.info("language : {}", request.getLanguage());
 
-        GameSetting gameSetting = request.toEntity();
-        gameSetting.assignMember(member);
+        GameSetting gameSetting = gameSettingRepository.findByMemberNo(member.getMemberNo())
+                .map(existing -> {
+                    // 업데이트
+                    existing.update(
+                            request.getBackgroundSoundVolume(),
+                            request.getEffectSoundVolume(),
+                            Language.valueOf(request.getLanguage().toUpperCase())
+                    );
+                    return existing;
+                })
+                .orElseGet(() -> {
+                    // 새로 생성
+                    GameSetting newSetting = request.toEntity();
+                    newSetting.assignMember(member);
+                    return newSetting;
+                });
 
         gameSettingRepository.save(gameSetting);
 
