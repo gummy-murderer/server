@@ -7,12 +7,10 @@ import com.server.gummymurderer.domain.dto.gameNpc.GameNpcDTO;
 import com.server.gummymurderer.domain.dto.scenario.*;
 import com.server.gummymurderer.domain.entity.*;
 import com.server.gummymurderer.domain.enum_class.GameResult;
+import com.server.gummymurderer.domain.enum_class.Language;
 import com.server.gummymurderer.exception.AppException;
 import com.server.gummymurderer.exception.ErrorCode;
-import com.server.gummymurderer.repository.GameAlibiRepository;
-import com.server.gummymurderer.repository.GameNpcRepository;
-import com.server.gummymurderer.repository.GameScenarioRepository;
-import com.server.gummymurderer.repository.GameSetRepository;
+import com.server.gummymurderer.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,6 +35,7 @@ public class ScenarioService {
     private final GameNpcRepository gameNpcRepository;
     private final GameScenarioRepository gameScenarioRepository;
     private final GameAlibiRepository gameAlibiRepository;
+    private final GameSettingRepository gameSettingRepository;
 
     @Value("${ai.url}")
     private String aiUrl;
@@ -137,12 +136,20 @@ public class ScenarioService {
         GameSet foundGameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameSetNo(), loginMember)
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
+        // 유저 설정 조회
+        Language userLanguage = gameSettingRepository.findByMemberNo(loginMember.getMemberNo())
+                .map(GameSetting::getLanguage)
+                .orElse(Language.KO);
+
+        log.info("🐻 유저 언어 설정 : {}", userLanguage);
+
         String url = aiUrl + "/api/v2/new-game/generate-chief-letter";
 
         log.info("🐻 ai 요청 url : {}", url);
 
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("gameNo", foundGameSet.getGameSetNo());
+        requestData.put("language", userLanguage.name().toLowerCase());
 
         ObjectMapper objectMapper = new ObjectMapper();
 
