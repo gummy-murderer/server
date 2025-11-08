@@ -15,6 +15,7 @@ import com.server.gummymurderer.domain.dto.scenario.MakeScenarioResponse;
 import com.server.gummymurderer.domain.entity.*;
 import com.server.gummymurderer.domain.enum_class.GameResult;
 import com.server.gummymurderer.domain.enum_class.GameStatus;
+import com.server.gummymurderer.domain.enum_class.Language;
 import com.server.gummymurderer.domain.enum_class.MafiaArrest;
 import com.server.gummymurderer.exception.AppException;
 import com.server.gummymurderer.exception.ErrorCode;
@@ -49,6 +50,7 @@ public class GameService {
     private final MemberRepository memberRepository;
     private final GameUserCustomRepository gameUserCustomRepository;
     private final GameNpcCustomRepository gameNpcCustomRepository;
+    private final GameSettingRepository gameSettingRepository;
 
     private final GameUserDetectiveNotebookService gameUserDetectiveNotebookService;
     private final GameUserCustomService gameUserCustomService;
@@ -176,16 +178,26 @@ public class GameService {
 
         WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build();
 
+        // User 언어 설정 불러오기
+        String userLang = gameSettingRepository.findByMemberNo(gameNpcList.get(0).getGameSet().getMember().getMemberNo())
+                .map(GameSetting::getLanguage)
+                .map(lang -> {
+                    switch (lang) {case EN: return "en"; case KO: default: return "ko"; }
+                })
+                .orElse("ko");
+
         // NPC 리스트 생성
         List<GameNpcInfo> npcInfoList = gameNpcList.stream()
                 .map(gameNpc -> GameNpcInfo.builder()
-                        .npcName(gameNpc.getNpcName())
+                        .npcName((gameNpc.getNpcNameEn() != null && !gameNpc.getNpcNameEn().isBlank())
+                                ? gameNpc.getNpcNameEn()
+                                : gameNpc.getNpcName())
                         .npcJob(gameNpc.getNpcJob())
                         .build())
                 .toList();
 
         // ai 요청 본문 생성
-        StartGameAIRequest request = StartGameAIRequest.create(gameNo, "ko", npcInfoList);
+        StartGameAIRequest request = StartGameAIRequest.create(gameNo, userLang, npcInfoList);
 
         // 요청 보내기
         AIResponse response = webClient.post()
@@ -325,6 +337,13 @@ public class GameService {
 
         log.info("🐻Load GameSetNo : {}", gameSet.getGameSetNo());
 
+        // 유저 언어 설정
+        Language userLanguage = gameSettingRepository.findByMemberNo(loginMember.getMemberNo())
+                .map(GameSetting::getLanguage)
+                .orElse(Language.KO);
+
+        String userLangCode = userLanguage.name().toLowerCase();
+
         GameUserCustom gameUserCustom = gameUserCustomRepository.findByGameSet(gameSet).orElse(null);
 
         // GameSet을 LoginGameSetDTO로 변환
@@ -354,24 +373,7 @@ public class GameService {
             npcCustomInfos.add(npcCustomInfo);
         }
 
-        //테스트용 npc 커스텀
-        // GameNpc Custom 정보 list
-//        List<NpcCustomInfo> npcCustomInfos = new ArrayList<>();
-//        for (GameNpc gameNpc : gameNpcs) {
-//            GameNpcCustom gameNpcCustom = gameNpcCustomRepository.findByGameNpc(gameNpc).orElse(null);
-//
-//            // gameNpcCustom이 없으면 기본값(0) 사용
-//            if (gameNpcCustom == null) {
-//                npcCustomInfos.add(new NpcCustomInfo(gameNpc.getNpcName(), 0, 0, 0, 0));
-//            } else {
-//                npcCustomInfos.add(new NpcCustomInfo(gameNpc.getNpcName(),
-//                        gameNpcCustom.getMouth(), gameNpcCustom.getEar(),
-//                        gameNpcCustom.getBody(), gameNpcCustom.getTail()));
-//            }
-//        }
-
-
-        MakeScenarioResponse scenarioResponse = MakeScenarioResponse.of(gameScenario, npcList);
+        MakeScenarioResponse scenarioResponse = MakeScenarioResponse.of(gameScenario, npcList, userLangCode);
 
         // 로그인 한 유저의 Notebook
         List<GameUserDetectiveNotebook> gameUserDetectiveNotebooks = gameUserDetectiveNotebookRepository.findByGameNpc_GameSet(gameSet);
@@ -433,11 +435,18 @@ public class GameService {
 
         request.setGameResult(gameSet.getGameResult());
 
+        Language userLanguage = gameSettingRepository.findByMemberNo(loginMember.getMemberNo())
+                .map(GameSetting::getLanguage)
+                .orElse(Language.KO);
+
+        String userLangCode = userLanguage.name().toLowerCase();
+
         String aiServerUrl = aiUrl + "/api/v2/new-game/end_game";
         WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build();
 
         AIGameEndingLetterRequest aiRequest = AIGameEndingLetterRequest.create(
                 request.getGameSetNo(),
+                userLangCode,
                 request.getGameResult().name()
         );
 
@@ -460,7 +469,9 @@ public class GameService {
 
         log.info("🐻gameEndingLetter 완료");
 
-        return aiResponse;
+        GameEndingLetterResponse response = GameEndingLetterResponse.of(aiResponse, userLangCode);
+
+        return response;
 
     }
 
@@ -486,18 +497,25 @@ public class GameService {
 
         log.info("gameNo : {}", gameSet);
 
+        Language userLanguage = gameSettingRepository.findByMemberNo(loginMember.getMemberNo())
+                .map(GameSetting::getLanguage)
+                .orElse(Language.KO);
+
+        String userLangCode = userLanguage.name().toLowerCase();
+
         String aiServerUrl = aiUrl + "/api/v2/in-game/investigate-corpse";
         WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build();
 
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("gameNo", request.getGameSetNo());
+        requestData.put("language", userLangCode);
 
         ObjectMapper objectMapper = new ObjectMapper();
 
         String jsonRequest = objectMapper.writeValueAsString(requestData);
         log.info("🐻jsonRequest : {}", jsonRequest);
 
-        GameAutopsyResponse response = webClient.post()
+        GameAutopsyResponse aiResponse = webClient.post()
                 .uri(aiServerUrl)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(jsonRequest)
@@ -509,7 +527,7 @@ public class GameService {
                 })
                 .block();
 
-        return response;
+        return GameAutopsyResponse.of(aiResponse, userLangCode);
     }
 
 }

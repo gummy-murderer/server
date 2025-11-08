@@ -10,6 +10,7 @@ import lombok.*;
 public class AIQuestionAnswerRequest {
 
     private Long gameNo;
+    private String language;
     private String npcName;
     private String keyWord;
     private String keyWordType;

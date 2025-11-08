@@ -22,7 +22,7 @@ public interface GameNpcRepository extends JpaRepository<GameNpc, Long> {
     @Query("SELECT new com.server.gummymurderer.domain.dto.scenario.NpcInfo(n.npcName, n.gameNpcNo) FROM GameNpc n WHERE n.gameSet.gameSetNo = :gameSetNo AND n.npcJob = 'Resident' AND (n.npcStatus = 'alive' OR n.npcStatus = 'ALIVE')")
     List<NpcInfo> findAllAliveResidentNpcInfoByGameSetNo(@Param("gameSetNo") Long gameSetNo);
 
-    @Query("SELECT new com.server.gummymurderer.domain.dto.scenario.LivingCharacters(n.npcName, n.npcJob, n.npcStatus) FROM GameNpc n WHERE n.gameSet.gameSetNo = :gameSetNo")
+    @Query("SELECT new com.server.gummymurderer.domain.dto.scenario.LivingCharacters(n.npcNameEn, n.npcJob, n.npcStatus) FROM GameNpc n WHERE n.gameSet.gameSetNo = :gameSetNo")
     List<LivingCharacters> findAllLivingCharactersByGameSetNo(@Param("gameSetNo") Long gameSetNo);
 
     @Query(value = "SELECT npc_name FROM game_npc_tb WHERE game_set_no = :gameSetNo AND npc_job = 'Murderer'", nativeQuery = true)
@@ -37,4 +37,11 @@ public interface GameNpcRepository extends JpaRepository<GameNpc, Long> {
     Optional<GameNpc> findByGameNpcNoAndGameSet(Long gameNpcNo, GameSet gameSet);
 
     Optional<GameNpc> findByGameSet_GameSetNoAndNpcName(Long gameSetNo, String npcName);
+
+    // 피해자 영문 이름으로 찾기
+    Optional<GameNpc> findByGameSet_GameSetNoAndNpcNameEn(Long gameSetNo, String npcNameEn);
+
+    // 알리바이 영문 이름으로 찾기
+    Optional<GameNpc> findByNpcNameEnAndGameSet_GameSetNo(String npcNameEn, Long gameSetNo);
+
 }

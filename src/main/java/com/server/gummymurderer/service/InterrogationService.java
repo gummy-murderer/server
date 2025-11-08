@@ -7,14 +7,14 @@ import com.server.gummymurderer.configuration.jwt.JwtProvider;
 import com.server.gummymurderer.domain.dto.interrogation.InterrogationProceedRequest;
 import com.server.gummymurderer.domain.dto.interrogation.InterrogationProceedResponse;
 import com.server.gummymurderer.domain.dto.interrogation.InterrogationStartRequest;
-import com.server.gummymurderer.domain.entity.GameSet;
-import com.server.gummymurderer.domain.entity.Interrogation;
-import com.server.gummymurderer.domain.entity.InterrogationDialogue;
-import com.server.gummymurderer.domain.entity.Member;
+import com.server.gummymurderer.domain.entity.*;
 import com.server.gummymurderer.domain.enum_class.InterrogationStatus;
+import com.server.gummymurderer.domain.enum_class.Language;
 import com.server.gummymurderer.exception.AppException;
 import com.server.gummymurderer.exception.ErrorCode;
+import com.server.gummymurderer.repository.GameNpcRepository;
 import com.server.gummymurderer.repository.GameSetRepository;
+import com.server.gummymurderer.repository.GameSettingRepository;
 import com.server.gummymurderer.repository.InterrogationRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +36,9 @@ public class InterrogationService {
 
     private final InterrogationRepository interrogationRepository;
     private final GameSetRepository gameSetRepository;
+    private final GameSettingRepository gameSettingRepository;
     private final JwtProvider jwtProvider;
+    private final GameNpcRepository gameNpcRepository;
 
     @Value("${ai.url}")
     private String aiUrl;
@@ -50,12 +52,28 @@ public class InterrogationService {
         GameSet gameSet = gameSetRepository.findByGameSetNo(request.getGameSetNo())
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
+        Language userLanguage = gameSettingRepository.findByMemberNo(loginMember.getMemberNo())
+                .map(GameSetting::getLanguage)
+                .orElse(Language.KO);
+
+        String userLangCode = userLanguage.name().toLowerCase();
+
         String aiServerUrl =  aiUrl + "/api/v2/interrogation/new";
         WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build();
 
+        // npcName 영어로
+        Long gameNo = request.getGameSetNo();
+        String npcNameEn = gameNpcRepository
+                .findByGameSet_GameSetNoAndNpcName(gameNo, request.getNpcName())           // ko로 왔을 때
+                .map(GameNpc::getNpcNameEn)
+                .or(() -> gameNpcRepository.findByGameSet_GameSetNoAndNpcNameEn(gameNo, request.getNpcName()) // 이미 en일 때
+                        .map(GameNpc::getNpcNameEn))
+                .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
+
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("gameNo", request.getGameSetNo());
-        requestData.put("npcName", request.getNpcName());
+        requestData.put("language", userLangCode);
+        requestData.put("npcName", npcNameEn);
         requestData.put("murderWeapon", request.getMurderWeapon());
         requestData.put("murderLocation", request.getMurderLocation());
         requestData.put("murderTime", request.getMurderTime());
@@ -77,10 +95,12 @@ public class InterrogationService {
         Interrogation interrogation = request.toEntity(gameSet);
         interrogationRepository.save(interrogation);
 
-        return response;
+        return InterrogationProceedResponse.of(response, userLangCode);
     }
 
-    public InterrogationProceedResponse interrogationProceed (InterrogationProceedRequest request) throws JsonProcessingException {
+    public InterrogationProceedResponse interrogationProceed (InterrogationProceedRequest request, Member loginMember, HttpServletRequest httpServletRequest) throws JsonProcessingException {
+
+        validateUser(loginMember, httpServletRequest);
 
         log.info("🐻Interrogation conversation 시작");
 
@@ -104,13 +124,34 @@ public class InterrogationService {
 
         log.info("🐻 선택된 최신 Interrogation : {}", interrogation.getInterrogationNo());
 
+        // 유저 언어 설정
+        Language userLanguage = gameSettingRepository.findByMemberNo(loginMember.getMemberNo())
+                .map(GameSetting::getLanguage)
+                .orElse(Language.KO);
+
+        String userLangCode = userLanguage.name().toLowerCase();
+
+        // npcName 영문으로
+        Long gameNo = request.getGameSetNo();
+        String npcNameInput = request.getNpcName();
+        String npcNameEn = gameNpcRepository
+                .findByGameSet_GameSetNoAndNpcNameEn(gameNo, npcNameInput)        // 이미 EN으로 온 경우
+                .map(GameNpc::getNpcNameEn)
+                .orElseGet(() ->                                                  // KO로 왔으면 EN으로 변환
+                        gameNpcRepository.findByGameSet_GameSetNoAndNpcName(gameNo, npcNameInput)
+                                .map(GameNpc::getNpcNameEn)
+                                .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND))
+                );
+
+
         String aiServerUrl =  aiUrl + "/api/v2/interrogation/conversation";
         WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build();
 
         ObjectMapper objectMapper = new ObjectMapper();
         ObjectNode jsonRequest = objectMapper.createObjectNode();
         jsonRequest.put("gameNo", request.getGameSetNo());
-        jsonRequest.put("npcName", request.getNpcName());
+        jsonRequest.put("language", userLangCode);
+        jsonRequest.put("npcName", npcNameEn);
         jsonRequest.put("content", request.getContent());
 
         String jsonRequestStr = objectMapper.writeValueAsString(jsonRequest);
@@ -138,7 +179,7 @@ public class InterrogationService {
 
         log.info("🐻Interrogation conversation 종료");
 
-        return response;
+        return InterrogationProceedResponse.of(response, userLangCode);
 
     }
 

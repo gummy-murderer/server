@@ -21,7 +21,11 @@ public class Npc extends BaseEntity{
 
     @NotBlank
     @Column(name = "npc_name")
-    private String npcName;
+    private String npcName;   // ko
+
+    @NotBlank
+    @Column(name = "npc_name_en")
+    private String npcNameEn; // en
 
     @Column(name = "age")
     private int age;
