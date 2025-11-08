@@ -224,13 +224,17 @@ public class GameService {
 
     private void updateVictimStatus(Long gameNo, String victimName, String crimeScene) {
 
-        GameNpc victimNpc = gameNpcRepository.findByGameSet_GameSetNoAndNpcName(gameNo, victimName)
-                .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
+        GameNpc victimNpc = gameNpcRepository
+                .findByGameSet_GameSetNoAndNpcNameEn(gameNo, victimName)
+                .orElseThrow(() -> {
+                    log.warn("victim not found. gameNo={}, victimName(en)={}", gameNo, victimName);
+                    return new AppException(ErrorCode.NPC_NOT_FOUND);
+                });
 
         victimNpc.markDeath(crimeScene);
-
         gameNpcRepository.save(victimNpc);
     }
+
 
     @Transactional
     public GameNpc createGameNpc(Npc npc, String npcJob, GameSet gameSet) {
