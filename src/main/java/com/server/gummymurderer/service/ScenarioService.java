@@ -53,6 +53,13 @@ public class ScenarioService {
 
         log.info("🐻foundGameSet : {}", foundGameSet.getGameSetNo());
 
+        // 유저 설정 조회
+        Language userLanguage = gameSettingRepository.findByMemberNo(loginMember.getMemberNo())
+                .map(GameSetting::getLanguage)
+                .orElse(Language.KO);
+
+        String userLangCode = userLanguage.name().toLowerCase();
+
         // AI에게 시나리오 생성 요청보내는 로직
         List<LivingCharacters> aliveGameNpcList = gameNpcRepository.findAllLivingCharactersByGameSetNo(foundGameSet.getGameSetNo());
 
@@ -60,6 +67,7 @@ public class ScenarioService {
 
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("gameNo", foundGameSet.getGameSetNo());
+        requestData.put("language", userLangCode);
         requestData.put("livingCharacters", aliveGameNpcList);
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -86,7 +94,7 @@ public class ScenarioService {
 
         // 피해자 NpcStatus Dead로 변경
         String victim = result.getAnswer().getVictim();
-        GameNpc victimNpc = gameNpcRepository.findByNpcNameAndGameSet(victim, foundGameSet)
+        GameNpc victimNpc = gameNpcRepository.findByGameSet_GameSetNoAndNpcNameEn(foundGameSet.getGameSetNo(), victim)
                 .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
         log.info("🐻 피해자 npc : {}", victimNpc);
 
@@ -121,7 +129,7 @@ public class ScenarioService {
             npcList.add(dto);
         }
 
-        MakeScenarioResponse response = MakeScenarioResponse.of(savedGameScenario, npcList);
+        MakeScenarioResponse response = MakeScenarioResponse.of(savedGameScenario, npcList, userLangCode);
 
         log.info("🐻scenario 완료");
 
@@ -141,7 +149,9 @@ public class ScenarioService {
                 .map(GameSetting::getLanguage)
                 .orElse(Language.KO);
 
-        log.info("🐻 유저 언어 설정 : {}", userLanguage);
+        String userLangCode = userLanguage.name().toLowerCase();
+
+        log.info("🐻 유저 언어 설정 : {}", userLangCode);
 
         String url = aiUrl + "/api/v2/new-game/generate-chief-letter";
 
@@ -149,7 +159,7 @@ public class ScenarioService {
 
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("gameNo", foundGameSet.getGameSetNo());
-        requestData.put("language", userLanguage.name().toLowerCase());
+        requestData.put("language", userLangCode);
 
         ObjectMapper objectMapper = new ObjectMapper();
 

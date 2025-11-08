@@ -24,7 +24,7 @@ public class QuestionController {
     private final QuestionService questionService;
 
     @PostMapping("/answer")
-    public Response<QuestionAnswerResponse> answerQuestion(@RequestBody QuestionAnswerRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails, HttpServletRequest httpServletRequest) {
+    public Response<QuestionAnswerResponse> answerQuestion(@RequestBody QuestionAnswerRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails, HttpServletRequest httpServletRequest) throws Exception {
 
         Member loginMember = customUserDetails.getMember();
 

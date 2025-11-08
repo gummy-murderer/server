@@ -15,13 +15,15 @@ import java.util.List;
 @NoArgsConstructor
 public class MakeScenarioResponse {
 
+    private String language;
     private String crimeScene;
     private String dailySummary;
     private String victim;
     private List<GameNpcDTO> gameNpcList;
 
-   public static MakeScenarioResponse of(GameScenario savedGameScenario, List<GameNpcDTO> gameNpcList) {
+   public static MakeScenarioResponse of(GameScenario savedGameScenario, List<GameNpcDTO> gameNpcList, String language) {
        MakeScenarioResponse response = new MakeScenarioResponse();
+       response.language = language;
        response.crimeScene = savedGameScenario.getCrimeScene();
        response.dailySummary = savedGameScenario.getDailySummary();
        response.victim = savedGameScenario.getVictim();

@@ -20,6 +20,9 @@ public class GameNpc extends BaseEntity {
     @Column(name = "npc_name")
     private String npcName;
 
+    @Column(name = "npc_name_en")
+    private String npcNameEn;
+
     @Column(name = "npc_job")
     private String npcJob;
 
@@ -52,6 +55,10 @@ public class GameNpc extends BaseEntity {
 
     public GameNpc(Npc npc, String npcJob, GameSet gameSet) {
         this.npcName = npc.getNpcName();
+        this.npcNameEn = npc.getNpcNameEn();
+        if (this.npcNameEn == null || this.npcNameEn.isBlank()) {
+            this.npcNameEn = this.npcName;
+        }
         this.npcJob = npcJob;
         this.npcPersonality = npc.getNpcPersonality();
         this.npcFeature = npc.getNpcFeature();

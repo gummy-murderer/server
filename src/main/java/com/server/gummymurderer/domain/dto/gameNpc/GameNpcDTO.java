@@ -13,6 +13,7 @@ public class GameNpcDTO {
 
     private Long gameNpcNo;
     private String npcName;
+    private String npcNameEn;
     private String npcJob;
     private String npcPersonality;
     private String npcFeature;
@@ -24,6 +25,7 @@ public class GameNpcDTO {
     public GameNpcDTO(GameNpc gameNpc) {
         this.gameNpcNo = gameNpc.getGameNpcNo();
         this.npcName = gameNpc.getNpcName();
+        this.npcNameEn = gameNpc.getNpcNameEn();
         this.npcJob = gameNpc.getNpcJob();
         this.npcPersonality = gameNpc.getNpcPersonality();
         this.npcFeature = gameNpc.getNpcFeature();

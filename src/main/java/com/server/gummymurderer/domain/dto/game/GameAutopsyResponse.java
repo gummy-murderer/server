@@ -14,6 +14,14 @@ public class GameAutopsyResponse {
 
     @JsonProperty("answer")
     private Answer answer;
+    private String language;
+
+    public static GameAutopsyResponse of(GameAutopsyResponse aiResponse, String language) {
+        GameAutopsyResponse resp = new GameAutopsyResponse();
+        resp.answer = aiResponse.getAnswer();
+        resp.language = language;
+        return resp;
+    }
 
     @Data
     public static class Answer {

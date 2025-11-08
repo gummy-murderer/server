@@ -2,13 +2,14 @@ package com.server.gummymurderer.service;
 
 import com.server.gummymurderer.configuration.jwt.JwtProvider;
 import com.server.gummymurderer.domain.dto.question.*;
-import com.server.gummymurderer.domain.entity.GameSet;
-import com.server.gummymurderer.domain.entity.Member;
-import com.server.gummymurderer.domain.entity.QuestionAnswer;
+import com.server.gummymurderer.domain.entity.*;
 import com.server.gummymurderer.domain.enum_class.KeyWordType;
+import com.server.gummymurderer.domain.enum_class.Language;
 import com.server.gummymurderer.exception.AppException;
 import com.server.gummymurderer.exception.ErrorCode;
+import com.server.gummymurderer.repository.GameNpcRepository;
 import com.server.gummymurderer.repository.GameSetRepository;
+import com.server.gummymurderer.repository.GameSettingRepository;
 import com.server.gummymurderer.repository.QuestionAnswerRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -26,12 +27,14 @@ public class QuestionService {
 
     private final GameSetRepository gameSetRepository;
     private final QuestionAnswerRepository questionAnswerRepository;
+    private final GameSettingRepository gameSettingRepository;
+    private final GameNpcRepository gameNpcRepository;
     private final JwtProvider jwtProvider;
 
     @Value("${ai.url}")
     private String aiUrl;
 
-    public QuestionAnswerResponse getAnswer(Member loginMember, QuestionAnswerRequest request, HttpServletRequest httpServletRequest) {
+    public QuestionAnswerResponse getAnswer(Member loginMember, QuestionAnswerRequest request, HttpServletRequest httpServletRequest) throws Exception {
 
         log.info("🐻Question Answer 시작");
 
@@ -72,18 +75,24 @@ public class QuestionService {
             throw new AppException(ErrorCode.GAME_NOT_FOUND);
         }
 
+        // ✅ 유저 언어 조회 (Enum 그대로)
+        Language userLanguage = gameSettingRepository.findByMemberNo(loginMember.getMemberNo())
+                .map(GameSetting::getLanguage)
+                .orElse(Language.KO);
+
+        String userLangCode = userLanguage.name().toLowerCase();
+
         log.info("🐻user-npc Question Answer unity 통신 완료");
 
         try {
-            return sendAIToAnswer(request);
+            return sendAIToAnswer(request, userLangCode);
         } catch (Exception e) {
             log.error("🐻AI 통신 실패 : ", e);
             throw e;
         }
     }
 
-
-    private QuestionAnswerResponse sendAIToAnswer(QuestionAnswerRequest request) {
+    private QuestionAnswerResponse sendAIToAnswer(QuestionAnswerRequest request, String userLangCode) throws Exception {
 
         log.info("🐻Question Answer AI 통신 시작");
 
@@ -93,10 +102,18 @@ public class QuestionService {
         GameSet gameSet = gameSetRepository.findByGameSetNo(request.getGameSetNo())
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
+        String npcNameEn = gameNpcRepository
+                .findByGameSet_GameSetNoAndNpcNameEn(gameSet.getGameSetNo(), request.getNpcName())
+                .map(GameNpc::getNpcNameEn)
+                .or(() -> gameNpcRepository.findByGameSet_GameSetNoAndNpcName(gameSet.getGameSetNo(), request.getNpcName())
+                        .map(GameNpc::getNpcNameEn))
+                .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
+
         // AI 서버에 보낼 요청 객체 생성
         AIQuestionAnswerRequest aiQuestionAnswerRequest = new AIQuestionAnswerRequest();
         aiQuestionAnswerRequest.setGameNo(request.getGameSetNo());
-        aiQuestionAnswerRequest.setNpcName(request.getNpcName());
+        aiQuestionAnswerRequest.setLanguage(userLangCode);
+        aiQuestionAnswerRequest.setNpcName(npcNameEn);
         aiQuestionAnswerRequest.setKeyWord(request.getKeyWord() != null ? request.getKeyWord() : "");
         aiQuestionAnswerRequest.setKeyWordType(request.getKeyWord() != null ? request.getKeyWordType() : "");
 
@@ -128,7 +145,7 @@ public class QuestionService {
 
         log.info("🐻Question Answer AI 통신 완료");
 
-        return aiResponse;
+        return QuestionAnswerResponse.of(aiResponse, userLangCode);
     }
 
 }
