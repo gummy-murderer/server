@@ -14,11 +14,13 @@ import com.server.gummymurderer.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -83,6 +85,12 @@ public class ScenarioService {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromValue(jsonRequest))
                 .retrieve()
+                .onStatus(HttpStatusCode::isError, response ->
+                        response.bodyToMono(String.class)
+                                .flatMap(errorBody -> {
+                                    log.error("🐻 AI 응답 에러: {}", errorBody);
+                                    return Mono.error(new RuntimeException("AI 서버 오류 발생"));
+                                }))
                 .bodyToMono(AiMakeScenarioResponse.class)
                 .block();
 
