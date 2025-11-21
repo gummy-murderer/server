@@ -202,47 +202,29 @@ public class ScenarioService {
         GameSet foundGameSet = gameSetRepository.findByGameSetNoAndMember(request.getGameSetNo(), loginMember)
                 .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
 
-        String secretKey = "mafia";
-        request.setSecretKey(secretKey);
+        // 언어 설정 조회
+        Language userLanguage = gameSettingRepository.findByMemberNo(loginMember.getMemberNo())
+                .map(GameSetting::getLanguage)
+                .orElse(Language.KO);
 
-        // gameResult 정보 가져오기
-        String gameResult = null;
+        String userLangCode = userLanguage.name().toLowerCase();
 
-        if (foundGameSet.getGameResult() == GameResult.WIN) {
-            gameResult = "victory";
-        } else {
+        // 게임 결과 체크 및 반환
+        if (foundGameSet.getGameResult() != GameResult.WIN) {
             throw new AppException(ErrorCode.GAME_NOT_WON);
         }
+        String gameResultCode = foundGameSet.getGameResult().name();
 
-        log.info("🐻 gameResult : {}", foundGameSet.getGameResult());
+        log.info("🐻gameResultCode : {}", gameResultCode);
 
-        // murderer 정보 가져오기
-        String murderer = gameNpcRepository.findMurderByGameSetNo(foundGameSet.getGameSetNo());
-
-        // previousStory 정보 가져오기
-        String previousStory = gameScenarioRepository.findTopByGameSetOrderByScenarioNoDesc(foundGameSet)
-                .map(GameScenario::getDailySummary)
-                .orElseThrow(() -> new AppException(ErrorCode.SCENARIO_NOT_FOUND));
-
-        // livingCharacters 정보 가져오기
-        List<NpcInfo> livingCharacters = gameNpcRepository.findAllAliveResidentNpcInfoByGameSetNo(foundGameSet.getGameSetNo());
-
-        String url = aiUrl + "/api/v1/scenario/final-words";
-
+        String url = aiUrl + "/api/v2/new-game/final-words";
         log.info("🐻 ai 요청 url : {}", url);
 
-        Map<String, Object> requestData = new HashMap<>();
-        requestData.put("gameNo", foundGameSet.getGameSetNo());
-        requestData.put("secretKey", request.getSecretKey());
-        requestData.put("gameResult", gameResult);
-        requestData.put("murderer", murderer);
-        requestData.put("livingCharacters", livingCharacters);
-        requestData.put("previousStory", previousStory);
-
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        String jsonRequest = objectMapper.writeValueAsString(requestData);
-        log.info("🐻jsonRequest : {} ", jsonRequest);
+        FinalWordAIRequest aiRequest = FinalWordAIRequest.of(
+                foundGameSet.getGameSetNo(),
+                userLangCode,
+                gameResultCode
+        );
 
         WebClient webClient = WebClient.create();
 
@@ -250,7 +232,7 @@ public class ScenarioService {
                 .post()
                 .uri(url)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(jsonRequest))
+                .bodyValue(aiRequest)
                 .retrieve()
                 .bodyToMono(FinalWordResponse.class)
                 .block();

@@ -12,6 +12,5 @@ import lombok.Setter;
 public class FinalWordResponse {
 
     private FinalWordAnswerDTO answer;
-    private TokensDTO tokens;
 
 }
