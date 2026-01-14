@@ -11,20 +11,22 @@ import java.util.List;
 @AllArgsConstructor
 public class GameEndingLetterResponse {
 
-    private String result;
     private String language;
-    private Letter chiefLetter;
-    private Letter murdererLetter;
-    private List<SurvivorLetter> survivorsLetters;
+    private Answer answer;
 
+    @Getter
+    @ToString
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Answer {
+        private String greeting;
+        private String content;
+        private String closing;
+    }
+
+    // ✅ AI 응답(=this)에 language만 덧붙인 새 객체 반환
     public static GameEndingLetterResponse of(GameEndingLetterResponse aiResponse, String language) {
-        return new GameEndingLetterResponse(
-                aiResponse.getResult(),
-                language,
-                aiResponse.getChiefLetter(),
-                aiResponse.getMurdererLetter(),
-                aiResponse.getSurvivorsLetters()
-        );
+        return new GameEndingLetterResponse(language, aiResponse.getAnswer());
     }
 
 }
