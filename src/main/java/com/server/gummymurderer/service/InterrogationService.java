@@ -111,7 +111,22 @@ public class InterrogationService {
 
         log.info("🐻 unity request GameSetNo : {}", request.getGameSetNo());
 
-        List<Interrogation> interrogations = interrogationRepository.findByGameSetAndNpcNameOrderByInterrogationNoDesc(gameSet, request.getNpcName());
+        Long gameNo = request.getGameSetNo();
+        String npcNameInput = request.getNpcName();
+
+        String npcNameEn = gameNpcRepository
+                .findByGameSet_GameSetNoAndNpcNameEn(gameNo, npcNameInput) // 이미 EN
+                .map(GameNpc::getNpcNameEn)
+                .orElseGet(() ->
+                        gameNpcRepository.findByGameSet_GameSetNoAndNpcName(gameNo, npcNameInput) // KO → EN
+                                .map(GameNpc::getNpcNameEn)
+                                .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND))
+                );
+
+        log.info("🐻 Interrogation 조회용 npcNameEn = {}", npcNameEn);
+
+        List<Interrogation> interrogations =
+                interrogationRepository.findByGameSetAndNpcNameOrderByInterrogationNoDesc(gameSet, npcNameEn);
 
         if (interrogations.isEmpty()) {
             throw new AppException(ErrorCode.INTERROGATION_NOT_FOUND);
@@ -130,19 +145,6 @@ public class InterrogationService {
                 .orElse(Language.KO);
 
         String userLangCode = userLanguage.name().toLowerCase();
-
-        // npcName 영문으로
-        Long gameNo = request.getGameSetNo();
-        String npcNameInput = request.getNpcName();
-        String npcNameEn = gameNpcRepository
-                .findByGameSet_GameSetNoAndNpcNameEn(gameNo, npcNameInput)        // 이미 EN으로 온 경우
-                .map(GameNpc::getNpcNameEn)
-                .orElseGet(() ->                                                  // KO로 왔으면 EN으로 변환
-                        gameNpcRepository.findByGameSet_GameSetNoAndNpcName(gameNo, npcNameInput)
-                                .map(GameNpc::getNpcNameEn)
-                                .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND))
-                );
-
 
         String aiServerUrl =  aiUrl + "/api/v2/interrogation/conversation";
         WebClient webClient = WebClient.builder().baseUrl(aiServerUrl).build();
