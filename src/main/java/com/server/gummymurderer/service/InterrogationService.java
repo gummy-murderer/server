@@ -63,12 +63,9 @@ public class InterrogationService {
 
         // npcName 영어로
         Long gameNo = request.getGameSetNo();
-        String npcNameEn = gameNpcRepository
-                .findByGameSet_GameSetNoAndNpcName(gameNo, request.getNpcName())           // ko로 왔을 때
-                .map(GameNpc::getNpcNameEn)
-                .or(() -> gameNpcRepository.findByGameSet_GameSetNoAndNpcNameEn(gameNo, request.getNpcName()) // 이미 en일 때
-                        .map(GameNpc::getNpcNameEn))
-                .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
+        String npcNameEn = resolveNpcNameEn(gameNo, request.getNpcName());
+
+        log.info("🐻 Interrogation 조회용 npcNameEn = {}", npcNameEn);
 
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("gameNo", request.getGameSetNo());
@@ -183,6 +180,18 @@ public class InterrogationService {
 
         return InterrogationProceedResponse.of(response, userLangCode);
 
+    }
+
+    private String resolveNpcNameEn(Long gameNo, String npcNameInput) {
+        return gameNpcRepository
+                .findByGameSet_GameSetNoAndNpcNameEn(gameNo, npcNameInput)
+                .map(GameNpc::getNpcNameEn)
+                .or(() ->
+                        gameNpcRepository
+                                .findByGameSet_GameSetNoAndNpcName(gameNo, npcNameInput)
+                                .map(GameNpc::getNpcNameEn)
+                )
+                .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
     }
 
     private void validateUser(Member loginMember, HttpServletRequest httpServletRequest) {
