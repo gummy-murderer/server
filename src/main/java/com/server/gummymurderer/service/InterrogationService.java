@@ -109,21 +109,20 @@ public class InterrogationService {
         log.info("🐻 unity request GameSetNo : {}", request.getGameSetNo());
 
         Long gameNo = request.getGameSetNo();
-        String npcNameInput = request.getNpcName();
 
-        String npcNameEn = gameNpcRepository
-                .findByGameSet_GameSetNoAndNpcNameEn(gameNo, npcNameInput) // 이미 EN
-                .map(GameNpc::getNpcNameEn)
-                .orElseGet(() ->
-                        gameNpcRepository.findByGameSet_GameSetNoAndNpcName(gameNo, npcNameInput) // KO → EN
-                                .map(GameNpc::getNpcNameEn)
-                                .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND))
-                );
+        String npcNameEn = resolveNpcNameEn(gameNo, request.getNpcName());
+        log.info("🐻 npcNameEn (AI용) = {}", npcNameEn);
 
-        log.info("🐻 Interrogation 조회용 npcNameEn = {}", npcNameEn);
+        String npcNameKo = gameNpcRepository
+                .findByGameSet_GameSetNoAndNpcNameEn(gameNo, npcNameEn)
+                .map(GameNpc::getNpcName)
+                .orElseThrow(() -> new AppException(ErrorCode.NPC_NOT_FOUND));
+
+        log.info("🐻 npcNameKo (DB 조회용) = {}", npcNameKo);
+
 
         List<Interrogation> interrogations =
-                interrogationRepository.findByGameSetAndNpcNameOrderByInterrogationNoDesc(gameSet, npcNameEn);
+                interrogationRepository.findByGameSetAndNpcNameOrderByInterrogationNoDesc(gameSet, npcNameKo);
 
         if (interrogations.isEmpty()) {
             throw new AppException(ErrorCode.INTERROGATION_NOT_FOUND);
