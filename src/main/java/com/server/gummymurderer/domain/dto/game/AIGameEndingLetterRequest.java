@@ -15,7 +15,7 @@ public class AIGameEndingLetterRequest {
     private String language;
     private String gameResult;
 
-    public static AIGameEndingLetterRequest create(Long gameNo, String gameResult, String language) {
+    public static AIGameEndingLetterRequest create(Long gameNo, String language, String gameResult) {
         return AIGameEndingLetterRequest.builder()
                 .gameNo(gameNo)
                 .language(language)
