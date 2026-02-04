@@ -12,8 +12,5 @@ import lombok.NoArgsConstructor;
 public class StartGameResponse {
 
     private Long gameSetNo;
-    private String language;
-    private float backgroundSoundVolume;
-    private float effectSoundVolume;
 
 }
