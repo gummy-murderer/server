@@ -162,11 +162,30 @@ public class GameService {
 
         gameNpcRepository.saveAll(gameNpcList);
 
+        GameSetting gameSetting = gameSettingRepository.findByMemberNo(loginMember.getMemberNo())
+                .orElse(null);
+
+        float backgroundVolume = 0.5f;
+        float effectVolume = 0.5f;
+        Language language = Language.EN;
+
+        if (gameSetting != null) {
+            backgroundVolume = gameSetting.getBackgroundSoundVolume();
+            effectVolume = gameSetting.getEffectSoundVolume();
+            language = gameSetting.getLanguage();
+        }
+
+        log.info("🎵 Setting - language: {}, bgVolume: {}, effectVolume: {}",
+                language, backgroundVolume, effectVolume);
+
         // AI 서버에 요청 보내기
         sendGameStartToAI(savedGameSet.getGameSetNo(), gameNpcList);
 
         return StartGameResponse.builder()
                 .gameSetNo(savedGameSet.getGameSetNo())
+                .language(language.name())
+                .backgroundSoundVolume(backgroundVolume)
+                .effectSoundVolume(effectVolume)
                 .build();
     }
 
