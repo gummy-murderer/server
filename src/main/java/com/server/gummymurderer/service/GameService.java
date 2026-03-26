@@ -296,11 +296,11 @@ public class GameService {
         gameUserDetectiveNotebookService.saveOrUpdateNotebook(loginMember, detectiveNotebookSaveRequest);
 
 
-        // custom 저장
-        if (request.getUserCustom() != null) {
-            request.getUserCustom().setGameSetNo(request.getGameSetNo());
-            gameUserCustomService.saveCustom(loginMember, request.getUserCustom());
-        }
+//        // custom 저장
+//        if (request.getUserCustom() != null) {
+//            request.getUserCustom().setGameSetNo(request.getGameSetNo());
+//            gameUserCustomService.saveCustom(loginMember, request.getUserCustom());
+//        }
 
         // npc custom 저장
         GameNpcCustomSaveRequest gameNpcCustomSaveRequest = new GameNpcCustomSaveRequest();

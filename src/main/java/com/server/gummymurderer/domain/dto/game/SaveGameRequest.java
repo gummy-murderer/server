@@ -20,7 +20,7 @@ public class SaveGameRequest {
     private boolean voteResult;
     private Long voteNightNumber;
     private List<DetectiveNotebookRequest> notebookRequestList;
-    private GameUserCustomSaveRequest userCustom;
+//    private GameUserCustomSaveRequest userCustom;
     private List<NpcCustomInfo> npcCustomInfos;
 
 }
