@@ -12,4 +12,6 @@ public interface GameUserCustomRepository extends JpaRepository<GameUserCustom, 
 
     Optional<GameUserCustom> findByGameSet(GameSet gameSet);
 
+    void deleteByGameSet(GameSet gameSet);
+
 }

@@ -44,4 +44,6 @@ public interface GameNpcRepository extends JpaRepository<GameNpc, Long> {
     // 알리바이 영문 이름으로 찾기
     Optional<GameNpc> findByNpcNameEnAndGameSet_GameSetNo(String npcNameEn, Long gameSetNo);
 
+    void deleteByGameSet(GameSet gameSet);
+
 }

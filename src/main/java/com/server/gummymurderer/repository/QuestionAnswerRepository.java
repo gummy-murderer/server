@@ -6,4 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface QuestionAnswerRepository extends JpaRepository<QuestionAnswer, Long> {
+
+    void deleteByGameSetNo(Long gameSetNo);
+
 }

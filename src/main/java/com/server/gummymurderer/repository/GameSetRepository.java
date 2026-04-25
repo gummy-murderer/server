@@ -2,6 +2,7 @@ package com.server.gummymurderer.repository;
 
 import com.server.gummymurderer.domain.entity.GameSet;
 import com.server.gummymurderer.domain.entity.Member;
+import com.server.gummymurderer.domain.enum_class.GameStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,4 +22,8 @@ public interface GameSetRepository extends JpaRepository<GameSet, Long> {
     @Query("SELECT gs FROM GameSet gs JOIN FETCH gs.member m WHERE m = :member AND gs.gameSetNo = :gameSetNo AND gs.gameStatus = 'GAME_END'")
     Optional<GameSet> findEndedGameSetByMemberAndGameSetNo(@Param("gameSetNo") Long gameSetNo, @Param("member") Member member);
 
+    Optional<GameSet> findTopByMemberAndGameStatusNotOrderByCreatedAtAsc(
+            Member member,
+            GameStatus gameStatus
+    );
 }

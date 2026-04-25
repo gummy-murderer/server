@@ -12,4 +12,6 @@ public interface InterrogationRepository extends JpaRepository<Interrogation, Lo
 
     List<Interrogation> findByGameSetAndNpcNameOrderByInterrogationNoDesc(GameSet gameSet, String npcName);
 
+    void deleteByGameSet(GameSet gameSet);
+
 }

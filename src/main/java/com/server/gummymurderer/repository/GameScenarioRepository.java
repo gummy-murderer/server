@@ -11,5 +11,7 @@ public interface GameScenarioRepository extends JpaRepository<GameScenario, Long
 
     Optional<GameScenario> findTopByGameSetOrderByScenarioNoDesc(GameSet gameSet);
 
+    void deleteByGameSet(GameSet gameSet);
+
 }
 

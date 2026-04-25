@@ -3,6 +3,7 @@ package com.server.gummymurderer.repository;
 import com.server.gummymurderer.domain.entity.GameAlibi;
 import com.server.gummymurderer.domain.entity.GameNpc;
 import com.server.gummymurderer.domain.entity.GameScenario;
+import com.server.gummymurderer.domain.entity.GameSet;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -12,5 +13,7 @@ public interface GameAlibiRepository extends JpaRepository<GameAlibi, Long> {
 
     Optional<GameAlibi> findByGameScenarioAndGameNpc(GameScenario gameScenario, GameNpc gameNpc);
     List<GameAlibi> findByGameNpc(GameNpc gameNpc);
+
+    void deleteByGameScenario_GameSet(GameSet gameSet);
 
 }

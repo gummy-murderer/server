@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface GameVoteEventRepository extends JpaRepository<GameVoteEvent, Long> {
 
     Long countAllByGameSet(GameSet gameSet);
+
+    void deleteByGameSet(GameSet gameSet);
 }

@@ -55,6 +55,9 @@ public class GameService {
     private final GameUserDetectiveNotebookService gameUserDetectiveNotebookService;
     private final GameUserCustomService gameUserCustomService;
     private final GameNpcCustomService gameNpcCustomService;
+    private final InterrogationRepository interrogationRepository;
+    private final InterrogationDialogueRepository interrogationDialogueRepository;
+    private final QuestionAnswerRepository questionAnswerRepository;
 
     @Value("${ai.url}")
     private String aiUrl;
@@ -131,10 +134,11 @@ public class GameService {
         int saveGameCount = gameSetRepository.findGameSetsByMember(loginMember).size();
         log.info("🤖 저장된 게임 갯수 : {}", saveGameCount);
 
-        // 게임 슬롯 최대 3개 저장
-//        if (saveGameCount >= 3) {
-//            throw new AppException(ErrorCode.SAVED_GAME_FULL);
-//        }
+        // 게임 슬롯이 모두 찼을 경우 가장 오래된 슬롯 삭제 후 게임 시작
+        if (saveGameCount >= 3) {
+            log.info("🐻 저장 슬롯이 모두 차서 가장 오래된 게임 슬롯을 삭제합니다.");
+            deleteOldestGameSet(loginMember);
+        }
 
         log.info("🤖 계정명 : " + loginMember.getNickname());
 
@@ -532,6 +536,38 @@ public class GameService {
                 .block();
 
         return GameAutopsyResponse.of(aiResponse, userLangCode);
+    }
+
+    private void deleteOldestGameSet(Member loginMember) {
+
+        GameSet oldestGameSet = gameSetRepository
+                .findTopByMemberAndGameStatusNotOrderByCreatedAtAsc(loginMember, GameStatus.GAME_END)
+                .orElseThrow(() -> new AppException(ErrorCode.GAME_SET_NOT_FOUND));
+
+        Long gameSetNo = oldestGameSet.getGameSetNo();
+
+        log.info("🐻 오래된 슬롯 삭제 시작");
+        log.info("🐻 삭제 유저 : {}", loginMember.getNickname());
+        log.info("🐻 삭제 대상 GameSetNo : {}", gameSetNo);
+        log.info("🐻 생성일 : {}", oldestGameSet.getCreatedAt());
+
+        interrogationDialogueRepository.deleteByInterrogation_GameSet(oldestGameSet);
+        interrogationRepository.deleteByGameSet(oldestGameSet);
+
+        gameAlibiRepository.deleteByGameScenario_GameSet(oldestGameSet);
+        gameNpcCustomRepository.deleteByGameSet(oldestGameSet);
+
+        gameUserCustomRepository.deleteByGameSet(oldestGameSet);
+        gameVoteEventRepository.deleteByGameSet(oldestGameSet);
+        gameScenarioRepository.deleteByGameSet(oldestGameSet);
+
+        questionAnswerRepository.deleteByGameSetNo(gameSetNo);
+
+        gameNpcRepository.deleteByGameSet(oldestGameSet);
+
+        gameSetRepository.delete(oldestGameSet);
+
+        log.info("🐻 오래된 슬롯 삭제 완료 : {}", gameSetNo);
     }
 
 }
