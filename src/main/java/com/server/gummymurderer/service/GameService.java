@@ -132,9 +132,9 @@ public class GameService {
         log.info("🤖 저장된 게임 갯수 : {}", saveGameCount);
 
         // 게임 슬롯 최대 3개 저장
-//        if (saveGameCount >= 3) {
-//            throw new AppException(ErrorCode.SAVED_GAME_FULL);
-//        }
+        if (saveGameCount >= 3) {
+            throw new AppException(ErrorCode.SAVED_GAME_FULL);
+        }
 
         log.info("🤖 계정명 : " + loginMember.getNickname());
 
