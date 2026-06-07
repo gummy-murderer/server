@@ -15,6 +15,7 @@ public class GameEndingLetterResponse {
     private Answer answer;
 
     @Getter
+    @Setter
     @ToString
     @NoArgsConstructor
     @AllArgsConstructor
